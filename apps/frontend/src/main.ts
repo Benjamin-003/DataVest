@@ -7,7 +7,7 @@ import { environment } from './environments/environment.prod';
 
 if (environment.production) {
   enableProdMode();
-  };
+  }
 
 Sentry.init({
   dsn: "http://357419a83f5d48ab84bf7c178cceede2@sentry.prod.modiscloud.net:9000/25",
