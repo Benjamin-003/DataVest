@@ -10,7 +10,7 @@ export class HeaderComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    this.items = [{label:"Tarif"},{label:"Investir"},{label:"Académie"},{label:"A propos de SVB Ind"},{label:"Des questions"}];
+    this.items = [{label:"Tarif"},{label:"Investir", routerLink:"Investissement"},{label:"Académie"},{label:"A propos de SVB Ind"},{label:"Des questions"}];
   }
 
 }

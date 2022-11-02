@@ -7,7 +7,7 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "none"
+          "inlineStyle": true
         },
         "@schematics/angular:application": {
           "strict": true
