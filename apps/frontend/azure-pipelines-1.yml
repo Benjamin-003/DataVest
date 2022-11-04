@@ -1,0 +1,61 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+trigger:
+  - master
+pool:
+  vmImage: "ubuntu-latest"
+variables:
+  buildConfiguration: "Release"
+  spaDir: "AzurePipelineRestoreAndSaveCacheEx/ClientApp"
+  cyCacheDir: "/home/vsts/.cache/Cypress"
+  npmCacheDir: "/home/vsts/.npm"
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "16.x"
+    displayName: "Install Node.js"
+  - task: Cache@2
+    inputs:
+      key: 'npm_v1 | "$(Agent.OS)" | $(spaDir)/package-lock.json'
+      path: $(npmCacheDir)
+      cacheHitVar: NPM_CACHE_RESTORED
+    displayName: "Cache ~/.npm directory"
+  - task: Cache@2
+    inputs:
+      key: 'cy_v1 | "$(Agent.OS)" | $(spaDir)/package-lock.json'
+      path: $(cyCacheDir)
+      cacheHitVar: CYPRESS_CACHE_RESTORED
+    displayName: "Cache Cypress binary"
+  - script: |
+      CYPRESS_INSTALL_BINARY=0 npm ci
+    displayName: Install dependencies (skip Cypress install)
+    workingDirectory: "$(spaDir)"
+    condition: eq(variables.CYPRESS_CACHE_RESTORED, 'true')
+  - script: |
+      npm ci
+    displayName: Install dependencies (include Cypress install)
+    workingDirectory: "$(spaDir)"
+    condition: eq(variables.CYPRESS_CACHE_RESTORED, 'false')
+  - task: CmdLine@2
+    inputs:
+      script: "npm test"
+      workingDirectory: "$(spaDir)"
+    displayName: "Run cypress test"
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: "JUnit"
+      testResultsFiles: "**/test-output-*.xml"
+    displayName: "Publish test results"
+  - task: DotNetCoreCLI@2
+    displayName: "Publish web app"
+    inputs:
+      command: "publish"
+      projects: "**/*.csproj"
+      publishWebProjects: true
+      zipAfterPublish: true
+      arguments: "--output $(build.artifactstagingdirectory)"
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: $(Build.ArtifactStagingDirectory)
