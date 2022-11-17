@@ -1,6 +1,6 @@
 <form [formGroup]="formulaire" (ngSubmit)="validationForm()">
   <div class="grid mt-5 p-fluid">
-    <div class="col-12 lg:col-offset-3 lg:col-5 shadow-2 bg-gray-300">
+    <div class="col-12 lg:col-offset-3 lg:col-6 shadow-2 bg-gray-300">
       <p-card>
         <div class="field mb-6">
           <span class="p-float-label mb-2">
@@ -109,7 +109,17 @@
             <small *ngIf="formulaire.controls['password'].hasError('required')" class="p-error">
               {{messagesErreur[1]}}
             </small>
+            <small *ngIf="formulaire.controls['password'].value && formulaire.controls['password'].invalid" class="p-error">
+              {{messagesErreur[0]}}
+            </small>
           </div>
+          <ul>
+            <li>Minimum 8 caractères</li>
+            <li>Au moins 1 majuscule</li>
+            <li>Au moins 1 minuscule</li>
+            <li>Au moins 1 chiffre</li>
+            <li>Au moins 1 caractère spécial</li>
+          </ul>
         </div>
         <div class="field mb-6">
           <span class="p-float-label mb-2">

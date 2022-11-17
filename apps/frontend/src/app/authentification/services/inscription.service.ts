@@ -9,7 +9,6 @@ const userEndpoint = `${environment.urlApi}/users`
   providedIn: 'root'
 })
 export class InscriptionService {
-  
   constructor(private readonly http: HttpClient) { }
 
   //Envoi d'un nouveau user vers le back

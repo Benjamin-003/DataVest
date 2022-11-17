@@ -2,7 +2,7 @@ import { InscriptionService } from './../../services/inscription.service';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
 import { Router } from '@angular/router';
-import { User } from '../../Interfaces/user';
+
 @Component({
   selector: 'app-form-inscription',
   templateUrl: './form-inscription.component.html'
@@ -14,7 +14,7 @@ export class FormInscriptionComponent implements OnInit {
   public messagesErreur = ["Il semble y avoir une erreur de saisie ici", "Ce champ est obligatoire, merci de saisir l'information demandée"]
 
   //Cette Regex vient du site https://www.emailregex.com/
-  public mailRegex: RegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  public mailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
   ngOnInit(): void {
     this.formulaire = this.formBuilder.group({
@@ -46,6 +46,7 @@ export class FormInscriptionComponent implements OnInit {
         "",
         [
           Validators.required,
+          Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
         ],
       ],
       confirmPassword: [
