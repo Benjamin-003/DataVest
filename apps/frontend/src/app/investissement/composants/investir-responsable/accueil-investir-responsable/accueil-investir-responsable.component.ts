@@ -1,15 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-accueil-investir-responsable',
-  templateUrl: './accueil-investir-responsable.component.html',
-  styleUrls: ['./accueil-investir-responsable.component.css']
+  templateUrl: './accueil-investir-responsable.component.html'
 })
-export class AccueilInvestirResponsableComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+export class AccueilInvestirResponsableComponent {
 }

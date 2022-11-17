@@ -1,15 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-retraite',
-  templateUrl: './retraite.component.html',
-  styleUrls: ['./retraite.component.css']
+  templateUrl: './retraite.component.html'
 })
-export class RetraiteComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
-  }
+export class RetraiteComponent{
 
 }

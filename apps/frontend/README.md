@@ -20,6 +20,7 @@ Pour lancer le front, il faut avoir en installé en préalable Node.JS et GIT ba
 
 Coté Front, l'application tourne sous Node.JS. Il faut entrer la commande `npm install` pour récupérer tout les nodes modules. 
 Pour lancer l'application en local, il faut effectuer un `npm start`
+Pour lancer le serveur JSON, il faut saisir la commande `npm run jsonServer`
 
 # Build and Test
 Pour générer un build de l'application, il faut effectuer un `ng build`, l'application est buildé dans un dossier nommé dist.

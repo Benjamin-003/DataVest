@@ -1,15 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-obligations',
-  templateUrl: './obligations.component.html',
-  styleUrls: ['./obligations.component.css']
+  templateUrl: './obligations.component.html'
 })
-export class ObligationsComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+export class ObligationsComponent {
 }

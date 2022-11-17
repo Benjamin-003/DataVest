@@ -6,11 +6,7 @@ import {MenuItem} from 'primeng/api';
 })
 export class HeaderComponent implements OnInit {
   public items!:MenuItem[]
-
-  constructor() { }
-
   ngOnInit() {
-    this.items = [{label:"Tarif",routerLink:"tarifs"},{label:"Investir", routerLink:"Investissement"},{label:"Académie"},{label:"A propos de SVB Ind"},{label:"Des questions"}];
+    this.items = [{label:"Tarif",routerLink:"tarifs"},{label:"Investir", routerLink:"investissement"},{label:"Académie"},{label:"A propos de SVB Ind"},{label:"Des questions"}];
   }
-
 }

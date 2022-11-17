@@ -1,15 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-sicav-fonds',
-  templateUrl: './sicav-fonds.component.html',
-  styleUrls: ['./sicav-fonds.component.css']
+  templateUrl: './sicav-fonds.component.html'
 })
-export class SicavFondsComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+export class SicavFondsComponent{
 }

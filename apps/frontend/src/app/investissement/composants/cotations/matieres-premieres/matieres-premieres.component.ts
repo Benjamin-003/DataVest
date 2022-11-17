@@ -1,15 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-matieres-premieres',
-  templateUrl: './matieres-premieres.component.html',
-  styleUrls: ['./matieres-premieres.component.css']
+  templateUrl: './matieres-premieres.component.html'
 })
-export class MatieresPremieresComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+export class MatieresPremieresComponent {
 }

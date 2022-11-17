@@ -1,0 +1,151 @@
+<form [formGroup]="formulaire" (ngSubmit)="validationForm()">
+  <div class="grid mt-5 p-fluid">
+    <div class="col-12 lg:col-offset-3 lg:col-5 shadow-2 bg-gray-300">
+      <p-card>
+        <div class="field mb-6">
+          <span class="p-float-label mb-2">
+            <input id="surname" type="text" formControlName="surname" pInputText>
+            <label for="surname">Nom</label>
+          </span>
+          <div *ngIf="formulaire.controls['surname'].touched">
+            <small *ngIf="formulaire.controls['surname'].hasError('pattern')" class="p-error">
+              {{messagesErreur[0]}}
+            </small>
+            <small *ngIf="formulaire.controls['surname'].hasError('required')" class="p-error">
+              {{messagesErreur[1]}}
+            </small>
+          </div>
+        </div>
+        <div class="field mb-6">
+          <span class="p-float-label mb-2">
+            <input id="firstname" type="text" formControlName="firstname" pInputText>
+            <label for="firstname">Prénom</label>
+          </span>
+          <div *ngIf="formulaire.controls['firstname'].touched">
+            <small *ngIf="formulaire.controls['firstname'].hasError('pattern')" class="p-error">
+              {{messagesErreur[0]}}
+            </small>
+            <small *ngIf="formulaire.controls['firstname'].hasError('required')" class="p-error">
+              {{messagesErreur[1]}}
+            </small>
+          </div>
+        </div>
+        <div class="field mb-6">
+          <span class="p-float-label mb-2">
+            <p-calendar inputId="birth_date" formControlName="birth_date" dateFormat="dd/mm/yy" [showIcon]="true">
+            </p-calendar>
+            <label for="birth_date">Date de Naissance</label>
+          </span>
+          <div *ngIf="formulaire.controls['birth_date'].touched">
+            <small *ngIf="formulaire.controls['birth_date'].hasError('required')" class="p-error">
+              {{messagesErreur[1]}}
+            </small>
+          </div>
+        </div>
+        <div class="field mb-6">
+          <span class="p-float-label mb-2">
+            <input id="address" type="text" formControlName="address" pInputText>
+            <label for="address">Adresse</label>
+          </span>
+          <div *ngIf="formulaire.controls['address'].touched">
+            <small *ngIf="formulaire.controls['address'].hasError('required')" class="p-error">
+              {{messagesErreur[1]}}
+            </small>
+          </div>
+        </div>
+        <div class="field mb-6">
+          <span class="p-float-label mb-2">
+            <input id="zip_code" type="text" formControlName="zip_code" pInputText>
+            <label for="zip_code">Code Postal</label>
+          </span>
+          <div *ngIf="formulaire.controls['zip_code'].touched">
+            <small *ngIf="formulaire.controls['zip_code'].hasError('required')" class="p-error">
+              {{messagesErreur[1]}}
+            </small>
+          </div>
+        </div>
+        <div class="field mb-6">
+          <span class="p-float-label mb-2">
+            <input id="city" type="text" formControlName="city" pInputText>
+            <label for="city">Ville</label>
+          </span>
+          <div *ngIf="formulaire.controls['city'].touched">
+            <small *ngIf="formulaire.controls['city'].hasError('required')" class="p-error">
+              {{messagesErreur[1]}}
+            </small>
+          </div>
+        </div>
+        <div class="field mb-6">
+          <span class="p-float-label mb-2">
+            <input id="country" type="text" formControlName="country" pInputText>
+            <label for="country">Pays</label>
+          </span>
+          <div *ngIf="formulaire.controls['country'].touched">
+            <small *ngIf="formulaire.controls['country'].hasError('required')" class="p-error">
+              {{messagesErreur[1]}}
+            </small>
+          </div>
+        </div>
+        <div class="field mb-6">
+          <span class="p-float-label mb-2">
+            <input id="mail" type="text" formControlName="mail" pInputText>
+            <label for="mail">E-mail</label>
+          </span>
+          <div *ngIf="formulaire.controls['mail'].touched">
+            <small *ngIf="formulaire.controls['mail'].hasError('required')" class="p-error">
+              {{messagesErreur[1]}}
+            </small>
+            <small *ngIf="formulaire.controls['mail'].value && formulaire.controls['mail'].invalid" class="p-error">
+              {{messagesErreur[0]}}
+            </small>
+          </div>
+        </div>
+        <div class="field mb-6">
+          <span class="p-float-label mb-2">
+            <input id="password" type="password" formControlName="password" pInputText>
+            <label for="password">Mot de Passe</label>
+          </span>
+          <div *ngIf="formulaire.controls['password'].touched">
+            <small *ngIf="formulaire.controls['password'].hasError('required')" class="p-error">
+              {{messagesErreur[1]}}
+            </small>
+          </div>
+        </div>
+        <div class="field mb-6">
+          <span class="p-float-label mb-2">
+            <input id="confirmPassword" type="password" formControlName="confirmPassword" pInputText>
+            <label for="confirmPassword">Confirmez votre mot de passe</label>
+          </span>
+          <div *ngIf="formulaire.controls['confirmPassword'].touched">
+            <small *ngIf="formulaire.controls['confirmPassword'].hasError('required')" class="p-error">
+              {{messagesErreur[1]}}
+            </small>
+            <small class="p-error" *ngIf="formulaire.controls['confirmPassword'].value && formulaire.get('password')?.value !== formulaire.get('confirmPassword')?.value">
+              {{messagesErreur[0]}}
+            </small>
+          </div>
+        </div>
+        <div class="mb-6">
+          <div class="field-checkbox mb-2">
+            <p-checkbox type="checkbox" id="newsletter" [binary]="true" formControlName="newsletter"></p-checkbox>
+            <label for="newsletter">J'accepte de recevoir la newsletter de SVB-Ind Ottawa Pigeon</label>
+          </div>
+        </div>
+        <div class="col-offset-3 col-6 flex flex-wrap align-items-center justify-content-center">
+          <button pButton pRipple [disabled]="formulaire.invalid" type="submit" label="Créer mon compte"
+            class="p-button-raised"></button>
+        </div>
+        <div class="col-offset-3 col-6 flex flex-wrap align-items-center justify-content-center">
+          <button pButton pRipple label="Annuler" class="p-button-raised p-button-danger"
+            routerLink="../../accueil"></button>
+        </div>
+        <div class="col-offset-3 col-6 flex flex-wrap align-items-center justify-content-center">
+          <p>OU</p>
+        </div>
+        <div class="col-offset-3 col-6 flex flex-wrap align-items-center justify-content-center">
+          <button pButton pRipple label="S'inscrire via un compte Google" icon="pi pi-google"></button>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</form>

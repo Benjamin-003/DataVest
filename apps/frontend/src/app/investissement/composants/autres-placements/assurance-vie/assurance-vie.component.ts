@@ -1,15 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-assurance-vie',
-  templateUrl: './assurance-vie.component.html',
-  styleUrls: ['./assurance-vie.component.css']
+  templateUrl: './assurance-vie.component.html'
 })
-export class AssuranceVieComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+export class AssuranceVieComponent{
 }

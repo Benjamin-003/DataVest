@@ -1,15 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-video-investisseur',
-  templateUrl: './video-investisseur.component.html',
-  styleUrls: ['./video-investisseur.component.css']
+  templateUrl: './video-investisseur.component.html'
 })
-export class VideoInvestisseurComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+export class VideoInvestisseurComponent {
 }

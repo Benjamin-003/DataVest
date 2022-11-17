@@ -2,14 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-immobilier',
-  templateUrl: './immobilier.component.html',
-  styleUrls: ['./immobilier.component.css']
+  templateUrl: './immobilier.component.html'
 })
-export class ImmobilierComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+export class ImmobilierComponent{
 }
