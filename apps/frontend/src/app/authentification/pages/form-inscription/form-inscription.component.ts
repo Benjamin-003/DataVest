@@ -69,14 +69,16 @@ export class FormInscriptionComponent implements OnInit {
 
   //On soumet le formulaire et on redirige vers la page de succès ou d'échec
   validationForm() {
-    const { confirmPassword, ...user } = this.formulaire.value
-    this.inscription.createUser(user).subscribe({
-      error: () => {
-        this.route.navigate(['./echec']);
-      },
-      complete: () => {
-        this.route.navigate(['./succes'])
-      }
-    })
+    if (this.formulaire.valid) {
+      const { confirmPassword, ...user } = this.formulaire.value
+      this.inscription.createUser(user).subscribe({
+        error: () => {
+          this.route.navigate(['./echec']);
+        },
+        complete: () => {
+          this.route.navigate(['./succes'])
+        }
+      })
+    }
   }
 }
