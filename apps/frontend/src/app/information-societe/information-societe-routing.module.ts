@@ -1,8 +1,9 @@
+import { AProposOttawaPigeonComponent } from './a-propos-ottawa-pigeon/a-propos-ottawa-pigeon.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { InformationSocieteComponent } from './information-societe.component';
 
-const routes: Routes = [{ path: '', component: InformationSocieteComponent }];
+
+const routes: Routes = [{ path: 'apropos', component:AProposOttawaPigeonComponent}];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
