@@ -5,7 +5,8 @@ const routes: Routes = [{path: '', redirectTo: 'accueil', pathMatch: 'full' },
 {path: 'accueil', loadChildren: () => import('./core/core.module').then(m => m.CoreModule)},
 {path: 'investissement', loadChildren: () => import('./investissement/investissement.module').then(m => m.InvestissementModule)},
 {path: 'tarifs', loadChildren: () => import('./tarifs/tarifs.module').then(m => m.TarifsModule)},
-{path: 'authentification', loadChildren: () => import('./authentification/authentification.module').then(m => m.AuthentificationModule)}];
+{path: 'authentification', loadChildren: () => import('./authentification/authentification.module').then(m => m.AuthentificationModule)},
+{path: 'information-societe', loadChildren: () => import('./information-societe/information-societe.module').then(m => m.InformationSocieteModule) }];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules})],
