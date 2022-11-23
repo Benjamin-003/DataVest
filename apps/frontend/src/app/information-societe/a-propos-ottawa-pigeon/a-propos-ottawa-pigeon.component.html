@@ -1,3 +1,20 @@
-<p>
-  a-propos-ottawa-pigeon works!
-</p>
+<p-carousel [numVisible]="3" [numScroll]="3" [circular]="false" [responsiveOptions]="responsiveOptions"
+  [value]="expertiseField">
+  <ng-template pTemplate="header">
+    <h3>Presentation de SVB Industries</h3>
+<h4>SVB Ind est une societé dont l’activité principale est d’accompagner les investisseurs dans leurs prises de decision
+  sur des éventuels investissements</h4>
+</ng-template>
+  <ng-template let-expertiseField pTemplate="item">
+    <div class="product-item">
+      <div class="product-item-content">
+        <div class="mb-3 text-center">
+          <img src="{{getRandomNum()}}" [alt]="expertiseField" class="product-image" />
+        </div>
+        <div>
+          <h4 class="mb-1 text-center">{{expertiseField}}</h4>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</p-carousel>
