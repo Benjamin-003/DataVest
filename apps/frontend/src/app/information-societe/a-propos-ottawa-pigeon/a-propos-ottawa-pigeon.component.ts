@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 const pictureAPI = "https://picsum.photos/200?random="
 @Component({
   selector: 'app-a-propos-ottawa-pigeon',
-  templateUrl: './a-propos-ottawa-pigeon.component.html',
-  styleUrls: ['./a-propos-ottawa-pigeon.component.css']
+  templateUrl: './a-propos-ottawa-pigeon.component.html'
 })
 export class AProposOttawaPigeonComponent {
 
