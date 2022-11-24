@@ -8,7 +8,7 @@ export class HeaderComponent implements OnInit {
   public items!: MenuItem[]
   ngOnInit() {
     this.items = [{ label: "Tarif", routerLink: "tarifs" }, { label: "Investir", routerLink: "investissement" }, { label: "Académie" }, { label: "A propos de SVB Ind",
-    items: [{ label: "À propos d'Ottawa Pigeon" }, { label: "Centre d'aide" }, { label: "Pourquoi nous choisir ?" }] },
+    items: [{ label: "À propos d'Ottawa Pigeon",routerLink: "information-societe/apropos"  }, { label: "Centre d'aide" }, { label: "Pourquoi nous choisir ?" }] },
     { label: "Des questions" }];
   }
 }

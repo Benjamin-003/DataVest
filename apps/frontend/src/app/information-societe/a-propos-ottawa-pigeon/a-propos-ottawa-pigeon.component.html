@@ -1,0 +1,23 @@
+<p-carousel [numVisible]="3" [numScroll]="3" [circular]="true" [responsiveOptions]="responsiveOptions"
+  [value]="expertiseField">
+  <ng-template pTemplate="header">
+    <div class="mb-5 text-center">
+      <h1>Presentation de SVB Industries</h1>
+      <p><strong>SVB Ind est une societé dont l’activité principale est d’accompagner les investisseurs dans leurs
+          prises de decision
+          sur des éventuels investissements</strong></p>
+    </div>
+  </ng-template>
+  <ng-template let-expertiseField pTemplate="item">
+    <div class="product-item">
+      <div class="product-item-content">
+        <div class="mb-3 text-center">
+          <img src="{{expertiseField.imageURL}}" [alt]="expertiseField.name" class="product-image" />
+        </div>
+        <div>
+          <p class="mb-1 text-center">{{expertiseField.name}}</p>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</p-carousel>
