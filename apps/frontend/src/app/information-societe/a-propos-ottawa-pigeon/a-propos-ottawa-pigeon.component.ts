@@ -5,7 +5,7 @@ const pictureAPI = "https://picsum.photos/200?random="
   templateUrl: './a-propos-ottawa-pigeon.component.html',
 })
 export class AProposOttawaPigeonComponent {
-
+  public randomNumberURL: string[] = []
   responsiveOptions = [
     {
       breakpoint: '1024px',
@@ -23,14 +23,10 @@ export class AProposOttawaPigeonComponent {
       numScroll: 1
     }
   ]
-  expertiseField = ["Analyser les principaux marches financiers (marches d’actions/Obligataires/monétaires/Cryptomonnaie)",
-    "Partager les informations, decryptage de l’actualité économique, des indicateurs financiers et cotations",
-    "Permettre à des investisseurs d’avoir toutes les cartes en main au moment de prendre position",
-    "Conseiller sur les investissements et la gestion de portefeuille",
-    "Le point sur les tendances du moment"
+  expertiseField = [{name: "Analyser les principaux marches financiers (marches d’actions/Obligataires/monétaires/Cryptomonnaie)",imageURL:pictureAPI+0},
+  {name: "Partager les informations, decryptage de l’actualité économique, des indicateurs financiers et cotations",imageURL:pictureAPI+1},
+  {name: "Permettre à des investisseurs d’avoir toutes les cartes en main au moment de prendre position",imageURL:pictureAPI+2},
+  {name: "Conseiller sur les investissements et la gestion de portefeuille",imageURL:pictureAPI+3},
+  {name: "Le point sur les tendances du moment",imageURL:pictureAPI+4}
   ]
-  //Cette méthode renvoi un entier que l'on integre a chaque appel de l'URL de l'API pour obtenir une image différente
-  getRandomNum() {
-    return pictureAPI + Math.random() * 10
-  }
 }
