@@ -5,7 +5,6 @@ const pictureAPI = "https://picsum.photos/200?random="
   templateUrl: './a-propos-ottawa-pigeon.component.html',
 })
 export class AProposOttawaPigeonComponent {
-  public randomNumberURL: string[] = []
   responsiveOptions = [
     {
       breakpoint: '1024px',
