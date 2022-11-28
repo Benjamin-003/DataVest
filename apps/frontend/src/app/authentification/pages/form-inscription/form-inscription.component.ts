@@ -1,7 +1,7 @@
 import { InscriptionService } from './../../services/inscription.service';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-form-inscription',
@@ -9,7 +9,11 @@ import { Router } from '@angular/router';
 })
 export class FormInscriptionComponent implements OnInit {
 
-  constructor(private readonly formBuilder: FormBuilder, private readonly inscription: InscriptionService, private readonly route: Router) { }
+  constructor(
+    private readonly formBuilder: FormBuilder,
+    private readonly inscription: InscriptionService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute) {}
   public formulaire!: FormGroup;
   public messagesErreur = ["Il semble y avoir une erreur de saisie ici", "Ce champ est obligatoire, merci de saisir l'information demandée"]
 
@@ -72,10 +76,10 @@ export class FormInscriptionComponent implements OnInit {
       const { confirmPassword, ...user } = this.formulaire.value
       this.inscription.createUser(user).subscribe({
         error: () => {
-          this.route.navigate(['./echec']);
+          this.router.navigate(['../echec'], { relativeTo: this.route }).then();
         },
         complete: () => {
-          this.route.navigate(['./succes'])
+          this.router.navigate(['../succes'], { relativeTo: this.route }).then();
         }
       })
     }
