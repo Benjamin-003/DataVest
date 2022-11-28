@@ -15,6 +15,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CardModule, } from 'primeng/card';
 import {InputTextModule} from 'primeng/inputtext';
 import {CheckboxModule } from 'primeng/checkbox';
+import {PasswordModule } from "primeng/password";
+import { DividerModule } from "primeng/divider";
 @NgModule({
   imports: [
     CommonModule,
@@ -27,7 +29,9 @@ import {CheckboxModule } from 'primeng/checkbox';
     CardModule,
     CoreModule,
     CheckboxModule,
-    InputTextModule
+    InputTextModule,
+    PasswordModule,
+    DividerModule
   ],
   exports:[
     FormInscriptionComponent,

@@ -102,24 +102,30 @@
         </div>
         <div class="field mb-6">
           <span class="p-float-label mb-2">
-            <input id="password" type="password" formControlName="password" pInputText>
+            <p-password id="password" formControlName="password" weakLabel="Faible" mediumLabel="Moyen"
+              strongLabel="Fort" promptLabel="Saisir un mot de passe"
+              (onBlur)="formulaire.controls['password'].markAsTouched()">
+              <ng-template pTemplate="header">
+                <h6>Définir un mot de passe</h6>
+              </ng-template>
+              <ng-template pTemplate="footer">
+                <p-divider></p-divider>
+                <p class="mt-2">Suggestions</p>
+                <ul class="pl-2 ml-2 mt-0 line-height-3">
+                  <li>Au moins une minuscule</li>
+                  <li>Au moins une majuscule</li>
+                  <li>Au moins un chiffre</li>
+                  <li>Au moins 8 caractères</li>
+                </ul>
+              </ng-template>
+            </p-password>
             <label for="password">Mot de Passe</label>
           </span>
           <div *ngIf="formulaire.controls['password'].touched">
             <small *ngIf="formulaire.controls['password'].hasError('required')" class="p-error">
               {{messagesErreur[1]}}
             </small>
-            <small *ngIf="formulaire.controls['password'].value && formulaire.controls['password'].invalid" class="p-error">
-              {{messagesErreur[0]}}
-            </small>
           </div>
-          <ul>
-            <li>Minimum 8 caractères</li>
-            <li>Au moins 1 majuscule</li>
-            <li>Au moins 1 minuscule</li>
-            <li>Au moins 1 chiffre</li>
-            <li>Au moins 1 caractère spécial</li>
-          </ul>
         </div>
         <div class="field mb-6">
           <span class="p-float-label mb-2">
@@ -130,7 +136,8 @@
             <small *ngIf="formulaire.controls['confirmPassword'].hasError('required')" class="p-error">
               {{messagesErreur[1]}}
             </small>
-            <small class="p-error" *ngIf="formulaire.controls['confirmPassword'].value && formulaire.get('password')?.value !== formulaire.get('confirmPassword')?.value">
+            <small class="p-error"
+              *ngIf="formulaire.controls['confirmPassword'].value && formulaire.get('password')?.value !== formulaire.get('confirmPassword')?.value">
               {{messagesErreur[0]}}
             </small>
           </div>
