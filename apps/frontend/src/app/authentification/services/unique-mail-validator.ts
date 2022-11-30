@@ -6,11 +6,12 @@ import { Observable, map, catchError, of } from "rxjs";
 @Injectable({ providedIn: 'root' })
 export class UniqueMailValidator implements AsyncValidator {
   constructor(private readonly userService:UserService) {}
+
   validate(
     control: AbstractControl
   ): Observable<ValidationErrors | null> {
     return this.userService.isMailTaken(control.value).pipe(
-      map(errorcode => (errorcode===200 ? { uniqueMail: true } : null)),
+      map(status => (status===200 ? { uniqueMail: true } : null)),
       catchError(() => of(null))
     );
   }

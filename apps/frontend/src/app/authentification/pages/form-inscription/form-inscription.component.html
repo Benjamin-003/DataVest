@@ -92,11 +92,14 @@
             <label for="mail">E-mail</label>
           </span>
           <div *ngIf="formulaire.controls['mail'].touched">
-            <small *ngIf="formulaire.controls['mail'].hasError('required')" class="p-error">
+            <small *ngIf="formulaire.controls['mail'].errors?.['required']" class="p-error">
               {{messagesErreur[1]}}
             </small>
-            <small *ngIf="formulaire.controls['mail'].value && formulaire.controls['mail'].invalid" class="p-error">
+            <small *ngIf="formulaire.controls['mail'].errors?.['pattern']" class="p-error">
               {{messagesErreur[0]}}
+            </small>
+            <small *ngIf="formulaire.controls['mail'].errors?.['uniqueMail']" class="p-error">
+              {{messagesErreur[2]}}
             </small>
           </div>
         </div>

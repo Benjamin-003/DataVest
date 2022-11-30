@@ -1,3 +1,4 @@
+import { UniqueMailValidator } from './../../services/unique-mail-validator';
 import { UserService } from './../../services/user-service.service';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
@@ -12,11 +13,17 @@ export class FormInscriptionComponent implements OnInit {
   constructor(
     private readonly formBuilder: FormBuilder,
     private readonly inscription: UserService,
+    private readonly uniqueMail: UniqueMailValidator,
     private readonly router: Router,
     private readonly route: ActivatedRoute
-    ) { }
+  ) { }
+
   public formulaire!: FormGroup;
-  public messagesErreur = ["Il semble y avoir une erreur de saisie ici", "Ce champ est obligatoire, merci de saisir l'information demandée"]
+  public messagesErreur = [
+    "Il semble y avoir une erreur de saisie ici",
+    "Ce champ est obligatoire, merci de saisir l'information demandée",
+    "Un compte est déjà associé à cette adresse email",
+  ]
 
   //Cette Regex vient du site https://www.emailregex.com/
   public mailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -42,10 +49,16 @@ export class FormInscriptionComponent implements OnInit {
       country: ["", Validators.required],
       mail: [
         "",
-        [
-          Validators.required,
-          Validators.pattern(this.mailRegex)
-        ],
+        {
+          validators: [
+            Validators.required,
+            Validators.pattern(this.mailRegex),
+          ],
+          asyncValidators: [
+            this.uniqueMail.validate.bind(this.uniqueMail),
+          ],
+          updateOn: 'blur',
+        }
       ],
       password: [
         "",
