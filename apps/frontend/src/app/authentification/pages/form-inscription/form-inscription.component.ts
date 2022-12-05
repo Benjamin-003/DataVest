@@ -25,6 +25,27 @@ export class FormInscriptionComponent implements OnInit {
     "Un compte est déjà associé à cette adresse email",
   ]
 
+  //on utilise des getters pour acceder aux valeurs saisie dans le formulaire
+  get surname() {return this.formulaire.get('surname');}
+
+  get firstname() {return this.formulaire.get('firstname');}
+
+  get birth_date() {return this.formulaire.get('birth_date');}
+
+  get address() {return this.formulaire.get('address');}
+
+  get zip_code() {return this.formulaire.get('zip_code');}
+
+  get city() {return this.formulaire.get('city');}
+
+  get country() {return this.formulaire.get('country');}
+
+  get mail() {return this.formulaire.get('mail');}
+
+  get password() {return this.formulaire.get('password');}
+
+  get confirmPassword() {return this.formulaire.get('confirmPassword');}
+
   ngOnInit(): void {
     this.formulaire = this.formBuilder.group({
       surname: [
