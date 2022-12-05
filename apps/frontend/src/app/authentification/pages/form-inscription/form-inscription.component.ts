@@ -25,9 +25,6 @@ export class FormInscriptionComponent implements OnInit {
     "Un compte est déjà associé à cette adresse email",
   ]
 
-  //Cette Regex vient du site https://www.emailregex.com/
-  public mailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-
   ngOnInit(): void {
     this.formulaire = this.formBuilder.group({
       surname: [
@@ -52,7 +49,7 @@ export class FormInscriptionComponent implements OnInit {
         {
           validators: [
             Validators.required,
-            Validators.pattern(this.mailRegex),
+            Validators.email
           ],
           asyncValidators: [
             this.uniqueMail.validate.bind(this.uniqueMail),

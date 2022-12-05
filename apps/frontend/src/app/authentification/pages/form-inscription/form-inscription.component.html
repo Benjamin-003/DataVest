@@ -95,7 +95,7 @@
             <small *ngIf="formulaire.controls['mail'].errors?.['required']" class="p-error">
               {{messagesErreur[1]}}
             </small>
-            <small *ngIf="formulaire.controls['mail'].errors?.['pattern']" class="p-error">
+            <small *ngIf="formulaire.controls['mail'].errors?.['email']" class="p-error">
               {{messagesErreur[0]}}
             </small>
             <small *ngIf="formulaire.controls['mail'].errors?.['uniqueMail']" class="p-error">
