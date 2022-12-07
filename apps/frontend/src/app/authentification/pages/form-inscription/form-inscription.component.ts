@@ -1,7 +1,7 @@
 import { UniqueMailValidator } from './../../services/unique-mail-validator';
 import { UserService } from './../../services/user-service.service';
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
+import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -25,26 +25,44 @@ export class FormInscriptionComponent implements OnInit {
     "Un compte est déjà associé à cette adresse email",
   ]
 
+  /**
+   * Expression régulière pour détecter un mot de passe dit "fort".
+   *
+   * Un mot de passe est "fort" lorsqu'il contient :
+   * - au moins une lettre minuscule
+   * - au moins une lettre majuscule
+   * - au moins un chiffre
+   * - au moins un caractère spécial
+   * - au moins 8 caractères
+   *
+   * Les caractères spéciaux sont issus de :
+   *
+   * https://en.wikipedia.org/wiki/List_of_Special_Characters_for_Passwords
+   *
+   * À l'exception du caractère "espace" (décimal 32).
+   */
+  public readonly strongPasswordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!-\/:-@[-`{-~])[a-zA-Z0-9!-\/:-@[-`{-~]{8,}$"
+
   //on utilise des getters pour acceder aux valeurs saisie dans le formulaire
-  get surname() {return this.formulaire.get('surname');}
+  get surname() { return this.formulaire.get('surname'); }
 
-  get firstname() {return this.formulaire.get('firstname');}
+  get firstname() { return this.formulaire.get('firstname'); }
 
-  get birth_date() {return this.formulaire.get('birth_date');}
+  get birth_date() { return this.formulaire.get('birth_date'); }
 
-  get address() {return this.formulaire.get('address');}
+  get address() { return this.formulaire.get('address'); }
 
-  get zip_code() {return this.formulaire.get('zip_code');}
+  get zip_code() { return this.formulaire.get('zip_code'); }
 
-  get city() {return this.formulaire.get('city');}
+  get city() { return this.formulaire.get('city'); }
 
-  get country() {return this.formulaire.get('country');}
+  get country() { return this.formulaire.get('country'); }
 
-  get mail() {return this.formulaire.get('mail');}
+  get mail() { return this.formulaire.get('mail'); }
 
-  get password() {return this.formulaire.get('password');}
+  get password() { return this.formulaire.get('password'); }
 
-  get confirmPassword() {return this.formulaire.get('confirmPassword');}
+  get confirmPassword() { return this.formulaire.get('confirmPassword'); }
 
   ngOnInit(): void {
     this.formulaire = this.formBuilder.group({
@@ -74,7 +92,7 @@ export class FormInscriptionComponent implements OnInit {
           ],
           asyncValidators: [
             this.uniqueMail.validate.bind(this.uniqueMail),
-          ],
+          ] as AsyncValidatorFn[],
           updateOn: 'blur',
         }
       ],

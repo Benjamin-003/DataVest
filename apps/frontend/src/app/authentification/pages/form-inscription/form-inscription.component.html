@@ -106,7 +106,7 @@
         <div class="field mb-6">
           <span class="p-float-label mb-2">
             <p-password id="password" formControlName="password" weakLabel="Faible" mediumLabel="Moyen"
-              strongLabel="Fort" promptLabel="Saisir un mot de passe"
+              strongLabel="Fort" promptLabel="Saisir un mot de passe" [strongRegex]="strongPasswordRegex"
               (onBlur)="password?.markAsTouched()">
               <ng-template pTemplate="header">
                 <h6>Définir un mot de passe</h6>
@@ -118,6 +118,7 @@
                   <li>Au moins une minuscule</li>
                   <li>Au moins une majuscule</li>
                   <li>Au moins un chiffre</li>
+                  <li>Au moins un caractère spécial</li>
                   <li>Au moins 8 caractères</li>
                 </ul>
               </ng-template>
@@ -139,8 +140,7 @@
             <small *ngIf="confirmPassword?.hasError('required')" class="p-error">
               {{messagesErreur[1]}}
             </small>
-            <small class="p-error"
-              *ngIf="confirmPassword?.value && password?.value !== confirmPassword?.value">
+            <small class="p-error" *ngIf="confirmPassword?.value && password?.value !== confirmPassword?.value">
               {{messagesErreur[0]}}
             </small>
           </div>
