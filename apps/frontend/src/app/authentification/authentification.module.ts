@@ -17,6 +17,7 @@ import {InputTextModule} from 'primeng/inputtext';
 import {CheckboxModule } from 'primeng/checkbox';
 import {PasswordModule } from "primeng/password";
 import { DividerModule } from "primeng/divider";
+import { FormAuthentificationComponent } from './pages/form-authentification/form-authentification.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -44,6 +45,7 @@ import { DividerModule } from "primeng/divider";
   ],
   declarations: [
     FormInscriptionComponent,
+    FormAuthentificationComponent,
     PreambuleInscriptionComponent,
     AuthentificationComponent,
     InscriptionComponent,
