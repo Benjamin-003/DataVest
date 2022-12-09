@@ -7,11 +7,11 @@
             <input id="surname" type="text" formControlName="surname" pInputText>
             <label for="surname">Nom</label>
           </span>
-          <div *ngIf="surname?.touched">
-            <small *ngIf="surname?.hasError('pattern')" class="p-error">
+          <div *ngIf="surname?.touched" class="p-error">
+            <small *ngIf="surname?.hasError('pattern')">
               {{messagesErreur[0]}}
             </small>
-            <small *ngIf="surname?.hasError('required')" class="p-error">
+            <small *ngIf="surname?.hasError('required')">
               {{messagesErreur[1]}}
             </small>
           </div>
@@ -21,11 +21,11 @@
             <input id="firstname" type="text" formControlName="firstname" pInputText>
             <label for="firstname">Prénom</label>
           </span>
-          <div *ngIf="firstname?.touched">
-            <small *ngIf="firstname?.hasError('pattern')" class="p-error">
+          <div *ngIf="firstname?.touched" class="p-error">
+            <small *ngIf="firstname?.hasError('pattern')">
               {{messagesErreur[0]}}
             </small>
-            <small *ngIf="firstname?.hasError('required')" class="p-error">
+            <small *ngIf="firstname?.hasError('required')">
               {{messagesErreur[1]}}
             </small>
           </div>
@@ -36,8 +36,8 @@
             </p-calendar>
             <label for="birth_date">Date de Naissance</label>
           </span>
-          <div *ngIf="birth_date?.touched">
-            <small *ngIf="birth_date?.hasError('required')" class="p-error">
+          <div *ngIf="birth_date?.touched" class="p-error">
+            <small *ngIf="birth_date?.hasError('required')">
               {{messagesErreur[1]}}
             </small>
           </div>
@@ -47,8 +47,8 @@
             <input id="address" type="text" formControlName="address" pInputText>
             <label for="address">Adresse</label>
           </span>
-          <div *ngIf="address?.touched">
-            <small *ngIf="address?.hasError('required')" class="p-error">
+          <div *ngIf="address?.touched" class="p-error">
+            <small *ngIf="address?.hasError('required')">
               {{messagesErreur[1]}}
             </small>
           </div>
@@ -58,8 +58,8 @@
             <input id="zip_code" type="text" formControlName="zip_code" pInputText>
             <label for="zip_code">Code Postal</label>
           </span>
-          <div *ngIf="zip_code?.touched">
-            <small *ngIf="zip_code?.hasError('required')" class="p-error">
+          <div *ngIf="zip_code?.touched" class="p-error">
+            <small *ngIf="zip_code?.hasError('required')">
               {{messagesErreur[1]}}
             </small>
           </div>
@@ -69,8 +69,8 @@
             <input id="city" type="text" formControlName="city" pInputText>
             <label for="city">Ville</label>
           </span>
-          <div *ngIf="city?.touched">
-            <small *ngIf="city?.hasError('required')" class="p-error">
+          <div *ngIf="city?.touched" class="p-error">
+            <small *ngIf="city?.hasError('required')">
               {{messagesErreur[1]}}
             </small>
           </div>
@@ -80,8 +80,8 @@
             <input id="country" type="text" formControlName="country" pInputText>
             <label for="country">Pays</label>
           </span>
-          <div *ngIf="country?.touched">
-            <small *ngIf="country?.hasError('required')" class="p-error">
+          <div *ngIf="country?.touched" class="p-error">
+            <small *ngIf="country?.hasError('required')">
               {{messagesErreur[1]}}
             </small>
           </div>
@@ -91,14 +91,14 @@
             <input id="mail" type="text" formControlName="mail" pInputText>
             <label for="mail">E-mail</label>
           </span>
-          <div *ngIf="mail?.touched">
-            <small *ngIf="mail?.errors?.['required']" class="p-error">
+          <div *ngIf="mail?.touched" class="p-error">
+            <small *ngIf="mail?.hasError('required')">
               {{messagesErreur[1]}}
             </small>
-            <small *ngIf="mail?.errors?.['email']" class="p-error">
+            <small *ngIf="mail?.hasError('email')">
               {{messagesErreur[0]}}
             </small>
-            <small *ngIf="mail?.errors?.['uniqueMail']" class="p-error">
+            <small *ngIf="mail?.hasError('uniqueMail')">
               {{messagesErreur[2]}}
             </small>
           </div>
@@ -125,8 +125,8 @@
             </p-password>
             <label for="password">Mot de Passe</label>
           </span>
-          <div *ngIf="password?.touched">
-            <small *ngIf="password?.hasError('required')" class="p-error">
+          <div *ngIf="password?.touched" class="p-error">
+            <small *ngIf="password?.hasError('required')">
               {{messagesErreur[1]}}
             </small>
           </div>
@@ -136,18 +136,18 @@
             <input id="confirmPassword" type="password" formControlName="confirmPassword" pInputText>
             <label for="confirmPassword">Confirmez votre mot de passe</label>
           </span>
-          <div *ngIf="confirmPassword?.touched">
-            <small *ngIf="confirmPassword?.hasError('required')" class="p-error">
+          <div *ngIf="confirmPassword?.touched" class="p-error">
+            <small *ngIf="confirmPassword?.hasError('required')">
               {{messagesErreur[1]}}
             </small>
-            <small class="p-error" *ngIf="confirmPassword?.value && password?.value !== confirmPassword?.value">
+            <small *ngIf="confirmPassword?.value && password?.value !== confirmPassword?.value">
               {{messagesErreur[0]}}
             </small>
           </div>
         </div>
         <div class="mb-6">
           <div class="field-checkbox mb-2">
-            <p-checkbox type="checkbox" id="newsletter" [binary]="true" formControlName="newsletter"></p-checkbox>
+            <p-checkbox id="newsletter" [binary]="true" formControlName="newsletter"></p-checkbox>
             <label for="newsletter">J'accepte de recevoir la newsletter de SVB-Ind Ottawa Pigeon</label>
           </div>
         </div>
