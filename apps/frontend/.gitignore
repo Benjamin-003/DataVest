@@ -1,6 +1,5 @@
 # .angular
 .angular/cache
-package-lock.json
 # Logs
 logs
 *.log
