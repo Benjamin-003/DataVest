@@ -4,18 +4,22 @@
       <p-card>
         <div class="field mb-6">
           <span class="p-float-label mb-2">
-            <input id="mail" type="text" formControlName="mail" pInputText>
+            <input id="mail" type="text" formControlName="mail" pInputText />
             <label for="mail">Email de connexion</label>
           </span>
         </div>
         <div class="field mb-6">
           <span class="p-float-label mb-2">
-            <input id="password" type="password" formControlName="password" pInputText>
+            <input id="password" type="password" formControlName="password" pInputText />
             <label for="password">Mot de passe</label>
           </span>
         </div>
         <div class="col-offset-2 col-8 flex flex-wrap align-items-center justify-content-center">
           <button pButton pRipple type="submit" label="Se connecter" class="p-button-raised"></button>
+          <ul class="list-none">
+            <li><a>Mot de passe oublié</a></li>
+            <li><a [routerLink]="['../preambule']">Pas encore client ? Ouvrir un compte</a></li>
+          </ul>
         </div>
       </p-card>
     </div>
