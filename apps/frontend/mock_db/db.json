@@ -1,5 +1,15 @@
 {
   "users": [
+    {
+      "id": 1,
+      "firstname": "Benjamin",
+      "mail": "benjamin.boissin@modis.com",
+    },
+    {
+      "id": 2,
+      "firstname": "Sylvain",
+      "mail": "sylvain.vizzini@modis.com"
+    }
   ],
   "mails": [
     {

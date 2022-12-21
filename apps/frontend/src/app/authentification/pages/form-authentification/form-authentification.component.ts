@@ -1,4 +1,4 @@
-import { Credentials } from './../../Interfaces/credentials';
+import { Credentials } from '../../Interfaces/credentials.model';
 import { Component, OnInit,Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 

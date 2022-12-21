@@ -1,8 +1,36 @@
-import { Component} from '@angular/core';
+import { UserService } from './../../services/user-service.service';
+import { Component } from '@angular/core';
+import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-authentification',
-  templateUrl: './authentification.component.html'
+  templateUrl: './authentification.component.html',
+  providers: [MessageService]
 })
-export class AuthentificationComponent{
+
+export class AuthentificationComponent {
+  public isLoggedIn = true;
+  constructor(
+    private readonly authentification: UserService,
+    private readonly messageService: MessageService,
+    private readonly router: Router
+  ) { }
+
+  //Cette méthode va appeler le back pour authentification
+  signIn(credential: Credential) {
+    this.authentification.signInUser(credential).subscribe({
+      next: (result) => {
+        this.authentification.getUserName(result.id).subscribe((resultName: string) => {
+          this.authentification.currentLoggedUserName.next(resultName);
+        })
+      },
+      error: () => {
+        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Email et/ou mot de passe incorrect' });
+      },
+      complete: () => {
+        this.router.navigate(['./accueil']);
+      }
+    })
+  }
 }

@@ -1,34 +1,36 @@
-<p-menubar
-  [model]="items"
->
-  <ng-template
-    pTemplate="start"
-    >
-    <a
-      routerLink="accueil"
-      >
-        <h4>
-          SVB ind - Ottawa Pigeon
-        </h4>
-      </a
-    >
+<p-menubar [model]="items">
+  <ng-template pTemplate="start">
+    <a routerLink="accueil">
+      <h4>SVB ind - Ottawa Pigeon</h4>
+    </a>
   </ng-template>
-  <ng-template
-    pTemplate="end"
+  <div
+    *ngIf="isLogged; then thenTemplate; else elseTemplate"
   >
-  <div class="grid">
-    <p-button
-      class="m-1"
-      label="Accès client"
-      routerLink="authentification/connexion"
-    >
-    </p-button>
-    <p-button
-      class="m-1"
-      label="Ouvrir un compte"
-      routerLink="authentification/preambule"
-    >
-    </p-button>
   </div>
+  <ng-template
+    #thenTemplate
+  >
+    <div>
+      <p>
+        Bonjour {{ loggedUserName | async }}
+      </p>
+    </div>
+  </ng-template>
+  <ng-template #elseTemplate>
+    <div class="grid">
+      <p-button
+        class="m-1"
+        label="Accès client"
+        routerLink="authentification/connexion"
+      >
+      </p-button>
+      <p-button
+        class="m-1"
+        label="Ouvrir un compte"
+        routerLink="authentification/preambule"
+      >
+      </p-button>
+    </div>
   </ng-template>
 </p-menubar>

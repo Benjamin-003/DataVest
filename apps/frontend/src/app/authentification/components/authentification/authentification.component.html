@@ -2,5 +2,6 @@
     <img src="assets/logo.png" alt="logo" width="397" height="223" />
     <h1>Bienvenue</h1>
     <h3>Connectez-vous</h3>
-    <app-form-authentification></app-form-authentification>
+    <p-toast position="bottom-right"></p-toast>
+    <app-form-authentification (newConnexionEvent)="signIn($event)"></app-form-authentification>
 </div>
