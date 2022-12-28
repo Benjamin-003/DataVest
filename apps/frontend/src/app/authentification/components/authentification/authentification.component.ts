@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 })
 
 export class AuthentificationComponent {
-  public isLoggedIn = true;
+
   constructor(
     private readonly authentification: UserService,
     private readonly messageService: MessageService,
