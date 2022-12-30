@@ -8,9 +8,12 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "e2e": "ng e2e",
-    "jsonServer": "json-server --watch mock_db/db.json",
+    "json-server:run": "json-server --watch mock_db/db.json",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "cypress:run": "cypress run",
+    "ci:back": "npm run json-server:run & npx wait-on http://localhost:3000",
+    "ci:front": "npm start & npx wait-on http://localhost:4200",
+    "ci:cypress": "npm run cypress:run"
   },
   "private": true,
   "dependencies": {
@@ -48,6 +51,7 @@
     "karma-coverage": "~2.1.0",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
-    "typescript": "~4.8.4"
+    "typescript": "~4.8.4",
+    "wait-on": "^7.0.1"
   }
 }
