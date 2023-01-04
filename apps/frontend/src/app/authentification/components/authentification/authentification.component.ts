@@ -29,7 +29,7 @@ export class AuthentificationComponent {
         this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Email et/ou mot de passe incorrect' });
       },
       complete: () => {
-        this.router.navigate(['./accueil']);
+        this.router.navigate(['dashboard/macroeconomicnews']);
       }
     })
   }
