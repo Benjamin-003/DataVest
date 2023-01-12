@@ -1,0 +1,38 @@
+<p-table
+  [value]="articleListe"
+  [paginator]="true"
+  [rows]="10"
+  [showCurrentPageReport]="true"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Date and time</th>
+      <th>Article title</th>
+    </tr>
+  </ng-template>
+  <ng-template let-articleListe pTemplate="body">
+    <tr>
+      <td>
+        {{ articleListe.publicationDate | date : "dd MMM y HH:mm:ss" }}
+      </td>
+      <td>
+        <ng-container
+          *ngIf="articleListe.title.length <= titleLength; else elseTemplate"
+        >
+          <a href="{{ articleListe.link }}" target="_blank"
+            >{{ articleListe.title }}
+          </a>
+        </ng-container>
+        <ng-template #elseTemplate>
+          <a
+            href="{{ articleListe.link }}"
+            target="_blank"
+            [pTooltip]="articleListe.title"
+            tooltipPosition="bottom"
+            >{{ articleListe.title.substr(0, titleLength) }} [...]
+          </a>
+        </ng-template>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
