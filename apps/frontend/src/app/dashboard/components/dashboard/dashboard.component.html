@@ -1,3 +1,7 @@
+<h5 class="text-center">Macro-economic news</h5>
+<div>
+  <p-tabMenu [model]="items" [activeItem]="items[0]"></p-tabMenu>
+</div>
 <div class="grid">
   <div class="col-12 lg:col-3">
     <app-last-article-card
@@ -5,8 +9,8 @@
     ></app-last-article-card>
   </div>
   <div class="col-12 md:col-9">
-    <h5>Macro-economic news</h5>
     <app-article-table [articleListe]="articleListe"></app-article-table>
   </div>
 </div>
 <app-table-footer [firstArticle]="firstArticle"></app-table-footer>
+

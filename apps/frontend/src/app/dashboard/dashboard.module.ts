@@ -9,7 +9,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { CardModule } from 'primeng/card';
 import { TooltipModule } from 'primeng/tooltip';
 import { ArticleTableComponent } from './pages/article-table/article-table.component';
-
+import { TabMenuModule } from 'primeng/tabmenu';
 @NgModule({
   declarations: [
     DashboardComponent,
@@ -23,7 +23,8 @@ import { ArticleTableComponent } from './pages/article-table/article-table.compo
     TableModule,
     ButtonModule,
     CardModule,
-    TooltipModule
+    TooltipModule,
+    TabMenuModule
   ]
 })
 export class DashboardModule { }

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs';
 import * as XMLtoJSON from 'xml-js'
-const FTEndpoint = `${environment.urlApi}/requests/`;
+const FTEndpoint = `${environment.urlApi}/articles/`;
 const parsedResult = (articleResult: string) => { return XMLtoJSON.xml2json(articleResult, { compact: true, spaces: 1 }) };
 @Injectable({
   providedIn: 'root'
