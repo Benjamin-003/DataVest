@@ -19,7 +19,10 @@
         <ng-container
           *ngIf="articleListe.title.length <= titleLength; else elseTemplate"
         >
-          <a href="{{ articleListe.link }}" target="_blank"
+          <a
+            href="{{ articleListe.link }}"
+            target="_blank"
+            rel="noopener"
             >{{ articleListe.title }}
           </a>
         </ng-container>
@@ -29,6 +32,7 @@
             target="_blank"
             [pTooltip]="articleListe.title"
             tooltipPosition="bottom"
+            rel="noopener"
             >{{ articleListe.title.substr(0, titleLength) }} [...]
           </a>
         </ng-template>

@@ -13,7 +13,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(private macroEconomicNews: MacroeconomicNewsService) { }
   ngOnInit(): void {
-    this.macroEconomicNews.getFinancialTimesNews().subscribe(result => {
+    this.macroEconomicNews.getNews('https://www.ft.com/rss/home').subscribe(result => {
       this.articleListe = result.rss.channel.item.map(
         (rawData: any) => {
           let description: { _cdata: string } | undefined = rawData?.description;
