@@ -9,7 +9,7 @@ import { MacroeconomicNewsService } from './../../services/macroeconomic-news.se
 })
 
 export class DashboardComponent implements OnInit {
-  public isError:boolean = false
+  public isError:boolean = true
   public articleListe: Article[] = []
   public firstArticle: Article = { title: "", description: "", publicationDate: "", link: "" }
   public items = [
