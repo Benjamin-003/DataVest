@@ -12,9 +12,10 @@
     #thenTemplate
   >
     <div>
-      <p>
-        Bonjour {{ loggedUserName | async }}
-      </p>
+      <p-button
+      routerLink="parametres">
+        <span><i class="pi pi-cog"></i> Bonjour {{ loggedUserName | async }}</span>
+      </p-button>
     </div>
   </ng-template>
   <ng-template #elseTemplate>
