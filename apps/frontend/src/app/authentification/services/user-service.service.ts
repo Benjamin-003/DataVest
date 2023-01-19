@@ -1,3 +1,4 @@
+import { LoggedUser } from './../Interfaces/logged-user';
 import { Token } from './../Interfaces/token.model';
 import { User } from '../Interfaces/user.model';
 import { Injectable } from '@angular/core';
@@ -12,10 +13,12 @@ const loginEndpoint = `${environment.urlApi}/tokens`;
 @Injectable({
   providedIn: 'root'
 })
+
 export class UserService {
   constructor(private readonly http: HttpClient) { }
 
-  public currentLoggedUserName= new BehaviorSubject<string>('');
+  public currentLoggedUser= new BehaviorSubject<LoggedUser>({id:NaN,firstname:''});
+
   //Envoi d'un nouveau user vers le back
   createUser(newUser: User) {
     return this.http.post<User>(userEndpoint, newUser);

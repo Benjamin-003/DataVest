@@ -1,4 +1,4 @@
-import { Observable, of } from 'rxjs';
+import { UserSettingsService } from './../../../user-settings/services/user-settings.service';
 import { UserService } from './../../../authentification/services/user-service.service';
 import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
@@ -9,8 +9,9 @@ import { MenuItem } from 'primeng/api';
 export class HeaderComponent implements OnInit {
   public items!: MenuItem[];
   public isLogged = false;
-  public loggedUserName!: Observable<string>;
-  constructor(private readonly authentification: UserService) { }
+  public loggedUserName!: string;
+  public loggedUserId!:number;
+  constructor(private readonly authentification: UserService, private settings:UserSettingsService) { }
 
   ngOnInit() {
     this.items = [{ label: "Tarif", routerLink: "tarifs" }, { label: "Investir", routerLink: "investissement" }, { label: "Académie" }, {
@@ -18,21 +19,22 @@ export class HeaderComponent implements OnInit {
       items: [{ label: "À propos d'Ottawa Pigeon", routerLink: "information-societe/apropos" }, { label: "Centre d'aide" }, { label: "Pourquoi nous choisir ?" }]
     },
     { label: "Des questions" }];
-    this.getLoggedUserName();
+    this.getLoggedUser();
   }
 
   //Méthode de cycle de vie qui va checker si il y a un changement dans l'authentification
   ngDoCheck() {
-    if (this.authentification.currentLoggedUserName) {
-      this.getLoggedUserName();
+    if (this.authentification.currentLoggedUser) {
+      this.getLoggedUser();
     }
   }
 
   //Récupère le nom de l'utilisateur et passe le boolean a true si un utilisateur est connecté ou false dans le cas contraire
-  getLoggedUserName() {
-    this.authentification.currentLoggedUserName.subscribe(resultName => {
-      if (resultName) {
-        this.loggedUserName = of(resultName);
+  getLoggedUser() {
+    this.authentification.currentLoggedUser.subscribe(resultLoggedUser => {
+      if (resultLoggedUser.id && resultLoggedUser.firstname) {
+        this.loggedUserName = resultLoggedUser.firstname;
+        this.loggedUserId = resultLoggedUser.id;
         this.isLogged = true;
       }
       else {

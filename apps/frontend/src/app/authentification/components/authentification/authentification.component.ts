@@ -22,7 +22,7 @@ export class AuthentificationComponent {
     this.authentification.signInUser(credential).subscribe({
       next: (result) => {
         this.authentification.getUserName(result.id).subscribe((resultName: string) => {
-          this.authentification.currentLoggedUserName.next(resultName);
+          this.authentification.currentLoggedUser.next({id:result.id,firstname:resultName});
         })
       },
       error: () => {
