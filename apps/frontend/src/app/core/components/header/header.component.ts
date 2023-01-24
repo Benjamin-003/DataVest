@@ -1,5 +1,4 @@
-import { UserSettingsService } from './../../../user-settings/services/user-settings.service';
-import { UserService } from './../../../authentification/services/user-service.service';
+import { UserService } from '../../../users/services/user-service.service';
 import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 @Component({
@@ -10,8 +9,8 @@ export class HeaderComponent implements OnInit {
   public items!: MenuItem[];
   public isLogged = false;
   public loggedUserName!: string;
-  public loggedUserId!:number;
-  constructor(private readonly authentification: UserService, private settings:UserSettingsService) { }
+  public loggedUserId!: number;
+  constructor(private readonly authentification: UserService) { }
 
   ngOnInit() {
     this.items = [{ label: "Tarif", routerLink: "tarifs" }, { label: "Investir", routerLink: "investissement" }, { label: "Académie" }, {

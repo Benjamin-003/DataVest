@@ -1,7 +1,7 @@
 export interface User {
   surname:string,
   firstname:string,
-  birth_date:Date,
+  birth_date:string,
   address:string,
   zip_code:string,
   city:string,

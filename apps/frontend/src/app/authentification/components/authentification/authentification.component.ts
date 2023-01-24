@@ -1,4 +1,4 @@
-import { UserService } from './../../services/user-service.service';
+import { UserService } from '../../../users/services/user-service.service';
 import { Component } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
@@ -21,8 +21,8 @@ export class AuthentificationComponent {
   signIn(credential: Credential) {
     this.authentification.signInUser(credential).subscribe({
       next: (result) => {
-        this.authentification.getUserName(result.id).subscribe((resultName: string) => {
-          this.authentification.currentLoggedUser.next({id:result.id,firstname:resultName});
+        this.authentification.getUser(result.id).subscribe((user: any) => {
+          this.authentification.currentLoggedUser.next({ id: result.id, firstname: user.firstname });
         })
       },
       error: () => {

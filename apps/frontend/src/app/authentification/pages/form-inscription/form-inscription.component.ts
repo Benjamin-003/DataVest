@@ -1,5 +1,5 @@
 import { UniqueMailValidator } from './../../services/unique-mail-validator';
-import { UserService } from './../../services/user-service.service';
+import { UserService } from '../../../users/services/user-service.service';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from '@angular/router';
@@ -123,7 +123,9 @@ export class FormInscriptionComponent implements OnInit {
   //On soumet le formulaire et on redirige vers la page de succès ou d'échec
   validationForm() {
     if (this.formulaire.valid) {
-      const { confirmPassword, ...user } = this.formulaire.value
+      const { confirmPassword, birth_date, ...user } = this.formulaire.value
+      //On transforme l'objet Date en chaine de caractère au format ISO
+      user.birth_date = birth_date.toISOString()
       this.inscription.createUser(user).subscribe({
         error: () => {
           this.router.navigate(['../echec'], { relativeTo: this.route }).then();

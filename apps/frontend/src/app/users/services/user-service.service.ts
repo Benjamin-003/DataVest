@@ -1,6 +1,6 @@
-import { LoggedUser } from './../Interfaces/logged-user';
-import { Token } from './../Interfaces/token.model';
-import { User } from '../Interfaces/user.model';
+import { LoggedUser } from '../../authentification/Interfaces/logged-user.model';
+import { Token } from '../../authentification/Interfaces/token.model';
+import { User } from '../interfaces/user.model';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
@@ -17,19 +17,16 @@ const loginEndpoint = `${environment.urlApi}/tokens`;
 export class UserService {
   constructor(private readonly http: HttpClient) { }
 
-  public currentLoggedUser= new BehaviorSubject<LoggedUser>({id:NaN,firstname:''});
+  public currentLoggedUser = new BehaviorSubject<LoggedUser>({ id: 0, firstname: '' });
 
   //Envoi d'un nouveau user vers le back
   createUser(newUser: User) {
     return this.http.post<User>(userEndpoint, newUser);
   }
 
-  //Obtenir le prenom d'un utilisateur
-  getUserName(idUser: number) {
-    return this.http.get(`${userEndpoint}/${idUser}`).pipe(map((rawData: any) => {
-      return rawData['firstname'];
-    })
-    );
+  //Obtenir les informations personnelles d'un utilisateur
+  getUser(idUser: number) {
+    return this.http.get(`${userEndpoint}/${idUser}`);
   }
 
   //Verification des doublons d'email
