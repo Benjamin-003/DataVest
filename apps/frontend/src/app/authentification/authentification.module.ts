@@ -1,3 +1,4 @@
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { SuccesInscriptionComponent } from './pages/succes-inscription/succes-inscription.component';
 import { EchecInscriptionComponent } from './pages/echec-inscription/echec-inscription.component';
 import { CoreModule } from './../core/core.module';
@@ -19,7 +20,6 @@ import {PasswordModule } from "primeng/password";
 import { DividerModule } from "primeng/divider";
 import { FormAuthentificationComponent } from './pages/form-authentification/form-authentification.component';
 import {ToastModule} from 'primeng/toast';
-
 @NgModule({
   imports: [
     CommonModule,
@@ -44,7 +44,8 @@ import {ToastModule} from 'primeng/toast';
     InscriptionComponent,
     FormInscriptionComponent,
     EchecInscriptionComponent,
-    SuccesInscriptionComponent
+    SuccesInscriptionComponent,
+    ResetPasswordComponent
   ],
   declarations: [
     FormInscriptionComponent,
@@ -54,7 +55,8 @@ import {ToastModule} from 'primeng/toast';
     InscriptionComponent,
     FormInscriptionComponent,
     EchecInscriptionComponent,
-    SuccesInscriptionComponent
+    SuccesInscriptionComponent,
+    ResetPasswordComponent
   ]
 })
 export class AuthentificationModule { }

@@ -1,3 +1,4 @@
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { EchecInscriptionComponent } from './pages/echec-inscription/echec-inscription.component';
 import { SuccesInscriptionComponent } from './pages/succes-inscription/succes-inscription.component';
 import { AuthentificationComponent } from './components/authentification/authentification.component';
@@ -13,6 +14,7 @@ const routes: Routes = [
   { path: 'formulaire', component: InscriptionComponent },
   { path: 'succes', component: SuccesInscriptionComponent },
   { path: 'echec', component: EchecInscriptionComponent },
+  { path: 'password', component: ResetPasswordComponent }
 ];
 @NgModule({
   imports: [RouterModule.forChild(routes)],
