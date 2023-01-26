@@ -40,5 +40,10 @@ export class UserService {
   signInUser(credential: Credential): Observable<Token> {
     return this.http.post<Token>(loginEndpoint, credential);
   }
+
+  //Appel le back pour générer un mail avec un nouveau mot de passe
+  resetPassword(mail:string){
+    return this.http.post(`${mailEndpoint}/${mail}/password`,mail)
+  }
 }
 
