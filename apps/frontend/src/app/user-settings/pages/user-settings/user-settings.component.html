@@ -2,5 +2,5 @@
   <p>
   Vous pouvez utiliser cette page pour visualiser vos informations personnelles, modifier vos préférences et d'autres paramètres.
   </p>
-  <app-personal-data [personalData]="personalData"></app-personal-data>
+  <app-personal-data [personalData]="personalData" (modificationEvent)="updatePersonnalInformation($event)"></app-personal-data>
 

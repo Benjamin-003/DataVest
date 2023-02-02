@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserSettingsRoutingModule } from './user-settings-routing.module';
 import { CalendarModule } from 'primeng/calendar';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 
 
@@ -18,7 +18,7 @@ import { InputTextModule } from 'primeng/inputtext';
     InputTextModule,
     UserSettingsRoutingModule,
     CalendarModule,
-    FormsModule
+    ReactiveFormsModule
   ],
   exports: [
     UserSettingsComponent,

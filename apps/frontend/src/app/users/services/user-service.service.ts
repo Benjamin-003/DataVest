@@ -1,3 +1,4 @@
+import { PersonalData } from './../interfaces/personal-data.model';
 import { LoggedUser } from '../../authentification/Interfaces/logged-user.model';
 import { Token } from '../../authentification/Interfaces/token.model';
 import { User } from '../interfaces/user.model';
@@ -25,8 +26,8 @@ export class UserService {
   }
 
   //Obtenir les informations personnelles d'un utilisateur
-  getUser(idUser: number) {
-    return this.http.get(`${userEndpoint}/${idUser}`);
+  getUser(idUser: number):Observable<PersonalData> {
+    return this.http.get<PersonalData>(`${userEndpoint}/${idUser}`);
   }
 
   //Verification des doublons d'email

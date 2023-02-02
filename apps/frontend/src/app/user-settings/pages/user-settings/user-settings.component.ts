@@ -1,24 +1,21 @@
-import { UserService } from '../../../users/services/user-service.service';
+import { PersonalData } from './../../../users/interfaces/personal-data.model';
+import { User } from './../../../users/interfaces/user.model';
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-user-settings',
   templateUrl: './user-settings.component.html'
 })
-export class UserSettingsComponent implements OnInit {
-  public personalData = { surname: "", firstname: "", birth_date: "", address: "", city: "", zip_code: "", country: "" }
-  constructor(private readonly userSettings: UserService,
-  ) { }
+export class UserSettingsComponent implements OnInit{
+  public personalData!:PersonalData
 
-  ngOnInit() {
-    this.userSettings.currentLoggedUser.subscribe(idResult => {
-      this.userSettings.getUser(idResult.id).subscribe(
-        (resultPersonnalData: any) => {
-          this.personalData = resultPersonnalData
-          this.personalData.birth_date = new Date(this.personalData.birth_date + "+00:00").toISOString()
-        }
-      )
-    }
-    )
+  constructor(private router: ActivatedRoute) {}
+
+  ngOnInit(){
+    this.router.data.subscribe(data=>{ this.personalData = data['user']})
+  }
+  updatePersonnalInformation(updatedDataUser:User){
+    //Ici on appelle la méthode du back
   }
 }

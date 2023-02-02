@@ -1,86 +1,130 @@
-<h2 class="mb-5">Mes informations personnelles</h2>
+<form [formGroup]="formulaire" (ngSubmit)="saveModification()">
+  <h2 class="mb-5">Mes informations personnelles</h2>
   <div class="grid p-fluid">
-        <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
-          <span class="p-float-label mb-2">
-            <input
-              type="text"
-              id="surname"
-              value={{personalData!.surname}}
-              disabled
-              pInputText
-            />
-            <label for="surname">Nom*</label>
-          </span>
-        </div>
-        <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
-          <span class="p-float-label mb-2">
-            <input
-              type="text"
-              id="firstname"
-              value={{personalData!.firstname}}
-              disabled
-              pInputText
-            />
-            <label for="firstname">Prénom*</label>
-          </span>
-        </div>
-        <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
-          <span class="p-float-label mb-2">
-            <p-calendar
-              inputId="birth_date"
-              dateFormat="dd/mm/yy"
-              [(ngModel)]="birth_date"
-              [disabled]="true"
-              [showIcon]="true"
-            >
-            </p-calendar>
-            <label for="inputtext">Date de naissance*</label>
-          </span>
-        </div>
-        <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
-          <span class="p-float-label mb-2">
-            <input
-              type="text"
-              id="Adresse"
-              value={{personalData!.address}}
-              disabled
-              pInputText
-            />
-            <label for="address">Adresse*</label>
-          </span>
-        </div>
-        <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
-          <span class="p-float-label mb-2">
-            <input
-              type="text"
-              id="zip_code"
-              value={{personalData!.zip_code}}
-              disabled
-              pInputText
-            />
-            <label for="zip_code">Code postal*</label>
-          </span>
-        </div>
-        <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
-          <span class="p-float-label mb-2">
-            <input type="text"
-                    id="city"
-                    value={{personalData!.city}}
-                    disabled
-                    pInputText/>
-            <label for="city">Ville*</label>
-          </span>
-        </div>
-        <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
-          <span class="p-float-label mb-2">
-            <input
-              type="text"
-              id="country"
-              value={{personalData!.country}}
-              disabled
-              pInputText
-            />
-            <label for="country">Pays*</label>
-          </span>
-        </div>
+    <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
+      <span class="p-float-label mb-2">
+        <input
+          type="text"
+          id="surname"
+          formControlName="surname"
+          pInputText
+        />
+        <label for="surname">Nom*</label>
+      </span>
+      <div *ngIf="surname?.touched" class="p-error">
+        <small *ngIf="surname?.hasError('required')">
+          {{ messagesErreur }}
+        </small>
+      </div>
     </div>
+    <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
+      <span class="p-float-label mb-2">
+        <input
+          type="text"
+          id="firstname"
+          formControlName="firstname"
+          pInputText
+        />
+        <label for="firstname">Prénom*</label>
+      </span>
+      <div *ngIf="firstname?.touched" class="p-error">
+        <small *ngIf="firstname?.hasError('required')">
+          {{ messagesErreur }}
+        </small>
+      </div>
+    </div>
+    <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
+      <span class="p-float-label mb-2">
+        <p-calendar
+          formControlName="birthdate"
+          inputId="birthdate"
+          dateFormat="dd/mm/yy"
+          [showIcon]="true"
+        >
+        </p-calendar>
+        <label for="birthdate">Date de naissance*</label>
+      </span>
+      <div *ngIf="birthdate?.touched" class="p-error">
+        <small *ngIf="birthdate?.hasError('required')">
+          {{ messagesErreur }}
+        </small>
+      </div>
+    </div>
+    <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
+      <span class="p-float-label mb-2">
+        <input
+          type="text"
+          id="address"
+          formControlName="address"
+          pInputText
+        />
+        <label for="address">Adresse*</label>
+      </span>
+      <div *ngIf="address?.touched" class="p-error">
+        <small *ngIf="address?.hasError('required')">
+          {{ messagesErreur }}
+        </small>
+      </div>
+    </div>
+    <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
+      <span class="p-float-label mb-2">
+        <input
+          type="text"
+          id="zip_code"
+          formControlName="zip_code"
+          pInputText
+        />
+        <label for="zip_code">Code postal*</label>
+      </span>
+      <div *ngIf="zip_code?.touched" class="p-error">
+        <div *ngIf="zip_code?.touched" class="p-error">
+          <small *ngIf="zip_code?.hasError('required')">
+            {{ messagesErreur }}
+          </small>
+        </div>
+      </div>
+    </div>
+    <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
+      <span class="p-float-label mb-2">
+        <input
+          type="text"
+          id="city"
+          formControlName="city"
+          pInputText
+        />
+        <label for="city">Ville*</label>
+      </span>
+      <div *ngIf="city?.touched" class="p-error">
+        <small *ngIf="city?.hasError('required')">
+          {{ messagesErreur }}
+        </small>
+      </div>
+    </div>
+    <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
+      <span class="p-float-label mb-2">
+        <input
+          type="text"
+          id="country"
+          formControlName="country"
+          pInputText
+        />
+        <label for="country">Pays*</label>
+      </span>
+      <div *ngIf="country?.touched" class="p-error">
+        <small *ngIf="country?.hasError('required')">
+          {{ messagesErreur }}
+        </small>
+      </div>
+    </div>
+  </div>
+    <div class="grid p-fluid col-12 md:col-offset-4 md:col-4 justify-content-center">
+      <button
+      pButton
+        pRipple
+        [disabled]="!(formulaire.valid && formulaire.dirty)"
+        type="submit"
+        label="Sauvegarder mes informations personelles"
+        class="p-button-raised"
+      ></button>
+    </div>
+</form>

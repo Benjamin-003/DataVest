@@ -1,11 +1,5 @@
-export interface User {
-  surname:string,
-  firstname:string,
-  birth_date:string,
-  address:string,
-  zip_code:string,
-  city:string,
-  country:string,
+import { PersonalData } from './personal-data.model';
+export interface User extends PersonalData{
   mail:string
   password:string,
   newsletter:boolean
