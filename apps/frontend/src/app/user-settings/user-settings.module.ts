@@ -6,7 +6,7 @@ import { UserSettingsRoutingModule } from './user-settings-routing.module';
 import { CalendarModule } from 'primeng/calendar';
 import { ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
-
+import {ToastModule} from 'primeng/toast';
 
 @NgModule({
   declarations: [
@@ -18,7 +18,8 @@ import { InputTextModule } from 'primeng/inputtext';
     InputTextModule,
     UserSettingsRoutingModule,
     CalendarModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ToastModule
   ],
   exports: [
     UserSettingsComponent,

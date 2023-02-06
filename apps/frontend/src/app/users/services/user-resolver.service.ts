@@ -2,7 +2,7 @@ import { UserService } from './user-service.service';
 import { PersonalData } from '../interfaces/personal-data.model';
 import { Injectable } from '@angular/core';
 import { Resolve } from '@angular/router';
-import { catchError, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'

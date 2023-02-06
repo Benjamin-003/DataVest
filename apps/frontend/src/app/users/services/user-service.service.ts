@@ -25,6 +25,11 @@ export class UserService {
     return this.http.post<User>(userEndpoint, newUser);
   }
 
+  //Envoi d'un nouveau user vers le back
+  updtateUser(userToUpdate: PersonalData) {
+    return this.http.patch<User>(userEndpoint+"/"+this.currentLoggedUser.value.id, userToUpdate);
+  }
+
   //Obtenir les informations personnelles d'un utilisateur
   getUser(idUser: number):Observable<PersonalData> {
     return this.http.get<PersonalData>(`${userEndpoint}/${idUser}`);
