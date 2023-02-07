@@ -1,7 +1,7 @@
 import { PersonalData } from './../../../users/interfaces/personal-data.model';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
+import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
 @Component({
   selector: 'app-personal-data',
   templateUrl: './personal-data.component.html'
@@ -18,7 +18,7 @@ export class PersonalDataComponent implements OnInit {
 
   get firstname() { return this.formulaire.get('firstname'); }
 
-  get birthdate() { return this.formulaire.get('birthdate'); }
+  get birth_date() { return this.formulaire.get('birth_date'); }
 
   get address() { return this.formulaire.get('address'); }
 
@@ -44,7 +44,7 @@ export class PersonalDataComponent implements OnInit {
           Validators.required,
         ],
       ],
-      birthdate: [
+      birth_date: [
         new Date(this.personalData.birth_date),
         [
           Validators.required
@@ -74,12 +74,32 @@ export class PersonalDataComponent implements OnInit {
           Validators.required
         ]
       ]
-    })
+    },{validators:[this.noChangeValuesValidator(this.personalData)]})
   }
 
+  noChangeValuesValidator(personalData: PersonalData): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const surname = control.get('surname');
+      const firstname = control.get('firstname');
+      const birth_date = control.get('birth_date');
+      const address = control.get('address');
+      const zip_code = control.get('zip_code');
+      const city = control.get('city');
+      const country = control.get('country');
+      return surname?.value === personalData.surname
+        && firstname?.value === personalData.firstname
+        && birth_date?.value.toISOString() === personalData.birth_date
+        && address?.value === personalData.address
+        && zip_code?.value === personalData.zip_code
+        && city?.value === personalData.city
+        && country?.value === personalData.country
+        ? { noChangeValues: true } : null;
+    };
+  }
   //On emet les données au composant parent
   saveModification() {
     if (this.formulaire.valid) {
+      this.formulaire.value.birth_date = this.formulaire.value.birth_date.toISOString()
       this.modificationEvent.emit(this.formulaire.value)
     }
   }

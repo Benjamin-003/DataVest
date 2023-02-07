@@ -36,16 +36,16 @@
     <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
       <span class="p-float-label mb-2">
         <p-calendar
-          formControlName="birthdate"
-          inputId="birthdate"
+          formControlName="birth_date"
+          inputId="birth_date"
           dateFormat="dd/mm/yy"
           [showIcon]="true"
         >
         </p-calendar>
         <label for="birthdate">Date de naissance*</label>
       </span>
-      <div *ngIf="birthdate?.touched" class="p-error">
-        <small *ngIf="birthdate?.hasError('required')">
+      <div *ngIf="birth_date?.touched" class="p-error">
+        <small *ngIf="birth_date?.hasError('required')">
           {{ messagesErreur }}
         </small>
       </div>
@@ -121,7 +121,7 @@
       <button
       pButton
         pRipple
-        [disabled]="!(formulaire.valid && formulaire.dirty)"
+        [disabled]="formulaire.invalid"
         type="submit"
         label="Sauvegarder mes informations personelles"
         class="p-button-raised"
