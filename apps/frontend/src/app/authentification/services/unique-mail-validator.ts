@@ -5,14 +5,18 @@ import { Observable, map, catchError, of } from "rxjs";
 
 @Injectable({ providedIn: 'root' })
 export class UniqueMailValidator implements AsyncValidator {
+  currentMail: string = ""
+
   constructor(private readonly userService: UserService) { }
 
-  validate(
-    control: AbstractControl
-  ): Observable<ValidationErrors | null> {
-    return this.userService.isMailTaken(control.value).pipe(
-      map(status => (status === 200 ? { uniqueMail: true } : null)),
-      catchError(() => of(null))
-    );
+  validate(control: AbstractControl): Observable<ValidationErrors | null> {
+    if (control.value && control.value !== this.currentMail) {
+      return this.userService.isMailTaken(control.value).pipe(
+        map(status => (status === 200 ? { uniqueMail: true } : null)),
+        catchError(() => of(null))
+      );
+    }
+    return of(null);
   }
 }
+

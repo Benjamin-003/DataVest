@@ -7,11 +7,13 @@ import { CalendarModule } from 'primeng/calendar';
 import { ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import {ToastModule} from 'primeng/toast';
+import { CredentialsComponent } from './components/credentials/credentials.component';
 
 @NgModule({
   declarations: [
     UserSettingsComponent,
-    PersonalDataComponent
+    PersonalDataComponent,
+    CredentialsComponent
   ],
   imports: [
     CommonModule,

@@ -3,4 +3,5 @@
   Vous pouvez utiliser cette page pour visualiser vos informations personnelles, modifier vos préférences et d'autres paramètres.
   </p>
   <app-personal-data [personalData]="personalData" (modificationEvent)="updatePersonnalInformation($event)"></app-personal-data>
+  <app-credentials [userMail]="personalData.mail" (modificationEvent)="updatePersonnalInformation($event)"></app-credentials>
   <p-toast position="bottom-right"></p-toast>

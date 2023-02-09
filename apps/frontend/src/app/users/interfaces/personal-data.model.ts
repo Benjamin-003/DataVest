@@ -6,4 +6,5 @@ export interface PersonalData {
   zip_code:string,
   city:string,
   country:string,
+  mail:string
 }
