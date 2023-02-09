@@ -45,7 +45,7 @@ export class PersonalDataComponent implements OnInit {
         ],
       ],
       birth_date: [
-        new Date(this.personalData.birth_date),
+        new Date(+this.personalData.birth_date.substring(0, 4), +this.personalData.birth_date.substring(5, 7) - 1 , +this.personalData.birth_date.substring(8)),
         [
           Validators.required
         ]
@@ -88,7 +88,7 @@ export class PersonalDataComponent implements OnInit {
       const country = control.get('country');
       return surname?.value === personalData.surname
         && firstname?.value === personalData.firstname
-        && birth_date?.value.toISOString() === personalData.birth_date
+        && this.dateToString(birth_date?.value) === personalData.birth_date
         && address?.value === personalData.address
         && zip_code?.value === personalData.zip_code
         && city?.value === personalData.city
@@ -96,10 +96,18 @@ export class PersonalDataComponent implements OnInit {
         ? { noChangeValues: true } : null;
     };
   }
+
+dateToString(date:Date) :string{
+  let day: string = date.getDate().toString().padStart(2, "0")
+  let month: string = (date.getMonth() + 1).toString().padStart(2, "0")
+  let year: string = date.getFullYear().toString()
+  return year + "-" + month + "-" + day
+}
+
   //On emet les données au composant parent
   saveModification() {
     if (this.formulaire.valid) {
-      this.formulaire.value.birth_date = this.formulaire.value.birth_date.toISOString()
+      this.formulaire.value.birth_date =  this.dateToString(this.formulaire.value.birth_date)
       this.modificationEvent.emit(this.formulaire.value)
     }
   }
