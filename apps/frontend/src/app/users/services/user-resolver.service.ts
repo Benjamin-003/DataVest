@@ -1,5 +1,5 @@
+import { PersonalData } from './../interfaces/personal-data.model';
 import { UserService } from './user-service.service';
-import { PersonalData } from '../interfaces/personal-data.model';
 import { Injectable } from '@angular/core';
 import { Resolve } from '@angular/router';
 import { map, Observable } from 'rxjs';

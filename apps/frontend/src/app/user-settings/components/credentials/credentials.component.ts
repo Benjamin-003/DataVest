@@ -1,4 +1,3 @@
-import { Observable, of } from 'rxjs';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { UniqueMailValidator } from 'src/app/authentification/services/unique-mail-validator';

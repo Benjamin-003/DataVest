@@ -12,32 +12,6 @@
       "newsletter": false,
       "id": 1,
       "birthdate": "2023-01-08T22:00:00.000Z"
-    },
-    {
-      "surname": "Vizzini-Bruyas",
-      "firstname": "Sylvain",
-      "address": "Rue de la paix",
-      "zip_code": "38000",
-      "city": "Grenoble",
-      "country": "France",
-      "mail": "sylvain.vizzini@akkodisgroup.com",
-      "password": "Aze",
-      "newsletter": true,
-      "birth_date": "2023-02-05T23:00:00.000Z",
-      "id": 4
-    },
-    {
-      "surname": "Massebeuf",
-      "firstname": "Jean-Luc",
-      "address": "Rue de la paix",
-      "zip_code": "69003",
-      "city": "Lyon",
-      "country": "France",
-      "mail": "jean-luc.massebeuf@akkodisgroup.com",
-      "password": "Aze",
-      "newsletter": false,
-      "birth_date": "2023-02-12T23:00:00.000Z",
-      "id": 5
     }
   ]
 }

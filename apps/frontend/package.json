@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "e2e": "ng e2e",
-    "json-server:run": "json-server --watch mock_db/db.json",
+    "json-server:run": "json-server --watch mock_db/db.json --routes mock_db/routes.json -p 6080",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "ci:back": "npm run json-server:run & npx wait-on http://localhost:3000",

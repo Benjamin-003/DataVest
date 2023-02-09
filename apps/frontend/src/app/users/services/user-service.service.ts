@@ -27,7 +27,7 @@ export class UserService {
 
   //Envoi d'un nouveau user vers le back
   updtateUser(userToUpdate: PersonalData) {
-    return this.http.patch<User>(userEndpoint+"/"+this.currentLoggedUser.value.id, userToUpdate);
+    return this.http.patch<PersonalData>(userEndpoint+"/"+this.currentLoggedUser.value.id, userToUpdate);
   }
 
   //Obtenir les informations personnelles d'un utilisateur
