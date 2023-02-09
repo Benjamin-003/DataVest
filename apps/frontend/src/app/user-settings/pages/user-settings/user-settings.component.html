@@ -4,4 +4,5 @@
   </p>
   <app-personal-data [personalData]="personalData" (modificationEvent)="updatePersonnalInformation($event)"></app-personal-data>
   <app-credentials [userMail]="personalData.mail" (modificationEvent)="updateEmail($event)"></app-credentials>
+  <app-other-settings></app-other-settings>
   <p-toast position="bottom-right"></p-toast>
