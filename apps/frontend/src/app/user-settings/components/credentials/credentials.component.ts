@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { UniqueMailValidator } from 'src/app/authentification/services/unique-mail-validator';
 
@@ -6,19 +6,28 @@ import { UniqueMailValidator } from 'src/app/authentification/services/unique-ma
   selector: 'app-credentials',
   templateUrl: './credentials.component.html'
 })
-export class CredentialsComponent implements OnInit {
+export class CredentialsComponent implements OnInit, OnChanges {
   public emailForm!: FormGroup;
   @Input() userMail!: string;
   @Output() modificationEvent = new EventEmitter();
 
   constructor(private readonly formBuilder: FormBuilder, private readonly uniqueMail: UniqueMailValidator) { }
   get mail() { return this.emailForm.get('mail'); }
+
   ngOnInit() {
     this.uniqueMail.currentMail = this.userMail;
+  }
 
+  ngOnChanges(simpleChanges: SimpleChanges) {
+    if (simpleChanges["userMail"]) {
+      this.initForm(simpleChanges["userMail"].currentValue)
+    }
+  }
+
+  initForm(email: string) {
     this.emailForm = this.formBuilder.group({
       mail: [
-        this.userMail,
+        email,
         {
           validators: [
             Validators.required,
@@ -30,7 +39,7 @@ export class CredentialsComponent implements OnInit {
           updateOn: 'change',
         }
       ]
-    },{validators: this.noChangeValuesValidator()}
+    }, { validators: this.noChangeValuesValidator() }
     )
   }
 

@@ -1,8 +1,26 @@
-  <h1>Mon Profil</h1>
-  <p>
-  Vous pouvez utiliser cette page pour visualiser vos informations personnelles, modifier vos préférences et d'autres paramètres.
-  </p>
-  <app-personal-data [personalData]="personalData" (modificationEvent)="updatePersonnalInformation($event)"></app-personal-data>
-  <app-credentials [userMail]="personalData.mail" (modificationEvent)="updateEmail($event)"></app-credentials>
-  <app-other-settings></app-other-settings>
-  <p-toast position="bottom-right"></p-toast>
+<h1>Mon Profil</h1>
+<p>
+  Vous pouvez utiliser cette page pour visualiser vos informations personnelles,
+  modifier vos préférences et d'autres paramètres.
+</p>
+<app-personal-data
+  [personalData]="
+  personalData || {
+      surname: '',
+      firstname: '',
+      birth_date: '',
+      address: '',
+      zip_code: '',
+      city: '',
+      country: '',
+      mail: ''
+    }
+  "
+  (modificationEvent)="updatePersonnalInformation($event)"
+></app-personal-data>
+<app-credentials
+  [userMail]="personalData.mail"
+  (modificationEvent)="updateEmail($event)"
+></app-credentials>
+<app-other-settings></app-other-settings>
+<p-toast position="bottom-right"></p-toast>

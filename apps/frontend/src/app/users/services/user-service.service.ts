@@ -5,7 +5,7 @@ import { User } from '../interfaces/user.model';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable, BehaviorSubject } from 'rxjs';
+import { map, Observable, BehaviorSubject, tap } from 'rxjs';
 
 const userEndpoint = `${environment.urlApi}/users`;
 const mailEndpoint = `${environment.urlApi}/mails`;
@@ -19,6 +19,11 @@ export class UserService {
   constructor(private readonly http: HttpClient) { }
 
   public currentLoggedUser = new BehaviorSubject<LoggedUser>({ id: 0, firstname: '' });
+  private _currentPersonalData$ = new BehaviorSubject<PersonalData>({ surname: '', firstname: '', birth_date: '', address: '', zip_code: '', city: '', country: '', mail: '' })
+
+  get currentPersonalData$() {
+    return this._currentPersonalData$.asObservable();
+  }
 
   //Envoi d'un nouveau user vers le back
   createUser(newUser: User) {
@@ -27,12 +32,20 @@ export class UserService {
 
   //Envoi d'un nouveau user vers le back
   updtateUser(userToUpdate: PersonalData) {
-    return this.http.patch<PersonalData>(userEndpoint+"/"+this.currentLoggedUser.value.id, userToUpdate);
+    return this.http.patch(userEndpoint + "/" + this.currentLoggedUser.value.id, userToUpdate).pipe(map(() => {
+      this.getUser(this.currentLoggedUser.value.id).subscribe()
+    })
+    );
   }
 
   //Obtenir les informations personnelles d'un utilisateur
-  getUser(idUser: number):Observable<PersonalData> {
-    return this.http.get<PersonalData>(`${userEndpoint}/${idUser}`);
+  getUser(idUser: number): Observable<PersonalData> {
+    return this.http.get<PersonalData>(`${userEndpoint}/${idUser}`).pipe(map(
+      (personalData) => {
+        this._currentPersonalData$.next(personalData)
+        return personalData
+      }
+    ));
   }
 
   //Verification des doublons d'email
@@ -48,8 +61,8 @@ export class UserService {
   }
 
   //Appel le back pour générer un mail avec un nouveau mot de passe
-  resetPassword(mail:string){
-    return this.http.post(`${mailEndpoint}/${mail}/password`,mail)
+  resetPassword(mail: string) {
+    return this.http.post(`${mailEndpoint}/${mail}/password`, mail)
   }
 }
 

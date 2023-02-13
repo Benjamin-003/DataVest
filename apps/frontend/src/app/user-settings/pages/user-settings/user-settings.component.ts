@@ -1,7 +1,7 @@
+import { Observable, Subscription } from 'rxjs';
 import { UserService } from './../../../users/services/user-service.service';
 import { PersonalData } from './../../../users/interfaces/personal-data.model';
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MessageService } from 'primeng/api';
 
 @Component({
@@ -9,34 +9,42 @@ import { MessageService } from 'primeng/api';
   templateUrl: './user-settings.component.html',
   providers: [MessageService]
 })
-export class UserSettingsComponent implements OnInit {
+export class UserSettingsComponent implements OnInit, OnDestroy {
   public personalData!: PersonalData
-  private message=["Votre nouvelle adresse mail est bien prise en compte",
-                    "Vos modifications ont bien été prises en compte et votre profil a été mis à jour",
-                    "Nous n'avons pas pu enregistrer vos modifications. Veuillez réessayer plus tard"
-                  ]
+  public personalData$!: Observable<PersonalData>
+  private _personalDataSubscription!: Subscription
+  private message = ["Votre nouvelle adresse mail est bien prise en compte",
+    "Vos modifications ont bien été prises en compte et votre profil a été mis à jour",
+    "Nous n'avons pas pu enregistrer vos modifications. Veuillez réessayer plus tard"
+  ]
 
-  constructor(private router: ActivatedRoute,
-              private readonly userService: UserService,
-              private readonly messageService: MessageService,
-            ) { }
+  constructor(private readonly userService: UserService,
+    private readonly messageService: MessageService,
+  ) { }
 
   ngOnInit() {
-    this.router.data.subscribe(data => { this.personalData = data['user'] })
+    this.personalData$ = this.userService.currentPersonalData$
+
+    this._personalDataSubscription = this.personalData$.subscribe((personalData) => this.personalData = personalData)
+  }
+
+  ngOnDestroy() {
+    this._personalDataSubscription.unsubscribe()
   }
 
   //Méthode qui appelle le back pour la modification du mail de l'utilisateur
-  updateEmail(mail:PersonalData){
-    this.userService.updtateUser(mail).subscribe({
+  updateEmail(form: { mail: string }) {
+    this.userService.updtateUser(form as PersonalData).subscribe({
       error: () => {
         this.messageService.add({
           severity: "error", detail: this.message[2]
         })
       },
-      complete:()=>{
+      complete: () => {
         this.messageService.add({
-        severity: "success", detail: this.message[0]
-      })
+          severity: "success", detail: this.message[0]
+        })
+        this.personalData.mail = form.mail
       }
     })
   }
@@ -44,15 +52,15 @@ export class UserSettingsComponent implements OnInit {
   //Méthode qui appelle le back pour la modification des données personnelles de l'utilisateur
   updatePersonnalInformation(updatedDataUser: PersonalData) {
     this.userService.updtateUser(updatedDataUser).subscribe({
-       error: () => {
+      error: () => {
         this.messageService.add({
           severity: "error", detail: this.message[2]
         })
       },
-      complete:()=>{
+      complete: () => {
         this.messageService.add({
-        severity: "success", detail: this.message[1]
-      })
+          severity: "success", detail: this.message[1]
+        })
       }
     })
   }
