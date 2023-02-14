@@ -7,24 +7,33 @@ import { UniqueMailValidator } from 'src/app/authentification/services/unique-ma
   templateUrl: './credentials.component.html'
 })
 export class CredentialsComponent implements OnInit, OnChanges {
-  public emailForm!: FormGroup;
   @Input() userMail!: string;
   @Output() modificationEvent = new EventEmitter();
-
-  constructor(private readonly formBuilder: FormBuilder, private readonly uniqueMail: UniqueMailValidator) { }
+  public emailForm!: FormGroup;
+  public passwordForm!: FormGroup;
   get mail() { return this.emailForm.get('mail'); }
+  get currentPassword() { return this.passwordForm.get('currentPassword'); }
+  get newPassword() { return this.passwordForm.get('newPassword'); }
+  get confirmPassword() { return this.passwordForm.get('confirmPassword'); }
+  public readonly strongPasswordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!-\/:-@[-`{-~])[a-zA-Z0-9!-\/:-@[-`{-~]{8,}$"
+  public messagesErreur = [
+    "Il semble y avoir une erreur de saisie ici",
+    "Ce champ est obligatoire, merci de saisir l'information demandée"
+  ];
+  constructor(private readonly formBuilder: FormBuilder, private readonly uniqueMail: UniqueMailValidator) { }
 
   ngOnInit() {
     this.uniqueMail.currentMail = this.userMail;
+    this.initPasswordForm()
   }
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges["userMail"]) {
-      this.initForm(simpleChanges["userMail"].currentValue)
+      this.initMailForm(simpleChanges["userMail"].currentValue)
     }
   }
 
-  initForm(email: string) {
+  initMailForm(email: string) {
     this.emailForm = this.formBuilder.group({
       mail: [
         email,
@@ -43,6 +52,27 @@ export class CredentialsComponent implements OnInit, OnChanges {
     )
   }
 
+  initPasswordForm() {
+    this.passwordForm = this.formBuilder.group({
+      currentPassword: ["",
+        [
+          Validators.required
+        ],
+      ],
+      newPassword: ["",
+        [
+          Validators.required
+        ],
+      ],
+      confirmPassword: ["",
+        [
+          Validators.required
+        ],
+      ],
+    }, { validators: [this.validationMatchingPassword] }
+    )
+  }
+
   noChangeValuesValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       return control.get('mail')?.value === this.userMail
@@ -50,7 +80,18 @@ export class CredentialsComponent implements OnInit, OnChanges {
     };
   }
 
-  saveModification() {
+  //Vérification si le mot de passe de confirmation match avec le champs de nouveau mot de passe .
+  validationMatchingPassword: ValidatorFn = (controle: AbstractControl): ValidationErrors | null => {
+    const newPassword = controle.get('newPassword');
+    const confirmPassword = controle.get('confirmPassword');
+    return newPassword?.value === confirmPassword?.value ? null : { notmatched: true };
+  }
+
+  saveMailModification() {
     this.modificationEvent.emit(this.emailForm.value)
+  }
+
+  saveMPasswordModification() {
+    this.modificationEvent.emit(this.passwordForm.value)
   }
 }

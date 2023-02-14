@@ -9,7 +9,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import {ToastModule} from 'primeng/toast';
 import { CredentialsComponent } from './components/credentials/credentials.component';
 import { OtherSettingsComponent } from './components/other-settings/other-settings.component';
-
+import { PasswordModule } from 'primeng/password';
+import { DividerModule } from "primeng/divider";
 @NgModule({
   declarations: [
     UserSettingsComponent,
@@ -23,7 +24,9 @@ import { OtherSettingsComponent } from './components/other-settings/other-settin
     UserSettingsRoutingModule,
     CalendarModule,
     ReactiveFormsModule,
-    ToastModule
+    ToastModule,
+    PasswordModule,
+    DividerModule
   ],
   exports: [
     UserSettingsComponent,
