@@ -4,23 +4,13 @@
   modifier vos préférences et d'autres paramètres.
 </p>
 <app-personal-data
-  [personalData]="
-  personalData || {
-      surname: '',
-      firstname: '',
-      birth_date: '',
-      address: '',
-      zip_code: '',
-      city: '',
-      country: '',
-      mail: ''
-    }
-  "
-  (modificationEvent)="updatePersonnalInformation($event)"
+  [personalData]="personalData"
+  (modificationEvent)="updatePersonalData($event, 1)"
 ></app-personal-data>
 <app-credentials
   [userMail]="personalData.mail"
-  (modificationEvent)="updateEmail($event)"
+  (modifyEmail)="updatePersonalData($event, 0)"
+  (modifyPassword)="updatePassword($event)"
 ></app-credentials>
 <app-other-settings></app-other-settings>
 <p-toast position="bottom-right"></p-toast>

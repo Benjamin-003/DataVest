@@ -1,3 +1,4 @@
+import { Password } from './../../../users/interfaces/password.model';
 import { Observable, Subscription } from 'rxjs';
 import { UserService } from './../../../users/services/user-service.service';
 import { PersonalData } from './../../../users/interfaces/personal-data.model';
@@ -10,12 +11,24 @@ import { MessageService } from 'primeng/api';
   providers: [MessageService]
 })
 export class UserSettingsComponent implements OnInit, OnDestroy {
-  public personalData!: PersonalData
+  public personalData: PersonalData = {
+    surname: '',
+    firstname: '',
+    birth_date: '',
+    address: '',
+    zip_code: '',
+    city: '',
+    country: '',
+    mail: ''
+  }
+  
   public personalData$!: Observable<PersonalData>
   private _personalDataSubscription!: Subscription
   private message = ["Votre nouvelle adresse mail est bien prise en compte",
     "Vos modifications ont bien été prises en compte et votre profil a été mis à jour",
-    "Nous n'avons pas pu enregistrer vos modifications. Veuillez réessayer plus tard"
+    "Nous n'avons pas pu enregistrer vos modifications. Veuillez réessayer plus tard",
+    "Votre nouveau mot de passe a bien été enregistré",
+    "Votre nouveau mot de passe n'a pas pu être sauvegardé. Veuillez réessayer plus tard"
   ]
 
   constructor(private readonly userService: UserService,
@@ -24,7 +37,6 @@ export class UserSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.personalData$ = this.userService.currentPersonalData$
-
     this._personalDataSubscription = this.personalData$.subscribe((personalData) => this.personalData = personalData)
   }
 
@@ -32,9 +44,9 @@ export class UserSettingsComponent implements OnInit, OnDestroy {
     this._personalDataSubscription.unsubscribe()
   }
 
-  //Méthode qui appelle le back pour la modification du mail de l'utilisateur
-  updateEmail(form: { mail: string }) {
-    this.userService.updtateUser(form as PersonalData).subscribe({
+  //Cette méthode appelle le back pour mettre à jour les données de l'utilisateur autre que le mot de passe
+  updatePersonalData(PersonalData: PersonalData, indexMessage: number) {
+    this.userService.updateUser(PersonalData).subscribe({
       error: () => {
         this.messageService.add({
           severity: "error", detail: this.message[2]
@@ -42,27 +54,27 @@ export class UserSettingsComponent implements OnInit, OnDestroy {
       },
       complete: () => {
         this.messageService.add({
-          severity: "success", detail: this.message[0]
+          severity: "success", detail: this.message[indexMessage]
         })
-        this.personalData.mail = form.mail
       }
     })
   }
 
-  //Méthode qui appelle le back pour la modification des données personnelles de l'utilisateur
-  updatePersonnalInformation(updatedDataUser: PersonalData) {
-    this.userService.updtateUser(updatedDataUser).subscribe({
+  //Méthode qui appelle le back pour la modification du mot de passe de l'utilisateur
+  updatePassword(password: Password) {
+    this.userService.updatePassword(password).subscribe({
       error: () => {
         this.messageService.add({
-          severity: "error", detail: this.message[2]
+          severity: "error", detail: this.message[4]
         })
       },
       complete: () => {
         this.messageService.add({
-          severity: "success", detail: this.message[1]
+          severity: "success", detail: this.message[3]
         })
       }
     })
   }
+
 }
 

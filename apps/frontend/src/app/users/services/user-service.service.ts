@@ -1,3 +1,4 @@
+import { Password } from './../interfaces/password.model';
 import { PersonalData } from './../interfaces/personal-data.model';
 import { LoggedUser } from '../../authentification/Interfaces/logged-user.model';
 import { Token } from '../../authentification/Interfaces/token.model';
@@ -5,7 +6,7 @@ import { User } from '../interfaces/user.model';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable, BehaviorSubject, tap } from 'rxjs';
+import { map, Observable, BehaviorSubject } from 'rxjs';
 
 const userEndpoint = `${environment.urlApi}/users`;
 const mailEndpoint = `${environment.urlApi}/mails`;
@@ -31,7 +32,7 @@ export class UserService {
   }
 
   //Envoi d'un nouveau user vers le back
-  updtateUser(userToUpdate: PersonalData) {
+  updateUser(userToUpdate: PersonalData) {
     return this.http.patch(userEndpoint + "/" + this.currentLoggedUser.value.id, userToUpdate).pipe(map(() => {
       this.getUser(this.currentLoggedUser.value.id).subscribe()
     })
@@ -63,6 +64,11 @@ export class UserService {
   //Appel le back pour générer un mail avec un nouveau mot de passe
   resetPassword(mail: string) {
     return this.http.post(`${mailEndpoint}/${mail}/password`, mail)
+  }
+
+  //Méthode qui appelle le back pour la modification du mot de passe de l'utilisateur
+  updatePassword(password: Password) {
+    return this.http.patch(`${userEndpoint}/${this.currentLoggedUser.value.id}/password`, password)
   }
 }
 

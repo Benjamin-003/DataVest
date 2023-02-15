@@ -1,3 +1,5 @@
+import { PersonalData } from './../../../users/interfaces/personal-data.model';
+import { Password } from './../../../users/interfaces/password.model';
 import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { UniqueMailValidator } from 'src/app/authentification/services/unique-mail-validator';
@@ -8,7 +10,8 @@ import { UniqueMailValidator } from 'src/app/authentification/services/unique-ma
 })
 export class CredentialsComponent implements OnInit, OnChanges {
   @Input() userMail!: string;
-  @Output() modificationEvent = new EventEmitter();
+  @Output("modifyEmail") emailEvent = new EventEmitter();
+  @Output("modifyPassword") passwordEvent = new EventEmitter();
   public emailForm!: FormGroup;
   public passwordForm!: FormGroup;
   get mail() { return this.emailForm.get('mail'); }
@@ -20,6 +23,7 @@ export class CredentialsComponent implements OnInit, OnChanges {
     "Il semble y avoir une erreur de saisie ici",
     "Ce champ est obligatoire, merci de saisir l'information demandée"
   ];
+
   constructor(private readonly formBuilder: FormBuilder, private readonly uniqueMail: UniqueMailValidator) { }
 
   ngOnInit() {
@@ -87,11 +91,15 @@ export class CredentialsComponent implements OnInit, OnChanges {
     return newPassword?.value === confirmPassword?.value ? null : { notmatched: true };
   }
 
-  saveMailModification() {
-    this.modificationEvent.emit(this.emailForm.value)
+  saveMail() {
+    if(this.emailForm.valid)
+    this.emailEvent.emit(this.emailForm.value as PersonalData)
   }
 
-  saveMPasswordModification() {
-    this.modificationEvent.emit(this.passwordForm.value)
+  savePassword() {
+    if(this.passwordForm.valid){
+      const password: Password = { old_password: this.currentPassword?.value, new_password: this.newPassword?.value }
+      this.passwordEvent.emit(password)
+    }
   }
 }
