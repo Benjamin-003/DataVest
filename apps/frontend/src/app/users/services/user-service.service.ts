@@ -20,7 +20,7 @@ export class UserService {
   constructor(private readonly http: HttpClient) { }
 
   public currentLoggedUser = new BehaviorSubject<LoggedUser>({ id: 0, firstname: '' });
-  private _currentPersonalData$ = new BehaviorSubject<PersonalData>({ surname: '', firstname: '', birth_date: '', address: '', zip_code: '', city: '', country: '', mail: '' })
+  private _currentPersonalData$ = new BehaviorSubject<PersonalData>({ surname: '', firstname: '', birth_date: '', address: '', zip_code: '', city: '', country: '', mail: '', language_code: '' })
 
   get currentPersonalData$() {
     return this._currentPersonalData$.asObservable();

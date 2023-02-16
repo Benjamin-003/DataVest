@@ -1,4 +1,13 @@
 <h2 class="mb-5">Autres préférences</h2>
-<p>
-  Rubrique en cours de construction. Vous pourrez notamment y changer la devise d'affichage
-</p>
+<form [formGroup]="languageForm">
+  <span class="p-float-label">
+    <p-dropdown
+      [options]="languages"
+      optionLabel="label"
+      optionValue="code"
+      inputId="language"
+      formControlName="language_code"
+    ></p-dropdown>
+    <label for="language">Langue</label>
+  </span>
+</form>

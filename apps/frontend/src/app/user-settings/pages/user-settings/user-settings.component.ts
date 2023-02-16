@@ -1,3 +1,5 @@
+import { LanguagesService } from './../../../languages/languages.service';
+import { Language } from '../../../languages/interfaces/language.model';
 import { Password } from './../../../users/interfaces/password.model';
 import { Observable, Subscription } from 'rxjs';
 import { UserService } from './../../../users/services/user-service.service';
@@ -19,10 +21,9 @@ export class UserSettingsComponent implements OnInit, OnDestroy {
     zip_code: '',
     city: '',
     country: '',
-    mail: ''
+    mail: '',
+    language_code: ''
   }
-  
-  public personalData$!: Observable<PersonalData>
   private _personalDataSubscription!: Subscription
   private message = ["Votre nouvelle adresse mail est bien prise en compte",
     "Vos modifications ont bien été prises en compte et votre profil a été mis à jour",
@@ -30,14 +31,20 @@ export class UserSettingsComponent implements OnInit, OnDestroy {
     "Votre nouveau mot de passe a bien été enregistré",
     "Votre nouveau mot de passe n'a pas pu être sauvegardé. Veuillez réessayer plus tard"
   ]
+  languages!: Language[]
 
   constructor(private readonly userService: UserService,
     private readonly messageService: MessageService,
+    private readonly languageService: LanguagesService
   ) { }
 
   ngOnInit() {
-    this.personalData$ = this.userService.currentPersonalData$
-    this._personalDataSubscription = this.personalData$.subscribe((personalData) => this.personalData = personalData)
+    this._personalDataSubscription = this.userService.currentPersonalData$.subscribe((personalData) => this.personalData = personalData)
+    this.languageService.getLanguages().subscribe(
+      (languageData: Language[]) => {
+         this.languages = languageData;
+      }
+   );
   }
 
   ngOnDestroy() {

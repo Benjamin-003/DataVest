@@ -11,6 +11,7 @@ import { CredentialsComponent } from './components/credentials/credentials.compo
 import { OtherSettingsComponent } from './components/other-settings/other-settings.component';
 import { PasswordModule } from 'primeng/password';
 import { DividerModule } from "primeng/divider";
+import {DropdownModule} from 'primeng/dropdown';
 @NgModule({
   declarations: [
     UserSettingsComponent,
@@ -26,7 +27,8 @@ import { DividerModule } from "primeng/divider";
     ReactiveFormsModule,
     ToastModule,
     PasswordModule,
-    DividerModule
+    DividerModule,
+    DropdownModule
   ],
   exports: [
     UserSettingsComponent,

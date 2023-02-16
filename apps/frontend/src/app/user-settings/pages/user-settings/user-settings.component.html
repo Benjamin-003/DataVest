@@ -12,5 +12,8 @@
   (modifyEmail)="updatePersonalData($event, 0)"
   (modifyPassword)="updatePassword($event)"
 ></app-credentials>
-<app-other-settings></app-other-settings>
+<app-other-settings
+  [languages]="languages"
+  [userLanguage]="personalData.language_code"
+></app-other-settings>
 <p-toast position="bottom-right"></p-toast>
