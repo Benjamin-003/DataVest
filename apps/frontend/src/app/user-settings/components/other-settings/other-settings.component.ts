@@ -1,3 +1,4 @@
+import { Currency } from './../../../currencies/currency-model';
 import { Language } from '../../../languages/interfaces/language.model';
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -8,27 +9,33 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 
 export class OtherSettingsComponent implements OnChanges {
-  @Input() languages!: Language[]
-  @Input() userLanguage!: string
-  languageForm!: FormGroup
+  @Input() languages!: Language[];
+  @Input() userLanguage!: string;
+  @Input() currencies!: Currency[];
+  @Input() userCurrency!: string;
+  otherSettingsForm!: FormGroup;
 
   constructor(private readonly formBuilder: FormBuilder) { }
 
 
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes["userLanguage"]) {
-      this.initLanguageForm(changes["userLanguage"].currentValue);
+    if (changes["userLanguage"] || changes["userCurrency"]) {
+      this.initOtherSettingsForm(changes["userLanguage"].currentValue, changes["userCurrency"].currentValue);
     }
   }
 
-  initLanguageForm(codeLanguage: string) {
-    this.languageForm = this.formBuilder.group(
+  initOtherSettingsForm(codeLanguage: string, codeCurrency: string) {
+    this.otherSettingsForm = this.formBuilder.group(
       {
         language_code: [
           codeLanguage, [Validators.required]
         ]
-      }
+      ,
+        currency_code: [
+          codeCurrency, [Validators.required]
+        ]
+      },
     );
   }
 }

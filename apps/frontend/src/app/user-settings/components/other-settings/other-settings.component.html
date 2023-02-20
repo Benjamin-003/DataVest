@@ -1,13 +1,37 @@
 <h2 class="mb-5">Autres préférences</h2>
-<form [formGroup]="languageForm">
-  <span class="p-float-label">
-    <p-dropdown
-      [options]="languages"
-      optionLabel="label"
-      optionValue="code"
-      inputId="language"
-      formControlName="language_code"
-    ></p-dropdown>
-    <label for="language">Langue</label>
-  </span>
+<form [formGroup]="otherSettingsForm">
+  <div class="grid p-fluid">
+    <div class="field col-12 md:col-4">
+      <span class="p-float-label">
+        <p-dropdown
+          [options]="languages"
+          optionLabel="label"
+          optionValue="code"
+          inputId="language"
+          formControlName="language_code"
+        ></p-dropdown>
+        <label for="language">Langue</label>
+      </span>
+    </div>
+    <div class="field col-12 md:col-4">
+      <span class="p-float-label">
+        <p-dropdown
+          [options]="currencies"
+          optionValue="code"
+          inputId="currency"
+          formControlName="currency_code"
+        >
+          <ng-template pTemplate="selectedItem" let-currency>
+            <span [class]="'fi fi-' + currency.flag"></span>
+            <span class="ml-2">{{ currency.label }}</span>
+          </ng-template>
+          <ng-template pTemplate="item" let-currency>
+            <span [class]="'fi fi-' + currency.flag"></span>
+            <span class="ml-2">{{ currency.label }}</span>
+          </ng-template>
+        </p-dropdown>
+        <label for="currency">Devise</label>
+      </span>
+    </div>
+  </div>
 </form>

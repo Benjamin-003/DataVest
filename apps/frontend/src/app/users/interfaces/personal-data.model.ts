@@ -7,5 +7,6 @@ export interface PersonalData {
   city: string,
   country: string,
   mail: string,
-  language_code: string
+  language_code: string,
+  currency_code: string
 }

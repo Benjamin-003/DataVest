@@ -1,11 +1,13 @@
+import { CurrenciesService } from './../../../currencies/currencies.service';
 import { LanguagesService } from './../../../languages/languages.service';
 import { Language } from '../../../languages/interfaces/language.model';
 import { Password } from './../../../users/interfaces/password.model';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { UserService } from './../../../users/services/user-service.service';
 import { PersonalData } from './../../../users/interfaces/personal-data.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MessageService } from 'primeng/api';
+import { Currency} from 'src/app/currencies/currency-model';
 
 @Component({
   selector: 'app-user-settings',
@@ -22,7 +24,8 @@ export class UserSettingsComponent implements OnInit, OnDestroy {
     city: '',
     country: '',
     mail: '',
-    language_code: ''
+    language_code: '',
+    currency_code: ''
   }
   private _personalDataSubscription!: Subscription
   private message = ["Votre nouvelle adresse mail est bien prise en compte",
@@ -32,10 +35,11 @@ export class UserSettingsComponent implements OnInit, OnDestroy {
     "Votre nouveau mot de passe n'a pas pu être sauvegardé. Veuillez réessayer plus tard"
   ]
   languages!: Language[]
-
+  currencies!: Currency[]
   constructor(private readonly userService: UserService,
     private readonly messageService: MessageService,
-    private readonly languageService: LanguagesService
+    private readonly languageService: LanguagesService,
+    private readonly currenciesService: CurrenciesService
   ) { }
 
   ngOnInit() {
@@ -45,6 +49,11 @@ export class UserSettingsComponent implements OnInit, OnDestroy {
          this.languages = languageData;
       }
    );
+   this.currenciesService.getCurrencies().subscribe(
+    (currencyData: Currency[]) => {
+      this.currencies = currencyData;
+   }
+   )
   }
 
   ngOnDestroy() {
