@@ -7,7 +7,7 @@ import { MenuItem } from 'primeng/api';
   templateUrl: './header.component.html'
 })
 export class HeaderComponent implements OnInit {
-  
+
   public items!: MenuItem[];
   public isLogged = false;
   public loggedUserName!: string;
@@ -20,7 +20,9 @@ export class HeaderComponent implements OnInit {
       items: [{ label: "À propos d'Ottawa Pigeon", routerLink: "information-societe/apropos" }, { label: "Centre d'aide" }, { label: "Pourquoi nous choisir ?" }]
     },
     { label: "Des questions" }];
+    if(this.authentification.currentLoggedUser){
     this.getLoggedUser();
+    }
   }
 
   //Méthode de cycle de vie qui va checker si il y a un changement dans l'authentification

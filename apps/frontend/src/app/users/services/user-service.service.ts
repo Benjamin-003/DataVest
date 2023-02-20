@@ -11,7 +11,7 @@ import { map, Observable, BehaviorSubject } from 'rxjs';
 const userEndpoint = `${environment.urlApi}/users`;
 const mailEndpoint = `${environment.urlApi}/mails`;
 const loginEndpoint = `${environment.urlApi}/tokens`;
-
+const USER_KEY = 'authentification-user';
 @Injectable({
   providedIn: 'root'
 })
@@ -59,6 +59,11 @@ export class UserService {
   //Appel le back pour la connexion
   signInUser(credential: Credential): Observable<Token> {
     return this.http.post<Token>(loginEndpoint, credential);
+  }
+
+  saveUserToken(token: string): void {
+    window.sessionStorage.removeItem(USER_KEY);
+    window.sessionStorage.setItem(USER_KEY, JSON.stringify(token));
   }
 
   //Appel le back pour générer un mail avec un nouveau mot de passe
