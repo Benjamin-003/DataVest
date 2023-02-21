@@ -24,6 +24,8 @@ export class UserService {
 
   get token() { return sessionStorage.getItem("authentification-user") }
 
+  get token() { return sessionStorage.getItem("authentification-user") }
+
   get currentPersonalData$() {
     return this._currentPersonalData$.asObservable();
   }
