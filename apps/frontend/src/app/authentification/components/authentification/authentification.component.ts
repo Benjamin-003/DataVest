@@ -21,7 +21,7 @@ export class AuthentificationComponent {
   signIn(credential: Credential) {
     this.authentification.signInUser(credential).subscribe({
       next: (result) => {
-        this.authentification.saveUserToken(result.token)
+        this.authentification.saveUserToken(result.id)
         this.authentification.getUser(result.id).subscribe((user: any) => {
           this.authentification.currentLoggedUser.next({ id: result.id, firstname: user.firstname });
         })

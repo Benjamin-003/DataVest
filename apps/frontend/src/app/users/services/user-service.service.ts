@@ -22,6 +22,8 @@ export class UserService {
   public currentLoggedUser = new BehaviorSubject<LoggedUser>({ id: 0, firstname: '' });
   private _currentPersonalData$ = new BehaviorSubject<PersonalData>({ surname: '', firstname: '', birth_date: '', address: '', zip_code: '', city: '', country: '', mail: '', language_code: '' })
 
+  get token() { return sessionStorage.getItem("authentification-user") }
+
   get currentPersonalData$() {
     return this._currentPersonalData$.asObservable();
   }
@@ -61,9 +63,10 @@ export class UserService {
     return this.http.post<Token>(loginEndpoint, credential);
   }
 
-  saveUserToken(token: string): void {
+  //Crétion du token sans le session storage
+  saveUserToken(tokenId: number): void {
     window.sessionStorage.removeItem(USER_KEY);
-    window.sessionStorage.setItem(USER_KEY, JSON.stringify(token));
+    window.sessionStorage.setItem(USER_KEY, JSON.stringify(tokenId));
   }
 
   //Appel le back pour générer un mail avec un nouveau mot de passe
