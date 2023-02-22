@@ -19,7 +19,7 @@ const USER_KEY = 'authentification-user';
   providedIn: 'root',
 })
 export class UserService {
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) { }
 
   public currentLoggedUser = new BehaviorSubject<LoggedUser>({
     id: 0,
@@ -50,7 +50,7 @@ export class UserService {
       try {
         const tokenPayload: { id: string } = jwtDecode(this.token);
         this.getUser(+tokenPayload.id).subscribe();
-      } catch (error) {}
+      } catch (error) { }
     }
     return this._currentPersonalData$.asObservable();
   }
@@ -76,6 +76,7 @@ export class UserService {
     return this.http.get<PersonalData>(`${userEndpoint}/${idUser}`).pipe(
       map((personalData) => {
         this._currentPersonalData$.next(personalData);
+        this.currentLoggedUser.next({ id: idUser, firstname: personalData.firstname })
         return personalData;
       })
     );

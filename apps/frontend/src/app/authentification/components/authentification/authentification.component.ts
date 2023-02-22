@@ -18,14 +18,6 @@ export class AuthentificationComponent {
   //Cette méthode va appeler le back pour authentification
   signIn(credential: Credential) {
     this.authentification.signInUser(credential).subscribe({
-      next: (result) => {
-        this.authentification.getUser(result.id).subscribe((user: any) => {
-          this.authentification.currentLoggedUser.next({
-            id: result.id,
-            firstname: user.firstname,
-          });
-        });
-      },
       error: () => {
         this.messageService.add({
           severity: 'error',
