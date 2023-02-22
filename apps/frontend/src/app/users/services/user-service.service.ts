@@ -1,3 +1,5 @@
+import jwtDecode from 'jwt-decode';
+
 import { Password } from './../interfaces/password.model';
 import { PersonalData } from './../interfaces/personal-data.model';
 import { LoggedUser } from '../../authentification/Interfaces/logged-user.model';
@@ -93,7 +95,14 @@ export class UserService {
 
   // Création du token dans le session storage
   saveUserToken(token: string): void {
-    sessionStorage.setItem(USER_KEY, token);
+    try {
+      const tokenPayload: { id: string } = jwtDecode(token);
+      this.getUser(+tokenPayload.id).subscribe();
+
+      sessionStorage.setItem(USER_KEY, token);
+    } catch (error) {
+      return;
+    }
   }
 
   //Appel le back pour générer un mail avec un nouveau mot de passe
