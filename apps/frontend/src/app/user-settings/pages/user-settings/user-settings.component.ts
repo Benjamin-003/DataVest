@@ -28,7 +28,7 @@ export class UserSettingsComponent implements OnInit, OnDestroy {
     currency_code: ''
   }
   private _personalDataSubscription!: Subscription
-  private message = ["Votre nouvelle adresse mail est bien prise en compte",
+  private readonly message = ["Votre nouvelle adresse mail est bien prise en compte",
     "Vos modifications ont bien été prises en compte et votre profil a été mis à jour",
     "Nous n'avons pas pu enregistrer vos modifications. Veuillez réessayer plus tard",
     "Votre nouveau mot de passe a bien été enregistré",
@@ -61,8 +61,8 @@ export class UserSettingsComponent implements OnInit, OnDestroy {
   }
 
   //Cette méthode appelle le back pour mettre à jour les données de l'utilisateur autre que le mot de passe
-  updatePersonalData(PersonalData: PersonalData, indexMessage: number) {
-    this.userService.updateUser(PersonalData).subscribe({
+  updatePersonalData(personalData: PersonalData, indexMessage: number) {
+    this.userService.updateUser(personalData).subscribe({
       error: () => {
         this.messageService.add({
           severity: "error", detail: this.message[2]
