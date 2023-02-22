@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 })
 export class ResetPasswordComponent implements OnInit, OnDestroy{
   formulaire!: FormGroup;
-  displayDialog: boolean = false;
+  displayDialog = false;
   private timeoutID!:ReturnType<typeof setTimeout>
   constructor(
     private readonly formBuilder: FormBuilder,

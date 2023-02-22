@@ -1,4 +1,3 @@
-import { PersonalData } from './../../../users/interfaces/personal-data.model';
 import { UserService } from '../../../users/services/user-service.service';
 import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
@@ -43,9 +42,9 @@ export class HeaderComponent implements OnInit {
 
   //Récupère le nom de l'utilisateur et passe le boolean a true si un utilisateur est connecté ou false dans le cas contraire
   getLoggedUser() {
-    this.authentification.currentPersonalData$.subscribe((PersonalData) => {
-      if (PersonalData.firstname) {
-        this.loggedUserName = PersonalData.firstname;
+    this.authentification.currentPersonalData$.subscribe((personalData) => {
+      if (personalData.firstname) {
+        this.loggedUserName = personalData.firstname;
         this.isLogged = true;
       } else {
         this.isLogged = false;

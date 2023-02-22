@@ -9,7 +9,7 @@ export class ArticleTableComponent {
   @Input() articleListe!: Article[]
   public first = 0;
   public rows = 10;
-  public titleLength: number = 50
+  public titleLength = 50;
 
   next() {
     this.first = this.first + this.rows;

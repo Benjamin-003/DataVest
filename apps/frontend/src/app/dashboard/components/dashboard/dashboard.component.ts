@@ -9,7 +9,7 @@ import { MacroeconomicNewsService } from './../../services/macroeconomic-news.se
 })
 
 export class DashboardComponent implements OnInit {
-  public isError:boolean = true
+  public isError = true
   public articleListe: Article[] = []
   public firstArticle: Article = { title: "", description: "", publicationDate: "", link: "" }
   public items = [
@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit {
     }]
   public activeItem = this.items[0];
 
-  constructor(private macroEconomicNews: MacroeconomicNewsService) { }
+  constructor(private readonly macroEconomicNews: MacroeconomicNewsService) { }
 
   ngOnInit(): void {
     this.getStream('https://www.ft.com/rss/home','_cdata')
@@ -51,7 +51,9 @@ export class DashboardComponent implements OnInit {
         (rawData: any) => {
           let description: { _cdata: string } | undefined = rawData?.description;
           if (description === undefined)
-            description = { _cdata: '' };
+            {
+              description = { _cdata: '' };
+            }
           return {
             title: rawData.title[attributeTitle],
             description: description['_cdata'],

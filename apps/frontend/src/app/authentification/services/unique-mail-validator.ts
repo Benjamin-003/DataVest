@@ -5,7 +5,7 @@ import { Observable, map, catchError, of } from "rxjs";
 
 @Injectable({ providedIn: 'root' })
 export class UniqueMailValidator implements AsyncValidator {
-  currentMail: string = ""
+  currentMail = ""
 
   constructor(private readonly userService: UserService) { }
 
