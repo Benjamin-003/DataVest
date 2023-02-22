@@ -83,13 +83,17 @@ export class UserService {
 
   //Appel le back pour la connexion
   signInUser(credential: Credential): Observable<Token> {
-    return this.http.post<Token>(loginEndpoint, credential);
+    return this.http.post<Token>(loginEndpoint, credential).pipe(
+      map((response) => {
+        this.saveUserToken(response.token);
+        return response;
+      })
+    );
   }
 
-  //Crétion du token sans le session storage
-  saveUserToken(tokenId: number): void {
-    window.sessionStorage.removeItem(USER_KEY);
-    window.sessionStorage.setItem(USER_KEY, JSON.stringify(tokenId));
+  // Création du token dans le session storage
+  saveUserToken(token: string): void {
+    sessionStorage.setItem(USER_KEY, token);
   }
 
   //Appel le back pour générer un mail avec un nouveau mot de passe
