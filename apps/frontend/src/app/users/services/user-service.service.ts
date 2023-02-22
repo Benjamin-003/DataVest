@@ -25,7 +25,7 @@ export class UserService {
     id: 0,
     firstname: '',
   });
-  private _currentPersonalData$ = new BehaviorSubject<PersonalData>({
+  private readonly _currentPersonalData$ = new BehaviorSubject<PersonalData>({
     surname: '',
     firstname: '',
     birth_date: '',
@@ -63,7 +63,7 @@ export class UserService {
   //Envoi d'un nouveau user vers le back
   updateUser(userToUpdate: PersonalData) {
     return this.http
-      .patch(userEndpoint + '/' + this.currentLoggedUser.value.id, userToUpdate)
+      .patch(`${userEndpoint}/${this.currentLoggedUser.value.id}`, userToUpdate)
       .pipe(
         map(() => {
           this.getUser(this.currentLoggedUser.value.id).subscribe();
