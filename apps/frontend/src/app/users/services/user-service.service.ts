@@ -103,7 +103,6 @@ export class UserService {
     );
   }
 
-  // Création du token dans le session storage
   saveUserToken(token: string): void {
     try {
       const tokenPayload: { id: string } = jwtDecode(token);
