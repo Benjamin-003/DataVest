@@ -39,10 +39,19 @@ export class UserService {
   });
 
   get token() {
-    return sessionStorage.getItem('authentification-user');
+    return sessionStorage.getItem(USER_KEY);
   }
 
   get currentPersonalData$() {
+    if (
+      this._currentPersonalData$.value.firstname === '' &&
+      this.token !== null
+    ) {
+      try {
+        const tokenPayload: { id: string } = jwtDecode(this.token);
+        this.getUser(+tokenPayload.id).subscribe();
+      } catch (error) {}
+    }
     return this._currentPersonalData$.asObservable();
   }
 
