@@ -1,7 +1,7 @@
 import { PersonalData } from './../../../users/interfaces/personal-data.model';
 import { Component, EventEmitter, Input, Output, SimpleChanges, OnChanges } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+
 @Component({
   selector: 'app-personal-data',
   templateUrl: './personal-data.component.html'
@@ -89,16 +89,16 @@ export class PersonalDataComponent implements OnChanges {
     return (control: AbstractControl): ValidationErrors | null => {
       const surname = control.get('surname');
       const firstname = control.get('firstname');
-      const birth_date = control.get('birth_date');
+      const birthDate = control.get('birth_date');
       const address = control.get('address');
-      const zip_code = control.get('zip_code');
+      const zipCode = control.get('zip_code');
       const city = control.get('city');
       const country = control.get('country');
       return surname?.value === personalData.surname
         && firstname?.value === personalData.firstname
-        && this.dateToString(birth_date?.value) === personalData.birth_date
+        && this.dateToString(birthDate?.value) === personalData.birth_date
         && address?.value === personalData.address
-        && zip_code?.value === personalData.zip_code
+        && zipCode?.value === personalData.zip_code
         && city?.value === personalData.city
         && country?.value === personalData.country
         ? { noChangeValues: true } : null;
@@ -106,10 +106,10 @@ export class PersonalDataComponent implements OnChanges {
   }
 
   dateToString(date: Date): string {
-    let day: string = date.getDate().toString().padStart(2, "0")
-    let month: string = (date.getMonth() + 1).toString().padStart(2, "0")
-    let year: string = date.getFullYear().toString()
-    return year + "-" + month + "-" + day
+    const day: string = date.getDate().toString().padStart(2, "0")
+    const month: string = (date.getMonth() + 1).toString().padStart(2, "0")
+    const year: string = date.getFullYear().toString()
+    return `${year}-${month}-${day}`
   }
 
   //On emet les données au composant parent

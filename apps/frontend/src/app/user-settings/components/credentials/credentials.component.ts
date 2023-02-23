@@ -92,10 +92,10 @@ export class CredentialsComponent implements OnInit, OnChanges {
   }
 
   saveMail() {
-    if(this.emailForm.valid)
-    this.emailEvent.emit(this.emailForm.value as PersonalData)
+    if(this.emailForm.valid){
+      this.emailEvent.emit(this.emailForm.value as PersonalData);
+    }
   }
-
   savePassword() {
     if(this.passwordForm.valid){
       const password: Password = { old_password: this.currentPassword?.value, new_password: this.newPassword?.value }
