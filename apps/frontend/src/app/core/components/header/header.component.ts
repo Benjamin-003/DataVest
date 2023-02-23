@@ -1,14 +1,16 @@
 import { UserService } from '../../../users/services/user-service.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MenuItem } from 'primeng/api';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   public items!: MenuItem[];
   public isLogged = false;
   public loggedUserName!: string;
+  private _currentUserSubscription!: Subscription;
 
   constructor(private readonly authentification: UserService) {}
 
@@ -33,16 +35,13 @@ export class HeaderComponent implements OnInit {
     this.getLoggedUser();
   }
 
-  //Méthode de cycle de vie qui va checker si il y a un changement dans l'authentification
-  ngDoCheck() {
-    if (this.authentification.currentLoggedUser) {
-      this.getLoggedUser();
-    }
+  ngOnDestroy(){
+    this._currentUserSubscription.unsubscribe();
   }
 
   //Récupère le nom de l'utilisateur et passe le boolean a true si un utilisateur est connecté ou false dans le cas contraire
   getLoggedUser() {
-    this.authentification.currentPersonalData$.subscribe((personalData) => {
+    this._currentUserSubscription = this.authentification.currentPersonalData$.subscribe((personalData) => {
       if (personalData.firstname) {
         this.loggedUserName = personalData.firstname;
         this.isLogged = true;
