@@ -6,7 +6,7 @@ import { PrimeNGConfig } from 'primeng/api';
 })
 export class PreambuleInscriptionComponent implements OnInit {
 
-  constructor(private primengConfig: PrimeNGConfig) { }
+  constructor(private readonly primengConfig: PrimeNGConfig) { }
 
   ngOnInit() {
     this.primengConfig.ripple = true;

@@ -1,5 +1,4 @@
 import jwtDecode from 'jwt-decode';
-
 import { Password } from './../interfaces/password.model';
 import { PersonalData } from './../interfaces/personal-data.model';
 import { LoggedUser } from '../../authentification/Interfaces/logged-user.model';
@@ -8,7 +7,7 @@ import { User } from '../interfaces/user.model';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable, BehaviorSubject } from 'rxjs';
+import { map, Observable, BehaviorSubject} from 'rxjs';
 
 const userEndpoint = `${environment.urlApi}/users`;
 const mailEndpoint = `${environment.urlApi}/mails`;
@@ -112,6 +111,22 @@ export class UserService {
     } catch (error) {
       return;
     }
+  }
+
+  deleteUserToken() {
+    sessionStorage.removeItem(USER_KEY)
+    this._currentPersonalData$.next({
+      surname: '',
+      firstname: '',
+      birth_date: '',
+      address: '',
+      zip_code: '',
+      city: '',
+      country: '',
+      mail: '',
+      language_code: '',
+      currency_code: ''
+    })
   }
 
   //Appel le back pour générer un mail avec un nouveau mot de passe

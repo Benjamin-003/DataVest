@@ -4,34 +4,27 @@
       <h4 class="m-1">SVB ind - Ottawa Pigeon</h4>
     </a>
   </ng-template>
-  <div
-    *ngIf="isLogged; then thenTemplate; else elseTemplate"
-  >
-  </div>
-  <ng-template
-    #thenTemplate
-  >
-    <div>
-      <p-button
-      routerLink="parametres">
-        <span><i class="pi pi-cog"></i> Bonjour {{ loggedUserName }}</span>
-      </p-button>
-    </div>
+  <div *ngIf="isLogged; then thenTemplate; else elseTemplate"></div>
+  <ng-template #thenTemplate>
+    <p-button routerLink="parametres" class="m-1">
+      <span><i class="pi pi-cog"></i> Bonjour {{ loggedUserName }}</span>
+    </p-button>
+    <p-button class="m-1" (click)="logOffUser()">
+      <span><i class="pi pi-power-off"></i></span>
+    </p-button>
   </ng-template>
   <ng-template #elseTemplate>
-    <div class="grid">
-      <p-button
-        class="m-1"
-        label="Accès client"
-        routerLink="authentification/connexion"
-      >
-      </p-button>
-      <p-button
-        class="m-1"
-        label="Ouvrir un compte"
-        routerLink="authentification/preambule"
-      >
-      </p-button>
-    </div>
+    <p-button
+      class="m-1"
+      label="Accès client"
+      routerLink="authentification/connexion"
+    >
+    </p-button>
+    <p-button
+      class="m-1"
+      label="Ouvrir un compte"
+      routerLink="authentification/preambule"
+    >
+    </p-button>
   </ng-template>
 </p-menubar>

@@ -2,6 +2,7 @@ import { UserService } from '../../../users/services/user-service.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -12,7 +13,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public loggedUserName!: string;
   private _currentUserSubscription!: Subscription;
 
-  constructor(private readonly authentification: UserService) {}
+  constructor(private readonly authentification: UserService, private readonly router: Router) { }
 
   ngOnInit() {
     this.items = [
@@ -35,7 +36,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.getLoggedUser();
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this._currentUserSubscription.unsubscribe();
   }
 
@@ -49,5 +50,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.isLogged = false;
       }
     });
+  }
+
+
+  //Gère la deconnexion de l'utilsateur
+  logOffUser() {
+    this.authentification.deleteUserToken()
+    this.router.navigate(['accueil'])
   }
 }
