@@ -4,7 +4,7 @@
   <p-tabMenu [model]="items" [activeItem]="items[0]"></p-tabMenu>
 </div>
 <ng-container *ngIf="!isError; else elseTemplate">
-<div class="grid">
+<div class="grid mx-2">
   <div class="col-12 lg:col-3">
     <app-last-article-card
       [firstArticle]="firstArticle"
