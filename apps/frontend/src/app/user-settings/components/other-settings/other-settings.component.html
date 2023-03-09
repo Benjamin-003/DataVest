@@ -1,5 +1,5 @@
 <h2 class="mb-5">Autres préférences</h2>
-<form [formGroup]="otherSettingsForm">
+<form [formGroup]="otherSettingsForm" (ngSubmit)="saveModification()">
   <div class="grid p-fluid">
     <div class="field col-12 md:col-4">
       <span class="p-float-label">
@@ -9,10 +9,12 @@
           optionValue="code"
           inputId="language"
           formControlName="language_code"
-        ></p-dropdown>
+        >
+        </p-dropdown>
         <label for="language">Langue</label>
       </span>
     </div>
+
     <div class="field col-12 md:col-4">
       <span class="p-float-label">
         <p-dropdown
@@ -23,15 +25,32 @@
         >
           <ng-template pTemplate="selectedItem" let-currency>
             <span [class]="'fi fi-' + currency.flag"></span>
-            <span class="ml-2">{{ currency.label }}</span>
+            <span class="ml-2">
+              {{ currency.label }}
+            </span>
           </ng-template>
           <ng-template pTemplate="item" let-currency>
             <span [class]="'fi fi-' + currency.flag"></span>
-            <span class="ml-2">{{ currency.label }}</span>
+            <span class="ml-2">
+              {{ currency.label }}
+            </span>
           </ng-template>
         </p-dropdown>
         <label for="currency">Devise</label>
       </span>
+    </div>
+
+    <div
+      class="grid p-fluid col-12 md:col-offset-4 md:col-4 justify-content-center"
+    >
+      <button
+        pButton
+        pRipple
+        [disabled]="otherSettingsForm.invalid"
+        type="submit"
+        label="Sauvegarder mes préférences"
+        class="p-button-raised"
+      ></button>
     </div>
   </div>
 </form>
