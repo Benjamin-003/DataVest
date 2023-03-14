@@ -6,8 +6,9 @@ import * as Sentry from "@sentry/angular";
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { InputTextModule } from 'primeng/inputtext';
+import { AuthentificationInterceptor } from './authentification/services/authentification-interceptor';
 
 @NgModule({
   declarations: [
@@ -36,10 +37,15 @@ import { InputTextModule } from 'primeng/inputtext';
       provide: APP_INITIALIZER,
       useFactory: () => () => {
         // Empty Function
-       },
+      },
       deps: [Sentry.TraceService],
       multi: true,
     },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthentificationInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })
