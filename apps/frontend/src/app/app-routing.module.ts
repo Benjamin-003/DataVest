@@ -10,7 +10,7 @@ const routes: Routes = [
   { path: 'authentification', loadChildren: () => import('./authentification/authentification.module').then(m => m.AuthentificationModule) },
   { path: 'information-societe', loadChildren: () => import('./information-societe/information-societe.module').then(m => m.InformationSocieteModule) },
   { path: 'dashboard', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),canActivate: [AuthentificationGuard] },
-  { path: 'parametres', loadChildren: () => import('./user-settings/user-settings.module').then(m => m.UserSettingsModule) },
+  { path: 'parametres', loadChildren: () => import('./user-settings/user-settings.module').then(m => m.UserSettingsModule),canActivate: [AuthentificationGuard] },
   { path: '', redirectTo: 'accueil', pathMatch: 'full' },
 ];
 

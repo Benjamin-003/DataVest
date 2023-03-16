@@ -105,9 +105,8 @@ export class UserService {
   saveUserToken(token: string): void {
     try {
       const tokenPayload: { id: string } = jwtDecode(token);
-      this.getUser(+tokenPayload.id).subscribe();
-
       sessionStorage.setItem(USER_KEY, token);
+      this.getUser(+tokenPayload.id).subscribe();
     } catch (error) {
       return;
     }
