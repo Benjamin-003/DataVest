@@ -13,7 +13,7 @@ export class AuthentificationGuard implements CanActivate {
       return true
     }
     else {
-      return this.route.parseUrl("authentification/connexion")
+      return this.route.parseUrl("authentication/connexion")
     }
   }
 

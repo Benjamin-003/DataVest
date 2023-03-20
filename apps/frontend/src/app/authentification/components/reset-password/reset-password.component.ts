@@ -42,7 +42,7 @@ ngOnDestroy(){
       this.user.resetPassword(this.formulaire.value.mail).subscribe()
       this.messageService.add({ severity: 'info', detail: 'Si cette adresse email est bien associée à un compte, vous allez recevoir un mail avec votre nouveau mot de passe' });
       this.timeoutID = setTimeout(() => {
-        this.router.navigate(['authentification/connexion']);
+        this.router.navigate(['authentication/connexion']);
       }, 15000)
     }
   }

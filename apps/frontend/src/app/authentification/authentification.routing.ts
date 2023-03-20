@@ -6,6 +6,7 @@ import { InscriptionComponent } from './components/inscription/inscription.compo
 import { PreambuleInscriptionComponent } from './pages/preambule-inscription/preambule-inscription.component';
 import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
+import { ResetPasswordFormComponent } from './components/reset-password-form/reset-password-form.component';
 
 const routes: Routes = [
   { path: 'preambule', component: PreambuleInscriptionComponent },
@@ -14,7 +15,8 @@ const routes: Routes = [
   { path: 'formulaire', component: InscriptionComponent },
   { path: 'succes', component: SuccesInscriptionComponent },
   { path: 'echec', component: EchecInscriptionComponent },
-  { path: 'password', component: ResetPasswordComponent }
+  { path: 'password', component: ResetPasswordComponent},
+  { path: 'reset-password/:token', component: ResetPasswordFormComponent}
 ];
 @NgModule({
   imports: [RouterModule.forChild(routes)],
