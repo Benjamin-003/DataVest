@@ -6,13 +6,14 @@ import { Token } from '../../authentification/Interfaces/token.model';
 import { User } from '../interfaces/user.model';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { HttpClient } from '@angular/common/http';
-import { map, Observable, BehaviorSubject} from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { map, Observable, BehaviorSubject } from 'rxjs';
 
 const userEndpoint = `${environment.urlApi}/users`;
 const mailEndpoint = `${environment.urlApi}/mails`;
 const loginEndpoint = `${environment.urlApi}/tokens`;
 const USER_KEY = 'authentification-user';
+const AUTH_KEY = 'refresh-token';
 
 @Injectable({
   providedIn: 'root',
@@ -75,7 +76,10 @@ export class UserService {
     return this.http.get<PersonalData>(`${userEndpoint}/${idUser}`).pipe(
       map((personalData) => {
         this._currentPersonalData$.next(personalData);
-        this.currentLoggedUser.next({ id: idUser, firstname: personalData.firstname })
+        this.currentLoggedUser.next({
+          id: idUser,
+          firstname: personalData.firstname,
+        });
         return personalData;
       })
     );
@@ -113,7 +117,7 @@ export class UserService {
   }
 
   deleteUserToken() {
-    sessionStorage.removeItem(USER_KEY)
+    sessionStorage.removeItem(USER_KEY);
     this._currentPersonalData$.next({
       surname: '',
       firstname: '',
@@ -124,13 +128,42 @@ export class UserService {
       country: '',
       mail: '',
       language_code: '',
-      currency_code: ''
-    })
+      currency_code: '',
+    });
   }
 
   //Appel le back pour générer un mail avec un nouveau mot de passe
   resetPassword(mail: string) {
     return this.http.post(`${mailEndpoint}/${mail}/password`, mail);
+  }
+
+  //Récupère l'ID a partir du token temporaire
+  getIDIntoRefreshToken(token: string | null) {
+    if (token) {
+      try {
+        const tokenPayload: { id: string } = jwtDecode(token);
+        return tokenPayload;
+      } catch (error) {
+        return undefined;
+      }
+    }
+      else{
+        return undefined;
+      }
+  }
+
+  //Méthode qui appelle le back pour la modification du mot de passe de l'utilisateur non connecté
+  updatePasswordWithoutLogin(
+    newPassword: { new_password: string },
+    idUser: { id: string },
+    userToken:string
+  ) {
+    const request = new HttpHeaders({
+      Authorization: `${userToken}`,
+    });
+    return this.http.put(`${userEndpoint}/${idUser.id}/password`, newPassword, {
+      headers: request,
+    });
   }
 
   //Méthode qui appelle le back pour la modification du mot de passe de l'utilisateur
