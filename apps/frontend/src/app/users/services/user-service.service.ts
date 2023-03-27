@@ -13,7 +13,6 @@ const userEndpoint = `${environment.urlApi}/users`;
 const mailEndpoint = `${environment.urlApi}/mails`;
 const loginEndpoint = `${environment.urlApi}/tokens`;
 const USER_KEY = 'authentification-user';
-const AUTH_KEY = 'refresh-token';
 
 @Injectable({
   providedIn: 'root',

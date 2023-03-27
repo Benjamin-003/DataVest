@@ -1,3 +1,4 @@
+import { ResetPasswordGuard } from './services/reset-password.guard';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { EchecInscriptionComponent } from './pages/echec-inscription/echec-inscription.component';
 import { SuccesInscriptionComponent } from './pages/succes-inscription/succes-inscription.component';
@@ -16,7 +17,8 @@ const routes: Routes = [
   { path: 'succes', component: SuccesInscriptionComponent },
   { path: 'echec', component: EchecInscriptionComponent },
   { path: 'password', component: ResetPasswordComponent},
-  { path: 'reset-password/:token', component: ResetPasswordFormComponent}
+  { path: 'reset-password/:token', component: ResetPasswordFormComponent, canActivate:[ResetPasswordGuard]
+}
 ];
 @NgModule({
   imports: [RouterModule.forChild(routes)],
