@@ -11,6 +11,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public items!: MenuItem[];
   public isLogged = false;
   public loggedUserName!: string;
+  public signUp = $localize`:@@header.signUp:Ouvrir un compte`
   private _currentUserSubscription!: Subscription;
 
   constructor(private readonly authentification: UserService, private readonly router: Router) { }

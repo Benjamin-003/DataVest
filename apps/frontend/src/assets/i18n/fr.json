@@ -1,10 +1,11 @@
 {
-  "header.price": "Tarif",
-  "header.invest": "Investir",
-  "header.academy": "Académie",
-  "header.aboutSVBInd": "À propos de SVB Ind",
-  "header.aboutOttawaPigeon": "À propos d'Ottawa Pigeon",
-  "header.helpCenter": "Centre d'aide",
-  "header.whyChooseUs": "Pourquoi nous choisir ?",
-  "header.anyQuestions": "Des questions ?"
+    "header.price": "Tarif",
+    "header.invest": "Investir",
+    "header.academy": "Académie",
+    "header.aboutSVBInd": "À propos de SVB Ind",
+    "header.aboutOttawaPigeon": "À propos d'Ottawa Pigeon",
+    "header.helpCenter": "Centre d'aide",
+    "header.whyChooseUs": "Pourquoi nous choisir ?",
+    "header.anyQuestions": "Des questions ?",
+    "header.signUp": "Ouvrir un compte"
 }
