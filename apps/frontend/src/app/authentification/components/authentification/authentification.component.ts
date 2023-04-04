@@ -10,14 +10,14 @@ import { Router } from '@angular/router';
 })
 export class AuthentificationComponent {
   constructor(
-    private readonly authentification: UserService,
+    private readonly userService: UserService,
     private readonly messageService: MessageService,
     private readonly router: Router
   ) {}
 
   //Cette méthode va appeler le back pour authentification
   signIn(credential: Credential) {
-    this.authentification.signInUser(credential).subscribe({
+    this.userService.signInUser(credential).subscribe({
       error: () => {
         this.messageService.add({
           severity: 'error',
@@ -26,8 +26,8 @@ export class AuthentificationComponent {
         });
       },
       complete: () => {
-        this.router.navigate(['dashboard/macroeconomicnews']);
-      },
+        this.router.navigate(['dashboard/macroeconomicnews']).then(() =>location.reload());
+      }
     });
   }
 }

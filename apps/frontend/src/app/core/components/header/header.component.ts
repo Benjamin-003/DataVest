@@ -17,21 +17,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.items = [
-      { label: 'Tarif', routerLink: 'tarifs' },
-      { label: 'Investir', routerLink: 'investissement' },
-      { label: 'Académie' },
+      { label: $localize`:@@header.price:Tarif`, routerLink: 'tarifs' },
+      { label: $localize`:@@header.invest:Investir`, routerLink: 'investissement' },
+      { label: $localize`:@@header.academy:Académie` },
       {
-        label: 'A propos de SVB Ind',
+        label: $localize`:@@header.aboutSVBInd:A propos de SVB Ind`,
         items: [
           {
-            label: "À propos d'Ottawa Pigeon",
+            label: $localize`:@@header.aboutOttawaPigeon:À propos d'Ottawa Pigeon`,
             routerLink: 'information-societe/apropos',
           },
-          { label: "Centre d'aide" },
-          { label: 'Pourquoi nous choisir ?' },
+          { label: $localize`:@@header.helpCenter:Centre d'aide` },
+          { label: $localize`:@@header.whyChooseUs:Pourquoi nous choisir ?` },
         ],
       },
-      { label: 'Des questions' },
+      { label: $localize`:@@header.anyQuestions:Des questions ?` }
     ];
     this.getLoggedUser();
   }
@@ -56,6 +56,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   //Gère la deconnexion de l'utilsateur
   logOffUser() {
     this.authentification.deleteUserToken()
-    this.router.navigate(['accueil'])
+    this.router.navigate(['accueil']).then(() => location.reload())
   }
 }

@@ -75,6 +75,7 @@ export class UserService {
     return this.http.get<PersonalData>(`${userEndpoint}/${idUser}`).pipe(
       map((personalData) => {
         this._currentPersonalData$.next(personalData);
+        sessionStorage.setItem('Language',personalData.language_code.toLowerCase())
         this.currentLoggedUser.next({
           id: idUser,
           firstname: personalData.firstname,
@@ -117,6 +118,7 @@ export class UserService {
 
   deleteUserToken() {
     sessionStorage.removeItem(USER_KEY);
+    sessionStorage.removeItem('Language');
     this._currentPersonalData$.next({
       surname: '',
       firstname: '',

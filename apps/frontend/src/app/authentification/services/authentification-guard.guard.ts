@@ -16,5 +16,4 @@ export class AuthentificationGuard implements CanActivate {
       return this.route.parseUrl("authentication/connexion")
     }
   }
-
 }

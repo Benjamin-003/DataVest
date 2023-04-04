@@ -57,7 +57,6 @@ export class OtherSettingsComponent implements OnChanges {
       this.modificationEvent.emit(this.otherSettingsForm.value as PersonalData)
     }
   }
-
 }
 
 

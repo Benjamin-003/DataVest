@@ -9,6 +9,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { InputTextModule } from 'primeng/inputtext';
 import { AuthentificationInterceptor } from './authentification/services/authentification-interceptor';
+import { I18nModule } from './i18n/i18n.module';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,9 @@ import { AuthentificationInterceptor } from './authentification/services/authent
       useClass: AuthentificationInterceptor,
       multi: true
     }
+    ,
+    I18nModule.setLocale(),
+    I18nModule.setLocaleId()
   ],
   bootstrap: [AppComponent]
 })
