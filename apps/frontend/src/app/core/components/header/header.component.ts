@@ -23,7 +23,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       { label: $localize`:@@header.invest:Investir`, routerLink: 'investissement' },
       { label: $localize`:@@header.academy:Académie` },
       {
-        label: $localize`:@@header.aboutSVBInd:A propos de SVB Ind`,
+        label: $localize`:@@header.aboutSVBInd:À propos de SVB Ind`,
         items: [
           {
             label: $localize`:@@header.aboutOttawaPigeon:À propos d'Ottawa Pigeon`,

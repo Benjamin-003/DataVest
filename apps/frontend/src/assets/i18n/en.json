@@ -1,4 +1,5 @@
 {
+  "header.welcome": "{$START_ITALIC_TEXT}{$CLOSE_ITALIC_TEXT} Hello {$INTERPOLATION}",
   "header.price": "Price",
   "header.invest": "Invest",
   "header.academy": "Academy",

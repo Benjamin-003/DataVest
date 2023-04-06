@@ -7,7 +7,7 @@
   <div *ngIf="isLogged; then thenTemplate; else elseTemplate"></div>
   <ng-template #thenTemplate>
     <p-button routerLink="parametres" class="m-1">
-      <span><i class="pi pi-cog"></i> Bonjour {{ loggedUserName }}</span>
+      <span i18n="@@header.welcome"><i class="pi pi-cog"></i> Bonjour {{loggedUserName}}</span>
     </p-button>
     <p-button class="m-1" (click)="logOffUser()">
       <span><i class="pi pi-power-off"></i></span>

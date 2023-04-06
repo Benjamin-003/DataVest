@@ -1,4 +1,7 @@
 {
+    "header.welcome": "{$START_ITALIC_TEXT}{$CLOSE_ITALIC_TEXT} Bonjour {$INTERPOLATION}",
+    "header.signUp": "Ouvrir un compte",
+    "header.signIn": "Accès client",
     "header.price": "Tarif",
     "header.invest": "Investir",
     "header.academy": "Académie",
@@ -6,7 +9,6 @@
     "header.aboutOttawaPigeon": "À propos d'Ottawa Pigeon",
     "header.helpCenter": "Centre d'aide",
     "header.whyChooseUs": "Pourquoi nous choisir ?",
-    "header.anyQuestions": "Des questions ?",
-    "header.signUp": "Ouvrir un compte",
-  "header.signIn": "Accès client"
+    "header.anyQuestions": "Des questions ?"
+
 }
