@@ -12,12 +12,14 @@ import { OtherSettingsComponent } from './components/other-settings/other-settin
 import { PasswordModule } from 'primeng/password';
 import { DividerModule } from "primeng/divider";
 import {DropdownModule} from 'primeng/dropdown';
+import { AccountDataComponent } from './components/account-data/account-data.component';
 @NgModule({
   declarations: [
     UserSettingsComponent,
     PersonalDataComponent,
     CredentialsComponent,
-    OtherSettingsComponent
+    OtherSettingsComponent,
+    AccountDataComponent
   ],
   imports: [
     CommonModule,
