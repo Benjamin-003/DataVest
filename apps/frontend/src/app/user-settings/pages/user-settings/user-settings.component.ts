@@ -8,6 +8,7 @@ import { PersonalData } from './../../../users/interfaces/personal-data.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { Currency } from 'src/app/currencies/currency-model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-settings',
@@ -34,6 +35,8 @@ export class UserSettingsComponent implements OnInit, OnDestroy {
     'Nous n\'avons pas pu enregistrer vos modifications. Veuillez réessayer plus tard',
     'Votre nouveau mot de passe a bien été enregistré',
     'Votre nouveau mot de passe n\'a pas pu être sauvegardé. Veuillez réessayer plus tard',
+    'Une erreur est survenue et votre compte n\'a pas pu être supprimé.Veuillez réessayer l\'opération plus tard.',
+    'Votre compte a bien été supprimé. Vous allez être redirigé dans quelques secondes.'
   ];
   oldLanguageSetting!: string;
   languages!: Language[];
@@ -42,8 +45,9 @@ export class UserSettingsComponent implements OnInit, OnDestroy {
     private readonly userService: UserService,
     private readonly messageService: MessageService,
     private readonly languageService: LanguagesService,
-    private readonly currenciesService: CurrenciesService
-  ) {}
+    private readonly currenciesService: CurrenciesService,
+    private readonly router: Router
+  ) { }
 
   ngOnInit() {
     this._personalDataSubscription =
@@ -103,5 +107,29 @@ export class UserSettingsComponent implements OnInit, OnDestroy {
         });
       },
     });
+  }
+
+  afterAccountDeletion() {
+    this.userService.deleteUserToken();
+    this.router.navigate(['accueil']);
+  }
+
+  deleteAccount() {
+    this.userService.removeUpUserAccount().subscribe({
+      error: () => {
+        this.messageService.add({
+          key: 'error',
+          severity: 'error',
+          detail: this.message[5],
+        });
+      },
+      complete: () => {
+        this.messageService.add({
+          key: 'succes',
+          severity: 'success',
+          detail: this.message[6],
+        });
+      }
+    })
   }
 }

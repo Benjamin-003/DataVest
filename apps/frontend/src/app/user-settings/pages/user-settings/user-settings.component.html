@@ -1,28 +1,37 @@
 <div class="mx-2">
-<h1>Mon Profil</h1>
-<p>
-  Vous pouvez utiliser cette page pour visualiser vos informations personnelles,
-  modifier vos préférences et d'autres paramètres.
-</p>
-<app-personal-data
-  [personalData]="personalData"
-  (modificationEvent)="updatePersonalData($event, 1)"
->
-</app-personal-data>
-<app-credentials
-  [userMail]="personalData.mail"
-  (modifyEmail)="updatePersonalData($event, 0)"
-  (modifyPassword)="updatePassword($event)"
->
-</app-credentials>
-<app-account-data>
-</app-account-data>
-<app-other-settings
-  [languages]="languages"
-  [userLanguage]="personalData.language_code"
-  [currencies]="currencies"
-  [userCurrency]="personalData.currency_code"
-  (modifyOtherSettings)="updatePersonalData($event, 1)"
->
-</app-other-settings>
-<p-toast position="bottom-right"></p-toast>
+  <h1>Mon Profil</h1>
+  <p>
+    Vous pouvez utiliser cette page pour visualiser vos informations
+    personnelles, modifier vos préférences et d'autres paramètres.
+  </p>
+  <app-personal-data
+    [personalData]="personalData"
+    (modificationEvent)="updatePersonalData($event, 1)"
+  >
+  </app-personal-data>
+  <app-credentials
+    [userMail]="personalData.mail"
+    (modifyEmail)="updatePersonalData($event, 0)"
+    (modifyPassword)="updatePassword($event)"
+  >
+  </app-credentials>
+  <app-account-data (deletionEvent)="deleteAccount()"> </app-account-data>
+  <app-other-settings
+    [languages]="languages"
+    [userLanguage]="personalData.language_code"
+    [currencies]="currencies"
+    [userCurrency]="personalData.currency_code"
+    (modifyOtherSettings)="updatePersonalData($event, 1)"
+  >
+  </app-other-settings>
+  <p-toast
+    position="bottom-right"
+    key="succes"
+    (onClose)="afterAccountDeletion()"
+  ></p-toast>
+  <p-toast
+    position="bottom-right"
+    key="error"
+  >
+  </p-toast>
+</div>

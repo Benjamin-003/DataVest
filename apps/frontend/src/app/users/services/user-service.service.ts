@@ -133,6 +133,12 @@ export class UserService {
     });
   }
 
+  //Méthode qui permet de supprimer définitevement le compte utilisateur définitevement
+  removeUpUserAccount(){
+  let tokenPayload : { id: string } = jwtDecode(sessionStorage.getItem(USER_KEY)!)
+  return this.http.delete(`${userEndpoint}/${tokenPayload.id}`)
+}
+
   //Appel le back pour générer un mail avec un nouveau mot de passe
   resetPassword(mail: string) {
     return this.http.post(`${mailEndpoint}/${mail}/password`, mail);

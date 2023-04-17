@@ -1,13 +1,41 @@
-<h2>
-  Informations du compte
-</h2>
+<h2>Informations du compte</h2>
 <div
-class="grid p-fluid col-12 md:col-offset-4 md:col-4 justify-content-center"
+  class="grid p-fluid col-12 md:col-offset-4 md:col-4 justify-content-center"
 >
-<button
-  pButton
-  pRipple
-  label="Supprimer mon compte"
-  class="p-button-danger"
-></button>
+  <p-dialog
+    [showHeader]="false"
+    [(visible)]="isVisible"
+    [draggable]="false"
+    [resizable]="false"
+    [modal]="true"
+  >
+    <p>
+      Souhaitez-vous vraiment supprimer votre compte Ottawa Pigeon ? <br />Cette
+      action est irréversible et supprimera l'ensemble de vos données.
+    </p>
+    <p-footer>
+      <div class="flex justify-content-around">
+        <button
+          type="button"
+          pButton
+          label="Non"
+          [autofocus]="isVisible"
+          (click)="isVisible = false"
+        ></button>
+        <button
+          type="button"
+          pButton
+          label="Oui"
+          (click)="deleteAccount()"
+        ></button>
+      </div>
+    </p-footer>
+  </p-dialog>
+  <button
+    pButton
+    pRipple
+    (click)="isVisible = true"
+    label="Supprimer mon compte"
+    class="p-button-danger"
+  ></button>
 </div>
