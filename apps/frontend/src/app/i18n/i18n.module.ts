@@ -11,15 +11,15 @@ class I18n {
   locale: string = this.browserLocale.includes('-')
     ? this.browserLocale.substring(0, this.browserLocale.indexOf('-'))
     : this.browserLocale;
-  userLocale!: string;
+  userLocale: string | null = null;
   async setLocale() {
-    this.userLocale = sessionStorage.getItem('Language')!;
+    this.userLocale = sessionStorage.getItem('Language');
 
     if (this.userLocale) {
       this.locale = this.userLocale.toLowerCase();
     }
 
-    if (this.locale != 'fr' && this.locale != 'en') {
+    if (this.locale !== 'fr' && this.locale !== 'en') {
       this.locale = 'fr'
     }
 

@@ -20,8 +20,12 @@ export class ResetPasswordGuard implements CanActivate {
         activatedRouteSnapshot.params['token']
       )
     )
-      return true;
+      {
+        return true;
+      }
     else
+      {
       return this.router.parseUrl('authentication/password');
+      }
   }
 }

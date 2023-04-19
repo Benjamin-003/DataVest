@@ -21,6 +21,7 @@ import { DividerModule } from "primeng/divider";
 import { FormAuthentificationComponent } from './pages/form-authentification/form-authentification.component';
 import {ToastModule} from 'primeng/toast';
 import { ResetPasswordFormComponent } from './components/reset-password-form/reset-password-form.component';
+import {DropdownModule} from 'primeng/dropdown';
 @NgModule({
   imports: [
     CommonModule,
@@ -36,7 +37,8 @@ import { ResetPasswordFormComponent } from './components/reset-password-form/res
     InputTextModule,
     PasswordModule,
     DividerModule,
-    ToastModule
+    ToastModule,
+    DropdownModule
   ],
   exports:[
     FormInscriptionComponent,

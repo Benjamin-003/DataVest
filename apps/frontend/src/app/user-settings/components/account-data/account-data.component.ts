@@ -6,9 +6,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 })
 export class AccountDataComponent {
   @Output() deletionEvent = new EventEmitter();
-  isVisible: boolean = false;
-
-  constructor() {}
+  isVisible = false;
 
   deleteAccount() {
     this.deletionEvent.emit();

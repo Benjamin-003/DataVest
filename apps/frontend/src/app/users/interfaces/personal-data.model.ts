@@ -8,5 +8,6 @@ export interface PersonalData {
   country: string,
   mail: string,
   language_code: string,
-  currency_code: string
+  currency_code: string,
+  subscription_code: string
 }

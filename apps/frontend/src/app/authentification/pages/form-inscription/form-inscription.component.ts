@@ -1,3 +1,5 @@
+import { Subscription } from '../../../subscriptions/subscription.model';
+import { SubscriptionsService } from '../../../subscriptions/subscriptions.service';
 import { UniqueMailValidator } from './../../services/unique-mail-validator';
 import { UserService } from '../../../users/services/user-service.service';
 import { Component, OnInit } from '@angular/core';
@@ -15,7 +17,8 @@ export class FormInscriptionComponent implements OnInit {
     private readonly inscription: UserService,
     private readonly uniqueMail: UniqueMailValidator,
     private readonly router: Router,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly subscriptionsService: SubscriptionsService
   ) { }
 
   public formulaire!: FormGroup;
@@ -42,6 +45,8 @@ export class FormInscriptionComponent implements OnInit {
    * À l'exception du caractère "espace" (décimal 32).
    */
   public readonly strongPasswordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!-\/:-@[-`{-~])[a-zA-Z0-9!-\/:-@[-`{-~]{8,}$"
+  public subscription!: Subscription[]
+  private defaultSubscription!: Subscription
 
   //on utilise des getters pour acceder aux valeurs saisie dans le formulaire
   get surname() { return this.formulaire.get('surname'); }
@@ -65,6 +70,14 @@ export class FormInscriptionComponent implements OnInit {
   get confirmPassword() { return this.formulaire.get('confirmPassword'); }
 
   ngOnInit(): void {
+    this.subscriptionsService.getSubscriptions().subscribe(resultOptions => {
+      this.subscription = resultOptions;
+      resultOptions.forEach(optionLine => {
+        if (optionLine.isDefault) {
+          this.defaultSubscription = optionLine
+        }
+      })
+    })
     this.formulaire = this.formBuilder.group({
       surname: [
         "",
@@ -108,6 +121,9 @@ export class FormInscriptionComponent implements OnInit {
           Validators.required
           ,
         ],
+      ],
+      subscription_code: [
+        this.defaultSubscription, [Validators.required]
       ],
       newsletter: [false],
     }, { validators: [this.validationMatchingPassword] })

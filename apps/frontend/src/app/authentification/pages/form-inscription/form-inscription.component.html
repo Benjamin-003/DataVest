@@ -145,6 +145,19 @@
             </small>
           </div>
         </div>
+        <div class="field col-12 md:col-4">
+          <span class="p-float-label">
+            <p-dropdown
+              [options]="subscription"
+              optionLabel="label"
+              optionValue="code"
+              inputId="subscription_code"
+              formControlName="subscription_code"
+            >
+            </p-dropdown>
+            <label for="subscriction">Abonnement</label>
+          </span>
+        </div>
         <div class="mb-6">
           <div class="field-checkbox mb-2">
             <p-checkbox id="newsletter" [binary]="true" formControlName="newsletter"></p-checkbox>

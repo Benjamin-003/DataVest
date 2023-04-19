@@ -1,7 +1,7 @@
 import { AuthentificationGuard } from './authentification/services/authentification-guard.guard';
 import { AccueilComponent } from './core/page/accueil/accueil.component';
 import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes, CanActivate } from '@angular/router';
+import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   { path: 'accueil', component: AccueilComponent },

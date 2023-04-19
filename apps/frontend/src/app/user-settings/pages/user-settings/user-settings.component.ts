@@ -9,6 +9,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { Currency } from 'src/app/currencies/currency-model';
 import { Router } from '@angular/router';
+const USER_KEY = 'authentification-user';
 
 @Component({
   selector: 'app-user-settings',
@@ -27,6 +28,7 @@ export class UserSettingsComponent implements OnInit, OnDestroy {
     mail: '',
     language_code: '',
     currency_code: '',
+    subscription_code: ''
   };
   private _personalDataSubscription!: Subscription;
   private readonly message = [
@@ -86,7 +88,9 @@ export class UserSettingsComponent implements OnInit, OnDestroy {
           detail: this.message[indexMessage],
         });
         if (personalData.language_code !== this.oldLanguageSetting && personalData.language_code)
-          location.reload();
+          {
+            location.reload();
+          }
       },
     });
   }
@@ -115,7 +119,9 @@ export class UserSettingsComponent implements OnInit, OnDestroy {
   }
 
   deleteAccount() {
-    this.userService.removeUpUserAccount().subscribe({
+    const userId: {id: string} | null = this.userService.getSignInUserId();
+    if(userId){
+    this.userService.removeUpUserAccount(userId.id).subscribe({
       error: () => {
         this.messageService.add({
           key: 'error',
@@ -132,4 +138,5 @@ export class UserSettingsComponent implements OnInit, OnDestroy {
       }
     })
   }
+}
 }

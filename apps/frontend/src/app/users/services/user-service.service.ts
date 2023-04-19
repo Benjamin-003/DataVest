@@ -14,6 +14,7 @@ const mailEndpoint = `${environment.urlApi}/mails`;
 const loginEndpoint = `${environment.urlApi}/tokens`;
 const USER_KEY = 'authentification-user';
 
+
 @Injectable({
   providedIn: 'root',
 })
@@ -35,6 +36,7 @@ export class UserService {
     mail: '',
     language_code: '',
     currency_code: '',
+    subscription_code: ''
   });
 
   get token() {
@@ -116,6 +118,14 @@ export class UserService {
     }
   }
 
+  getSignInUserId(): {id: string} | null {
+    const token: string | null = sessionStorage.getItem(USER_KEY);
+    if(token){
+      return jwtDecode(token);
+    }
+    return null;
+  }
+
   deleteUserToken() {
     sessionStorage.removeItem(USER_KEY);
     sessionStorage.removeItem('Language');
@@ -130,13 +140,13 @@ export class UserService {
       mail: '',
       language_code: '',
       currency_code: '',
+      subscription_code: ''
     });
   }
 
   //Méthode qui permet de supprimer définitevement le compte utilisateur définitevement
-  removeUpUserAccount(){
-  let tokenPayload : { id: string } = jwtDecode(sessionStorage.getItem(USER_KEY)!)
-  return this.http.delete(`${userEndpoint}/${tokenPayload.id}`)
+  removeUpUserAccount(id: string){
+  return this.http.delete(`${userEndpoint}/${id}`)
 }
 
   //Appel le back pour générer un mail avec un nouveau mot de passe
