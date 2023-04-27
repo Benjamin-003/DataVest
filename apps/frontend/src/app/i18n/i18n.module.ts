@@ -16,7 +16,7 @@ class I18n {
   userLocale: string | null = null;
   languages: string[] = [];
 
-  constructor(private languageService: LanguagesService) { }
+  constructor(private readonly languageService: LanguagesService) { }
 
   async setLocale() {
     this.languages = await firstValueFrom(

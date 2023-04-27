@@ -1,24 +1,19 @@
 import { Subscription } from '../../../subscriptions/subscription.model';
-import { SubscriptionsService } from '../../../subscriptions/subscriptions.service';
 import { UniqueMailValidator } from './../../services/unique-mail-validator';
-import { UserService } from '../../../users/services/user-service.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-form-inscription',
   templateUrl: './form-inscription.component.html'
 })
-export class FormInscriptionComponent implements OnInit {
+export class FormInscriptionComponent implements OnChanges {
 
   constructor(
     private readonly formBuilder: FormBuilder,
-    private readonly inscription: UserService,
     private readonly uniqueMail: UniqueMailValidator,
-    private readonly router: Router,
-    private readonly route: ActivatedRoute,
-    private readonly subscriptionsService: SubscriptionsService
+    private readonly route: ActivatedRoute
   ) { }
 
   public formulaire!: FormGroup;
@@ -44,40 +39,43 @@ export class FormInscriptionComponent implements OnInit {
    *
    * À l'exception du caractère "espace" (décimal 32).
    */
-  public readonly strongPasswordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!-\/:-@[-`{-~])[a-zA-Z0-9!-\/:-@[-`{-~]{8,}$"
-  public subscription!: Subscription[]
-  private defaultSubscription!: Subscription
+  public readonly strongPasswordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!-\/:-@[-`{-~])[a-zA-Z0-9!-\/:-@[-`{-~]{8,}$";
+  @Input() subscriptions!: Subscription[];
+  @Input() defaultBackOption!: string;
+  @Output() submitForm = new EventEmitter();
+  public selectedOptionCode!: string
 
   //on utilise des getters pour acceder aux valeurs saisie dans le formulaire
-  get surname() { return this.formulaire.get('surname'); }
+  get surname() { return this.formulaire?.get('surname'); }
 
-  get firstname() { return this.formulaire.get('firstname'); }
+  get firstname() { return this.formulaire?.get('firstname'); }
 
-  get birth_date() { return this.formulaire.get('birth_date'); }
+  get birth_date() { return this.formulaire?.get('birth_date'); }
 
-  get address() { return this.formulaire.get('address'); }
+  get address() { return this.formulaire?.get('address'); }
 
-  get zip_code() { return this.formulaire.get('zip_code'); }
+  get zip_code() { return this.formulaire?.get('zip_code'); }
 
-  get city() { return this.formulaire.get('city'); }
+  get city() { return this.formulaire?.get('city'); }
 
-  get country() { return this.formulaire.get('country'); }
+  get country() { return this.formulaire?.get('country'); }
 
-  get mail() { return this.formulaire.get('mail'); }
+  get mail() { return this.formulaire?.get('mail'); }
 
-  get password() { return this.formulaire.get('password'); }
+  get password() { return this.formulaire?.get('password'); }
 
-  get confirmPassword() { return this.formulaire.get('confirmPassword'); }
+  get confirmPassword() { return this.formulaire?.get('confirmPassword'); }
 
-  ngOnInit(): void {
-    this.subscriptionsService.getSubscriptions().subscribe(resultOptions => {
-      this.subscription = resultOptions;
-      resultOptions.forEach(optionLine => {
-        if (optionLine.isDefault) {
-          this.defaultSubscription = optionLine
-        }
-      })
-    })
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['defaultBackOption']) {
+      this.selectedOptionCode = this.route.snapshot.paramMap.get('option')
+        ? this.route.snapshot.paramMap.get('option') :
+        changes['defaultBackOption'].currentValue
+      this.initForm()
+    }
+  }
+
+  initForm() {
     this.formulaire = this.formBuilder.group({
       surname: [
         "",
@@ -123,7 +121,7 @@ export class FormInscriptionComponent implements OnInit {
         ],
       ],
       subscription_code: [
-        this.defaultSubscription, [Validators.required]
+        this.selectedOptionCode, [Validators.required]
       ],
       newsletter: [false],
     }, { validators: [this.validationMatchingPassword] })
@@ -142,14 +140,7 @@ export class FormInscriptionComponent implements OnInit {
       const { confirmPassword, birth_date, ...user } = this.formulaire.value
       //On transforme l'objet Date en chaine de caractère au format ISO
       user.birth_date = birth_date.toISOString()
-      this.inscription.createUser(user).subscribe({
-        error: () => {
-          this.router.navigate(['../echec'], { relativeTo: this.route }).then();
-        },
-        complete: () => {
-          this.router.navigate(['../succes'], { relativeTo: this.route }).then();
-        }
-      })
+      this.submitForm.emit(user)
     }
   }
 }

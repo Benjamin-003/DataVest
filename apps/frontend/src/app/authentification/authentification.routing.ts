@@ -13,7 +13,7 @@ const routes: Routes = [
   { path: 'preambule', component: PreambuleInscriptionComponent },
   { path: 'connexion', component: AuthentificationComponent },
   { path: 'inscription', component: InscriptionComponent },
-  { path: 'formulaire', component: InscriptionComponent },
+  { path: 'inscription/:option', component: InscriptionComponent },
   { path: 'succes', component: SuccesInscriptionComponent },
   { path: 'echec', component: EchecInscriptionComponent },
   { path: 'password', component: ResetPasswordComponent},

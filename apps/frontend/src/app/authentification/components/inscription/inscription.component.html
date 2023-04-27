@@ -1,2 +1,2 @@
 <app-etapes-inscription [label]="label"></app-etapes-inscription>
-<app-form-inscription></app-form-inscription>
+<app-form-inscription (submitForm)="validateFormToBack($event)" [subscriptions]="subscriptions" [defaultBackOption]="defaultBackOption"></app-form-inscription>
