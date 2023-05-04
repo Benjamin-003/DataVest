@@ -19,6 +19,7 @@ export class InscriptionComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly inscription: UserService
   ) { }
+  public selectedOption!: string;
 
   ngOnInit() {
     //Voici les label a transmettre pour le composant d'acheminement des étapes
