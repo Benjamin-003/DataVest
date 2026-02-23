@@ -8,5 +8,7 @@ declare namespace NodeJS {
     JWT_REFRESH_SECRET: string;
     JWT_REFRESH_EXPIRES_IN?: string;
     CORS_ORIGIN?: string;
+    RESEND_API_KEY: string;
+    FRONTEND_URL: string;
   }
 }

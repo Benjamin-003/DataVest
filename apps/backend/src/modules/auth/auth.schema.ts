@@ -70,3 +70,29 @@ export const checkEmailSchema = z.object({
 
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>['body'];
 export type CheckEmailInput = z.infer<typeof checkEmailSchema>['body'];
+
+// Schéma pour la demande de réinitialisation du mot de passe
+export const forgotPasswordSchema = z.object({
+  body: z.object({
+    email: z.string().check(z.email('Adresse email invalide')),
+  }),
+});
+
+// Schéma pour la réinitialisation du mot de passe via le token
+export const resetPasswordSchema = z.object({
+  body: z.object({
+    token: z.string().min(1, 'Token requis'),
+    newPassword: passwordValidation,
+  }),
+});
+
+// Schéma pour la vérification de l'email
+export const verifyEmailSchema = z.object({
+  body: z.object({
+    token: z.string().min(1, 'Token requis'),
+  }),
+});
+
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>['body'];
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>['body'];
+export type VerifyEmailInput = z.infer<typeof verifyEmailSchema>['body'];

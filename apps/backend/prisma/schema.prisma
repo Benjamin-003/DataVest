@@ -7,15 +7,25 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  password     String
-  firstName    String?
-  lastName     String?
-  role         Role     @default(USER)
-  refreshToken String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                   String    @id @default(cuid())
+  email                String    @unique
+  password             String
+  firstName            String?
+  lastName             String?
+  role                 Role      @default(USER)
+  refreshToken         String?
+
+  // Vérification email
+  emailVerified        Boolean   @default(false)
+  emailVerifyToken     String?
+  emailVerifyExpires   DateTime?
+
+  // Réinitialisation mot de passe
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
   @@map("users")
 }
