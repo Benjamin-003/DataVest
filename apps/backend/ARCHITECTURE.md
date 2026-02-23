@@ -26,6 +26,8 @@ Backend/
 │       ├── env.d.ts
 │       └── express.d.ts
 ├── .env
+├── .env.example
+├── .gitignore
 ├── prisma.config.ts
 ├── package.json
 └── tsconfig.json
@@ -92,7 +94,7 @@ Ce middleware doit toujours être déclaré **en dernier** dans `app.ts`.
 
 ### `src/middleware/validate.middleware.ts`
 Valide les données d'une requête HTTP en utilisant un schéma Zod passé en paramètre.
-Si les données sont invalides (ex: email mal formaté, mot de passe trop court), il retourne immédiatement une erreur 422 sans aller jusqu'au contrôleur.
+Si les données sont invalides (ex: email mal formaté, mot de passe trop faible), il retourne immédiatement une erreur 422 sans aller jusqu'au contrôleur.
 
 ### `src/middleware/auth.middleware.ts`
 Contient deux fonctions :
@@ -107,16 +109,28 @@ Un module regroupe tous les fichiers liés à une même fonctionnalité. Cela pe
 
 ### `src/modules/auth/auth.schema.ts`
 Définit les règles de validation Zod pour chaque route d'authentification.
-Vérifie que l'email est bien formaté, que le mot de passe fait au moins 8 caractères, etc.
-Exporte aussi les types TypeScript générés automatiquement par Zod pour éviter de les redéfinir manuellement.
+
+Règles de validation du mot de passe :
+- Minimum **12 caractères**
+- Au moins **une majuscule**
+- Au moins **une minuscule**
+- Au moins **un chiffre**
+- Au moins **un caractère spécial**
+
+La règle `passwordValidation` est définie une seule fois et réutilisée dans tous les schémas pour éviter la duplication.
+Exporte aussi les types TypeScript générés automatiquement par Zod.
 
 ### `src/modules/auth/auth.service.ts`
-Contient toute la logique métier de l'authentification :
+Contient toute la logique métier de l'authentification, découpée en petites fonctions avec un rôle précis :
 - **`register`** : vérifie que l'email n'existe pas, hash le mot de passe, crée l'utilisateur
 - **`login`** : vérifie l'email et le mot de passe, retourne les tokens
 - **`refresh`** : vérifie le refresh token et retourne une nouvelle paire de tokens
 - **`logout`** : supprime le refresh token en base pour l'invalider
-- **`getMe`** : récupère le profil de l'utilisateur connecté
+- **`getLoggedUser`** : récupère le profil de l'utilisateur connecté
+- **`updateMe`** : met à jour partiellement le profil
+- **`deleteMe`** : supprime le compte
+- **`checkEmail`** : vérifie si un email existe en base
+- **`changePassword`** : vérifie l'ancien mot de passe et sauvegarde le nouveau hashé
 
 ### `src/modules/auth/auth.controller.ts`
 Fait le lien entre les routes et le service.
@@ -124,15 +138,19 @@ Reçoit la requête HTTP, appelle le service et renvoie la réponse.
 Ne contient aucune logique métier, uniquement de la gestion req/res.
 
 ### `src/modules/auth/auth.routes.ts`
-Définit les points d'entrée de l'API d'authentification et branche les middlewares et contrôleurs sur chaque route.
+Définit les points d'entrée de l'API d'authentification.
 
 | Méthode | Route | Accès | Description |
 |---|---|---|---|
 | POST | `/api/auth/register` | Public | Créer un compte |
 | POST | `/api/auth/login` | Public | Se connecter |
 | POST | `/api/auth/refresh` | Public | Renouveler le token |
+| POST | `/api/auth/check-email` | Public | Vérifier si un email existe |
 | POST | `/api/auth/logout` | Protégé 🔒 | Se déconnecter |
 | GET | `/api/auth/me` | Protégé 🔒 | Voir son profil |
+| PATCH | `/api/auth/me` | Protégé 🔒 | Modifier son profil |
+| PATCH | `/api/auth/password` | Protégé 🔒 | Changer son mot de passe |
+| DELETE | `/api/auth/me` | Protégé 🔒 | Supprimer son compte |
 
 ---
 

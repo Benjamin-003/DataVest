@@ -141,6 +141,12 @@ Si tout fonctionne, vous devriez voir dans le terminal :
 
 ## Routes disponibles
 
+### Santé du serveur
+
+| Méthode | Route | Description |
+|---|---|---|
+| GET | `/health` | Vérifier que le serveur tourne |
+
 ### Authentification — `/api/auth`
 
 | Méthode | Route | Accès | Description |
@@ -148,14 +154,27 @@ Si tout fonctionne, vous devriez voir dans le terminal :
 | POST | `/api/auth/register` | Public | Créer un compte |
 | POST | `/api/auth/login` | Public | Se connecter |
 | POST | `/api/auth/refresh` | Public | Renouveler le token |
+| POST | `/api/auth/check-email` | Public | Vérifier si un email existe |
 | POST | `/api/auth/logout` | Protégé 🔒 | Se déconnecter |
 | GET | `/api/auth/me` | Protégé 🔒 | Voir son profil |
+| PATCH | `/api/auth/me` | Protégé 🔒 | Modifier son profil |
+| PATCH | `/api/auth/password` | Protégé 🔒 | Changer son mot de passe |
+| DELETE | `/api/auth/me` | Protégé 🔒 | Supprimer son compte |
 
-### Santé du serveur
+---
 
-| Méthode | Route | Description |
-|---|---|---|
-| GET | `/health` | Vérifier que le serveur tourne |
+## Règles de validation
+
+### Mot de passe
+Le mot de passe doit respecter les règles suivantes :
+- Minimum **12 caractères**
+- Au moins **une majuscule**
+- Au moins **une minuscule**
+- Au moins **un chiffre**
+- Au moins **un caractère spécial**
+
+### Email
+- Doit être une adresse email valide
 
 ---
 
@@ -171,7 +190,7 @@ Content-Type: application/json
 
 {
     "email": "test@test.com",
-    "password": "motdepasse123",
+    "password": "MonMotDePasse123!",
     "firstName": "John",
     "lastName": "Doe"
 }
@@ -184,6 +203,19 @@ Ajoutez le header `Authorization` avec le token reçu lors du login :
 ```
 Authorization: Bearer <accessToken>
 ```
+
+### Exemple — Check email
+
+```
+POST http://localhost:3000/api/auth/check-email
+Content-Type: application/json
+
+{ "email": "test@test.com" }
+```
+
+Réponses :
+- **200** → email trouvé en base → déjà utilisé
+- **404** → email absent → disponible
 
 ---
 
