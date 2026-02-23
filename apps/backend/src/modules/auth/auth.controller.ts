@@ -82,7 +82,26 @@ async deleteMe(req: Request, res: Response, next: NextFunction) {
   }
 },
 
-
-
-  
+async checkEmail(req: Request, res: Response, next: NextFunction) {
+  try {
+    const user = await authService.checkEmail(req.body.email);
+    if (user) {
+      // 200 = email trouvé en base
+      res.status(200).json({ available: false });
+    } else {
+      // 404 = email absent = disponible
+      res.status(404).json({ available: true });
+    }
+  } catch (err) {
+    next(err);
+  }
+},
+async changePassword(req: Request, res: Response, next: NextFunction) {
+  try {
+    await authService.changePassword(req.user!.id, req.body);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+},
 };

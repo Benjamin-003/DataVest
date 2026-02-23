@@ -30,7 +30,7 @@ app.use('/api/auth', authRoutes);
 
 // Handler 404 — si aucune route ne correspond à l'URL demandée
 app.use((_req, res) => {
-  res.status(404).json({ message: 'Route non trouvée' });
+  res.status(404).json({ message: 'Route not found' });
 });
 
 // Handler d'erreurs global — DOIT être en dernier

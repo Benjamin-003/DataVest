@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { prisma } from '../../prisma/client';
 import { config } from '../../config/env';
 import { AppError } from '../../middleware/error.middleware';
-import { LoginInput, RegisterInput, UpdateMeInput } from './auth.schema';
+import { ChangePasswordInput, LoginInput, RegisterInput, UpdateMeInput } from './auth.schema';
 
 // Génère une paire de tokens (access + refresh) à partir des infos de l'utilisateur
 // Le access token est de courte durée (7j), le refresh token de longue durée (30j)
@@ -137,4 +137,26 @@ export const authService = {
 async deleteMe(userId: string) {
   await deleteUser(userId);
 },
+async checkEmail(email: string) {
+  const user = await prisma.user.findUnique({ where: { email } });
+  // Retourne l'utilisateur trouvé ou null
+  return user;
+},
+
+async changePassword(userId: string, data: ChangePasswordInput) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new AppError(404, 'Utilisateur non trouvé');
+
+  // Vérifie que l'ancien mot de passe est correct
+  const isValid = await bcrypt.compare(data.currentPassword, user.password);
+  if (!isValid) throw new AppError(401, 'Mot de passe actuel incorrect');
+
+  // Hash et sauvegarde le nouveau mot de passe
+  const hashedPassword = await bcrypt.hash(data.newPassword, 12);
+  await prisma.user.update({
+    where: { id: userId },
+    data: { password: hashedPassword },
+  });
+},
 };
+
