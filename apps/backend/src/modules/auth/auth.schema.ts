@@ -22,6 +22,21 @@ export const loginSchema = z.object({
   }),
 });
 
+
+// Schéma pour la mise à jour partielle du profil
+// Tous les champs sont optionnels avec .partial()
+export const updateMeSchema = z.object({
+  body: z.object({
+    firstName: z.string().min(1).optional(),
+    lastName: z.string().min(1).optional(),
+    email: z.string().check(z.email('Adresse email invalide')).optional(),
+    // Si le mot de passe est fourni, il doit faire au moins 8 caractères
+    password: z.string().min(8, 'Le mot de passe doit faire au moins 8 caractères').optional(),
+  }),
+});
+
+export type UpdateMeInput = z.infer<typeof updateMeSchema>['body'];
+
 // Schéma de validation pour le renouvellement du token
 export const refreshSchema = z.object({
   body: z.object({

@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { prisma } from '../../prisma/client';
 import { config } from '../../config/env';
 import { AppError } from '../../middleware/error.middleware';
-import { LoginInput, RegisterInput } from './auth.schema';
+import { LoginInput, RegisterInput, UpdateMeInput } from './auth.schema';
 
 // Génère une paire de tokens (access + refresh) à partir des infos de l'utilisateur
 // Le access token est de courte durée (7j), le refresh token de longue durée (30j)
@@ -36,6 +36,23 @@ const sanitizeUser = (user: {
   role: user.role,
   createdAt: user.createdAt,
 });
+
+// Mise à jour partielle du profil
+const updateUser = async (userId: string, data: UpdateMeInput) => {
+  // Si un nouveau mot de passe est fourni, on le hash avant de sauvegarder
+  const updateData = data.password
+    ? { ...data, password: await bcrypt.hash(data.password, 12) }
+    : data;
+
+  return prisma.user.update({
+    where: { id: userId },
+    data: updateData,
+  });
+};
+
+const deleteUser = async (userId: string) => {
+  await prisma.user.delete({ where: { id: userId } });
+};
 
 export const authService = {
 
@@ -102,9 +119,22 @@ export const authService = {
   },
 
   // Récupère le profil de l'utilisateur connecté
-  async getMe(userId: string) {
+  async getLoggedUser(userId: string) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new AppError(404, 'Utilisateur non trouvé');
     return sanitizeUser(user);
-  },
+  },async updateMe(userId: string, data: UpdateMeInput) {
+  // Vérifie que le nouvel email n'est pas déjà utilisé par quelqu'un d'autre
+  if (data.email) {
+    const existing = await prisma.user.findUnique({ where: { email: data.email } });
+    if (existing && existing.id !== userId) throw new AppError(409, 'Email déjà utilisé');
+  }
+
+  const user = await updateUser(userId, data);
+  return sanitizeUser(user);
+},
+
+async deleteMe(userId: string) {
+  await deleteUser(userId);
+},
 };

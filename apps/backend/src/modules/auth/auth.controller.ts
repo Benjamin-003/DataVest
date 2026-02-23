@@ -49,14 +49,40 @@ export const authController = {
       next(err);
     }
   },
+  
 
   // GET /api/auth/me — protected route (requires authenticate)
-  async getMe(req: Request, res: Response, next: NextFunction) {
+  async getLoggedUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = await authService.getMe(req.user!.id);
+      const user = await authService.getLoggedUser(req.user!.id);
       res.status(200).json(user);
     } catch (err) {
       next(err);
     }
   },
+
+  // PATCH /api/auth/me — route protégée
+async updateMe(req: Request, res: Response, next: NextFunction) {
+  try {
+    const user = await authService.updateMe(req.user!.id, req.body);
+    res.status(200).json(user);
+  } catch (err) {
+    next(err);
+  }
+},
+
+// DELETE /api/auth/me — route protégée
+async deleteMe(req: Request, res: Response, next: NextFunction) {
+  try {
+    await authService.deleteMe(req.user!.id);
+    // 204 = No Content
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+},
+
+
+
+  
 };
