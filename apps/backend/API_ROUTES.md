@@ -17,7 +17,6 @@ Base URL : `http://localhost:3000`
   "lastName": "Doe"
 }
 ```
-
 > `firstName` et `lastName` sont optionnels.
 
 **Retour 201 :**
@@ -35,6 +34,7 @@ Base URL : `http://localhost:3000`
   "refreshToken": "..."
 }
 ```
+> Un email de vérification est automatiquement envoyé après l'inscription.
 
 ---
 
@@ -99,6 +99,59 @@ Base URL : `http://localhost:3000`
 |---|---|
 | 200 | Email trouvé → déjà utilisé |
 | 404 | Email absent → disponible |
+
+---
+
+### `POST /api/auth/forgot-password`
+
+**Body :**
+```json
+{
+  "email": "test@test.com"
+}
+```
+
+**Retour 200 :**
+```json
+{
+  "message": "If this email exists, a reset link has been sent"
+}
+```
+> Retourne toujours 200 même si l'email n'existe pas, pour ne pas révéler si un compte existe.
+> Un email avec un lien valide **1 heure** est envoyé si le compte existe.
+
+---
+
+### `POST /api/auth/reset-password`
+
+**Body :**
+```json
+{
+  "token": "le_token_reçu_par_email",
+  "newPassword": "NouveauMotDePasse123!"
+}
+```
+
+**Retour 204 :** aucun contenu
+
+---
+
+### `POST /api/auth/verify-email`
+
+**Body :**
+```json
+{
+  "token": "le_token_reçu_par_email"
+}
+```
+
+**Retour 200 :**
+```json
+{
+  "message": "Email verified successfully"
+}
+```
+> Le token de vérification est valide **24 heures**.
 
 ---
 

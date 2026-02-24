@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { authController } from './auth.controller';
 import { validate } from '../../middleware/validate.middleware';
 import { authenticate } from '../../middleware/auth.middleware';
-import { changePasswordSchema, checkEmailSchema, loginSchema, refreshSchema, registerSchema, updateMeSchema } from './auth.schema';
+import { changePasswordSchema, checkEmailSchema, forgotPasswordSchema, loginSchema, refreshSchema, registerSchema, resetPasswordSchema, updateMeSchema, verifyEmailSchema } from './auth.schema';
 
 const router = Router();
 
@@ -11,6 +11,9 @@ router.post('/register', validate(registerSchema), authController.register);
 router.post('/login', validate(loginSchema), authController.login);
 router.post('/refresh', validate(refreshSchema), authController.refresh);
 router.post('/check-email', validate(checkEmailSchema), authController.checkEmail);
+router.post('/forgot-password', validate(forgotPasswordSchema), authController.forgotPassword);
+router.post('/reset-password', validate(resetPasswordSchema), authController.resetPassword);
+router.post('/verify-email', validate(verifyEmailSchema), authController.verifyEmail);
 
 // Routes protégées — nécessitent un token valide via authenticate
 router.post('/logout', authenticate, authController.logout);

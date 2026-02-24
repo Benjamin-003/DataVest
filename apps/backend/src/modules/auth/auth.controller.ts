@@ -104,4 +104,35 @@ async changePassword(req: Request, res: Response, next: NextFunction) {
     next(err);
   }
 },
+// POST /api/auth/forgot-password
+async forgotPassword(req: Request, res: Response, next: NextFunction) {
+  try {
+    await authService.forgotPassword(req.body.email);
+    // On retourne toujours 200 même si l'email n'existe pas
+    // pour ne pas révéler si un compte existe
+    res.status(200).json({ message: 'If this email exists, a reset link has been sent' });
+  } catch (err) {
+    next(err);
+  }
+},
+
+// POST /api/auth/reset-password
+async resetPassword(req: Request, res: Response, next: NextFunction) {
+  try {
+    await authService.resetPassword(req.body.token, req.body.newPassword);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+},
+
+// POST /api/auth/verify-email
+async verifyEmail(req: Request, res: Response, next: NextFunction) {
+  try {
+    await authService.verifyEmail(req.body.token);
+    res.status(200).json({ message: 'Email verified successfully' });
+  } catch (err) {
+    next(err);
+  }
+},
 };

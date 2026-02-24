@@ -43,24 +43,55 @@ const updateUser = async (userId: string, data: UpdateMeInput) => {
   });
 };
 
+// Vérifie que l'email n'est pas déjà utilisé
+const checkEmailAvailability = async (email: string) => {
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) throw new AppError(409, 'Email déjà utilisé');
+};
+
+// Hash le mot de passe
+const hashPassword = async (password: string) => {
+  return bcrypt.hash(password, 12);
+};
+
+// Crée l'utilisateur en base
+const createUser = async (data: RegisterInput, hashedPassword: string) => {
+  return prisma.user.create({
+    data: { ...data, password: hashedPassword },
+  });
+};
+
+// Sauvegarde le refresh token en base
+const saveRefreshToken = async (userId: string, refreshToken: string) => {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { refreshToken },
+  });
+};
+
 // --- Service Principal ---
 
 export const authService = {
   async register(data: RegisterInput) {
-    const existing = await prisma.user.findUnique({ where: { email: data.email } });
-    if (existing) throw new AppError(409, 'Email déjà utilisé');
+  await checkEmailAvailability(data.email);
+  const hashedPassword = await hashPassword(data.password);
+  const user = await createUser(data, hashedPassword);
+  const tokens = generateTokens({ id: user.id, email: user.email, role: user.role });
+  await saveRefreshToken(user.id, tokens.refreshToken);
 
-    const hashedPassword = await bcrypt.hash(data.password, 12);
+  // Génère et sauvegarde le token de vérification email (valide 24h)
+  const emailVerifyToken = generateSecureToken();
+  const emailVerifyExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-    const user = await prisma.user.create({
-      data: { ...data, password: hashedPassword },
-    });
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { emailVerifyToken, emailVerifyExpires },
+  });
 
-    const tokens = generateTokens({ id: user.id, email: user.email, role: user.role });
-    await prisma.user.update({ where: { id: user.id }, data: { refreshToken: tokens.refreshToken } });
+  await authMailer.sendVerifyEmail(user.email, emailVerifyToken, user.firstName);
 
-    return { user: sanitizeUser(user), ...tokens };
-  },
+  return { user: sanitizeUser(user), ...tokens };
+},
 
   async login(data: LoginInput) {
     const user = await prisma.user.findUnique({ where: { email: data.email } });
@@ -115,6 +146,11 @@ export const authService = {
     await prisma.user.delete({ where: { id: userId } });
   },
 
+async checkEmail(email: string) {
+  const user = await prisma.user.findUnique({ where: { email } });
+  return user;
+},
+
   async changePassword(userId: string, data: ChangePasswordInput) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new AppError(404, 'Utilisateur non trouvé');
@@ -128,64 +164,68 @@ export const authService = {
       data: { password: hashedPassword },
     });
   },
+async forgotPassword(email: string) {
+  const user = await prisma.user.findUnique({ where: { email } });
+  // On ne révèle pas si l'email existe ou non pour des raisons de sécurité
+  if (!user) return;
 
-  async forgotPassword(email: string) {
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) return;
+  const token = generateSecureToken();
+  // Token valide 1 heure
+  const expires = new Date(Date.now() + 60 * 60 * 1000);
 
-    const token = generateSecureToken();
-    const expires = new Date(Date.now() + 60 * 60 * 1000);
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      resetPasswordToken: token,
+      resetPasswordExpires: expires,
+    },
+  });
 
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        resetPasswordToken: token,
-        resetPasswordExpires: expires,
-      },
-    });
+  await authMailer.sendResetPasswordEmail(user.email, token, user.firstName);
+},
 
-    await authMailer.sendResetPasswordEmail(user.email, token, user.firstName || '');
-  },
+async resetPassword(token: string, newPassword: string) {
+  const user = await prisma.user.findFirst({
+    where: {
+      resetPasswordToken: token,
+      // Vérifie que le token n'est pas expiré
+      resetPasswordExpires: { gt: new Date() },
+    },
+  });
 
-  async resetPassword(token: string, newPassword: string) {
-    const user = await prisma.user.findFirst({
-      where: {
-        resetPasswordToken: token,
-        resetPasswordExpires: { gt: new Date() },
-      },
-    });
+  if (!user) throw new AppError(400, 'Token invalide ou expiré');
 
-    if (!user) throw new AppError(400, 'Token invalide ou expiré');
+  const hashedPassword = await bcrypt.hash(newPassword, 12);
 
-    const hashedPassword = await bcrypt.hash(newPassword, 12);
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      password: hashedPassword,
+      // On supprime le token après utilisation
+      resetPasswordToken: null,
+      resetPasswordExpires: null,
+    },
+  });
+},
 
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        password: hashedPassword,
-        resetPasswordToken: null,
-        resetPasswordExpires: null,
-      },
-    });
-  },
+async verifyEmail(token: string) {
+  const user = await prisma.user.findFirst({
+    where: {
+      emailVerifyToken: token,
+      emailVerifyExpires: { gt: new Date() },
+    },
+  });
 
-  async verifyEmail(token: string) {
-    const user = await prisma.user.findFirst({
-      where: {
-        emailVerifyToken: token,
-        emailVerifyExpires: { gt: new Date() },
-      },
-    });
+  if (!user) throw new AppError(400, 'Token invalide ou expiré');
 
-    if (!user) throw new AppError(400, 'Token invalide ou expiré');
-
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        emailVerified: true,
-        emailVerifyToken: null,
-        emailVerifyExpires: null,
-      },
-    });
-  },
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      emailVerified: true,
+      emailVerifyToken: null,
+      emailVerifyExpires: null,
+    },
+  });
+},
+  
 };

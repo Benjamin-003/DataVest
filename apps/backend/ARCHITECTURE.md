@@ -9,13 +9,15 @@ Backend/
 │   └── schema.prisma
 ├── src/
 │   ├── config/
-│   │   └── env.ts
+│   │   ├── env.ts
+│   │   └── mailer.ts
 │   ├── middleware/
 │   │   ├── auth.middleware.ts
 │   │   ├── error.middleware.ts
 │   │   └── validate.middleware.ts
 │   ├── modules/
 │   │   └── auth/
+│   │       ├── auth.mailer.ts
 │   │       ├── auth.schema.ts
 │   │       ├── auth.service.ts
 │   │       ├── auth.controller.ts
@@ -39,8 +41,7 @@ Backend/
 
 ### `prisma/schema.prisma`
 Décrit la structure de la base de données.
-C'est ici qu'on définit les modèles (tables), les champs et les relations.
-Prisma lit ce fichier pour générer les migrations SQL et le client TypeScript.
+Contient le modèle `User` avec tous ses champs dont les nouveaux champs pour la vérification email et la réinitialisation de mot de passe.
 
 ### `prisma.config.ts`
 Fichier de configuration propre à Prisma v7.
@@ -53,7 +54,10 @@ Indique à Prisma où se trouve le schéma, les migrations, et comment se connec
 ### `src/config/env.ts`
 Charge et valide toutes les variables d'environnement au démarrage du serveur.
 Si une variable obligatoire est manquante, le serveur refuse de démarrer avec un message d'erreur clair.
-Exporte un objet `config` structuré et typé, utilisé dans tout le projet à la place de `process.env`.
+
+### `src/config/mailer.ts`
+Initialise le client **Resend** avec la clé API.
+Exporte l'instance `resend` et l'adresse expéditeur `FROM_EMAIL`.
 
 ---
 
@@ -61,11 +65,9 @@ Exporte un objet `config` structuré et typé, utilisé dans tout le projet à l
 
 ### `src/types/env.d.ts`
 Déclare à TypeScript quelles variables existent dans `process.env`.
-Grâce à ce fichier, TypeScript connaît le type de chaque variable d'environnement et vous avez l'autocomplétion dans VS Code.
 
 ### `src/types/express.d.ts`
 Étend le type `Request` d'Express pour y ajouter la propriété `user`.
-Sans ce fichier, TypeScript ne saurait pas que `req.user` existe et afficherait une erreur à chaque utilisation.
 
 ---
 
@@ -73,42 +75,29 @@ Sans ce fichier, TypeScript ne saurait pas que `req.user` existe et afficherait 
 
 ### `src/prisma/client.ts`
 Crée et exporte une seule instance de `PrismaClient` partagée dans toute l'application.
-Utilise l'adapter `@prisma/adapter-pg` requis par Prisma v7 pour se connecter directement à PostgreSQL.
-Sans ce singleton, chaque fichier qui importe Prisma créerait une nouvelle connexion à la base de données, ce qui peut rapidement la saturer.
+Utilise l'adapter `@prisma/adapter-pg` requis par Prisma v7.
 
 ---
 
 ## Middlewares
 
-Les middlewares sont des fonctions qui s'exécutent **entre** la réception d'une requête et son traitement par le contrôleur.
-Ils sont séparés des modules car ils sont **transversaux** — ils servent à toute l'application, pas à une seule fonctionnalité.
-
 ### `src/middleware/error.middleware.ts`
-Intercepte toutes les erreurs de l'application et retourne une réponse JSON propre au client.
-Gère trois cas :
-- **Erreur Zod (422)** : données invalides envoyées par le client
-- **Erreur métier AppError** : erreur volontaire avec un code HTTP (ex: 401, 404, 409)
-- **Erreur inattendue (500)** : bug ou crash non prévu
-
-Ce middleware doit toujours être déclaré **en dernier** dans `app.ts`.
+Intercepte toutes les erreurs et retourne une réponse JSON propre.
+Gère : erreurs Zod (422), erreurs métier AppError, erreurs inattendues (500).
 
 ### `src/middleware/validate.middleware.ts`
-Valide les données d'une requête HTTP en utilisant un schéma Zod passé en paramètre.
-Si les données sont invalides (ex: email mal formaté, mot de passe trop faible), il retourne immédiatement une erreur 422 sans aller jusqu'au contrôleur.
+Valide les données d'une requête via un schéma Zod.
 
 ### `src/middleware/auth.middleware.ts`
-Contient deux fonctions :
-- **`authenticate`** : vérifie que l'utilisateur est connecté en lisant et validant son token JWT. Si le token est valide, ajoute les infos de l'utilisateur dans `req.user`.
-- **`authorize(...roles)`** : vérifie que l'utilisateur a le bon rôle pour accéder à une route. S'utilise toujours après `authenticate`.
+- **`authenticate`** : vérifie le token JWT et injecte `req.user`
+- **`authorize(...roles)`** : vérifie le rôle de l'utilisateur
 
 ---
 
 ## Modules
 
-Un module regroupe tous les fichiers liés à une même fonctionnalité. Cela permet d'organiser le code **par fonctionnalité** plutôt que par type de fichier. Pour ajouter une nouvelle fonctionnalité, il suffit de créer un nouveau dossier dans `modules/`.
-
 ### `src/modules/auth/auth.schema.ts`
-Définit les règles de validation Zod pour chaque route d'authentification.
+Définit toutes les règles de validation Zod.
 
 Règles de validation du mot de passe :
 - Minimum **12 caractères**
@@ -117,28 +106,43 @@ Règles de validation du mot de passe :
 - Au moins **un chiffre**
 - Au moins **un caractère spécial**
 
-La règle `passwordValidation` est définie une seule fois et réutilisée dans tous les schémas pour éviter la duplication.
-Exporte aussi les types TypeScript générés automatiquement par Zod.
+### `src/modules/auth/auth.mailer.ts`
+Contient les templates HTML des emails transactionnels :
+- **`sendVerifyEmail`** — email de vérification après inscription (token valide 24h)
+- **`sendResetPasswordEmail`** — email de réinitialisation de mot de passe (token valide 1h)
 
 ### `src/modules/auth/auth.service.ts`
-Contient toute la logique métier de l'authentification, découpée en petites fonctions avec un rôle précis :
-- **`register`** : vérifie que l'email n'existe pas, hash le mot de passe, crée l'utilisateur
-- **`login`** : vérifie l'email et le mot de passe, retourne les tokens
-- **`refresh`** : vérifie le refresh token et retourne une nouvelle paire de tokens
-- **`logout`** : supprime le refresh token en base pour l'invalider
-- **`getLoggedUser`** : récupère le profil de l'utilisateur connecté
-- **`updateMe`** : met à jour partiellement le profil
-- **`deleteMe`** : supprime le compte
-- **`checkEmail`** : vérifie si un email existe en base
-- **`changePassword`** : vérifie l'ancien mot de passe et sauvegarde le nouveau hashé
+Contient toute la logique métier, découpée en petites fonctions avec un rôle précis.
+
+Fonctions utilitaires (hors authService) :
+- `generateTokens` — génère la paire access/refresh token
+- `generateSecureToken` — génère un token aléatoire sécurisé
+- `sanitizeUser` — retire les données sensibles avant de retourner l'utilisateur
+- `checkEmailAvailability` — vérifie qu'un email n'est pas déjà utilisé
+- `hashPassword` — hash le mot de passe avec bcrypt
+- `createUser` — crée l'utilisateur en base
+- `saveRefreshToken` — sauvegarde le refresh token en base
+- `updateUser` — met à jour partiellement le profil
+
+Méthodes de authService :
+- **`register`** — inscription + envoi email de vérification
+- **`login`** — connexion
+- **`refresh`** — renouvellement des tokens
+- **`logout`** — invalidation du refresh token
+- **`getLoggedUser`** — profil de l'utilisateur connecté
+- **`updateMe`** — mise à jour partielle du profil
+- **`deleteMe`** — suppression du compte
+- **`checkEmail`** — vérification de disponibilité d'un email
+- **`changePassword`** — changement de mot de passe
+- **`forgotPassword`** — demande de réinitialisation + envoi email
+- **`resetPassword`** — réinitialisation via token
+- **`verifyEmail`** — validation de l'adresse email via token
 
 ### `src/modules/auth/auth.controller.ts`
 Fait le lien entre les routes et le service.
-Reçoit la requête HTTP, appelle le service et renvoie la réponse.
 Ne contient aucune logique métier, uniquement de la gestion req/res.
 
 ### `src/modules/auth/auth.routes.ts`
-Définit les points d'entrée de l'API d'authentification.
 
 | Méthode | Route | Accès | Description |
 |---|---|---|---|
@@ -146,6 +150,9 @@ Définit les points d'entrée de l'API d'authentification.
 | POST | `/api/auth/login` | Public | Se connecter |
 | POST | `/api/auth/refresh` | Public | Renouveler le token |
 | POST | `/api/auth/check-email` | Public | Vérifier si un email existe |
+| POST | `/api/auth/forgot-password` | Public | Demander une réinitialisation |
+| POST | `/api/auth/reset-password` | Public | Réinitialiser le mot de passe |
+| POST | `/api/auth/verify-email` | Public | Vérifier l'adresse email |
 | POST | `/api/auth/logout` | Protégé 🔒 | Se déconnecter |
 | GET | `/api/auth/me` | Protégé 🔒 | Voir son profil |
 | PATCH | `/api/auth/me` | Protégé 🔒 | Modifier son profil |
@@ -166,6 +173,8 @@ validate(schema)    ← vérifie les données envoyées par le client
 controller          ← traite la requête et appelle le service
      ↓
 service             ← logique métier + appels à la base via Prisma
+     ↓
+mailer              ← envoi d'email si nécessaire (register, forgot-password)
      ↓
 Réponse JSON
      ↓ (en cas d'erreur)
@@ -196,6 +205,32 @@ errorHandler        ← formate et retourne l'erreur au client
 
 ---
 
+## Flux de vérification email
+
+```
+1. POST /register
+   → compte créé + email de vérification envoyé (token valide 24h)
+
+2. Utilisateur clique sur le lien dans l'email
+   → POST /verify-email avec le token
+   ← emailVerified = true
+```
+
+---
+
+## Flux de réinitialisation de mot de passe
+
+```
+1. POST /forgot-password avec l'email
+   → email envoyé si le compte existe (token valide 1h)
+
+2. Utilisateur clique sur le lien dans l'email
+   → POST /reset-password avec le token + nouveau mot de passe
+   ← mot de passe mis à jour + token supprimé
+```
+
+---
+
 ## Stack technique
 
 | Outil | Version | Rôle |
@@ -209,4 +244,5 @@ errorHandler        ← formate et retourne l'erreur au client
 | JWT | - | Authentification |
 | Bcrypt | - | Hash des mots de passe |
 | Zod | - | Validation des données |
+| Resend | - | Envoi d'emails transactionnels |
 | @prisma/adapter-pg | - | Adapter PostgreSQL pour Prisma v7 |

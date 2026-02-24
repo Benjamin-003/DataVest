@@ -51,6 +51,9 @@ JWT_REFRESH_SECRET=votre_secret_refresh_long_et_complexe
 JWT_REFRESH_EXPIRES_IN=30d
 
 CORS_ORIGIN=http://localhost:5173
+
+RESEND_API_KEY=votre_cle_api_resend
+FRONTEND_URL=http://localhost:5173
 ```
 
 > ⚠️ Ne commitez jamais le fichier `.env` — il contient des informations sensibles.
@@ -155,6 +158,9 @@ Si tout fonctionne, vous devriez voir dans le terminal :
 | POST | `/api/auth/login` | Public | Se connecter |
 | POST | `/api/auth/refresh` | Public | Renouveler le token |
 | POST | `/api/auth/check-email` | Public | Vérifier si un email existe |
+| POST | `/api/auth/forgot-password` | Public | Demander une réinitialisation de mot de passe |
+| POST | `/api/auth/reset-password` | Public | Réinitialiser le mot de passe |
+| POST | `/api/auth/verify-email` | Public | Vérifier l'adresse email |
 | POST | `/api/auth/logout` | Protégé 🔒 | Se déconnecter |
 | GET | `/api/auth/me` | Protégé 🔒 | Voir son profil |
 | PATCH | `/api/auth/me` | Protégé 🔒 | Modifier son profil |
@@ -178,44 +184,15 @@ Le mot de passe doit respecter les règles suivantes :
 
 ---
 
-## Tester l'API
+## Emails transactionnels
 
-Vous pouvez tester les routes avec [Postman](https://www.postman.com/) ou [Insomnia](https://insomnia.rest/).
+Le service utilise **Resend** pour l'envoi des emails. Deux emails sont envoyés automatiquement :
 
-### Exemple — Register
+- **Vérification d'email** — après l'inscription, lien valide **24 heures**
+- **Réinitialisation de mot de passe** — sur demande, lien valide **1 heure**
 
-```
-POST http://localhost:3000/api/auth/register
-Content-Type: application/json
-
-{
-    "email": "test@test.com",
-    "password": "MonMotDePasse123!",
-    "firstName": "John",
-    "lastName": "Doe"
-}
-```
-
-### Exemple — Routes protégées
-
-Ajoutez le header `Authorization` avec le token reçu lors du login :
-
-```
-Authorization: Bearer <accessToken>
-```
-
-### Exemple — Check email
-
-```
-POST http://localhost:3000/api/auth/check-email
-Content-Type: application/json
-
-{ "email": "test@test.com" }
-```
-
-Réponses :
-- **200** → email trouvé en base → déjà utilisé
-- **404** → email absent → disponible
+> En développement, utilisez l'adresse `onboarding@resend.dev` comme expéditeur.
+> En production, configurez votre propre domaine sur resend.com.
 
 ---
 
@@ -231,6 +208,7 @@ Réponses :
 | JWT | Authentification |
 | Bcrypt | Hash des mots de passe |
 | Zod | Validation des données |
+| Resend | Envoi d'emails transactionnels |
 | @prisma/adapter-pg | Adapter PostgreSQL pour Prisma v7 |
 
 ---
@@ -239,10 +217,10 @@ Réponses :
 
 ```
 src/
-├── config/         → Variables d'environnement
+├── config/         → Variables d'environnement + configuration Resend
 ├── middleware/     → Auth, validation, gestion des erreurs
 ├── modules/
-│   └── auth/      → Schema, service, controller, routes
+│   └── auth/      → Schema, service, controller, routes, mailer
 ├── prisma/        → Client Prisma singleton
 └── types/         → Types TypeScript globaux
 ```
