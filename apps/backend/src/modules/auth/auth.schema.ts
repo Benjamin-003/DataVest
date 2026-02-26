@@ -93,6 +93,16 @@ export const verifyEmailSchema = z.object({
   }),
 });
 
+// Schéma pour la vérification du code 2FA
+export const verifyTwoFactorSchema = z.object({
+  body: z.object({
+    email: z.string().check(z.email('Adresse email invalide')),
+    code: z.string().length(6, 'Le code doit faire 6 chiffres'),
+  }),
+});
+
+export type VerifyTwoFactorInput = z.infer<typeof verifyTwoFactorSchema>['body'];
+
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>['body'];
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>['body'];
 export type VerifyEmailInput = z.infer<typeof verifyEmailSchema>['body'];

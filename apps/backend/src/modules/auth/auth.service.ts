@@ -94,17 +94,30 @@ export const authService = {
 },
 
   async login(data: LoginInput) {
-    const user = await prisma.user.findUnique({ where: { email: data.email } });
-    if (!user) throw new AppError(401, 'Identifiants invalides');
+  const user = await prisma.user.findUnique({ where: { email: data.email } });
+  if (!user) throw new AppError(401, 'Identifiants invalides');
 
-    const isValid = await bcrypt.compare(data.password, user.password);
-    if (!isValid) throw new AppError(401, 'Identifiants invalides');
+  const isValid = await bcrypt.compare(data.password, user.password);
+  if (!isValid) throw new AppError(401, 'Identifiants invalides');
 
-    const tokens = generateTokens({ id: user.id, email: user.email, role: user.role });
-    await prisma.user.update({ where: { id: user.id }, data: { refreshToken: tokens.refreshToken } });
+  // Si la 2FA est activée, on envoie un code et on ne retourne pas encore les tokens
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expires = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-    return { user: sanitizeUser(user), ...tokens };
-  },
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        twoFactorCode: code,
+        twoFactorExpires: expires,
+      },
+    });
+
+    await authMailer.sendTwoFactorCode(user.email, code, user.firstName);
+
+    // On indique au frontend que la 2FA est requise
+    return { twoFactorRequired: true };
+  
+},
 
   async refresh(refreshToken: string) {
     let payload: { id: string; email: string; role: string };
@@ -224,6 +237,50 @@ async verifyEmail(token: string) {
       emailVerified: true,
       emailVerifyToken: null,
       emailVerifyExpires: null,
+    },
+  });
+},async verifyTwoFactor(email: string, code: string) {
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) throw new AppError(401, 'Code invalide');
+
+  // Vérifie que le code est correct et non expiré
+  if (
+    user.twoFactorCode !== code ||
+    !user.twoFactorExpires ||
+    user.twoFactorExpires < new Date()
+  ) {
+    throw new AppError(401, 'Code invalide ou expiré');
+  }
+
+  // Supprime le code après utilisation
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      twoFactorCode: null,
+      twoFactorExpires: null,
+    },
+  });
+
+  const tokens = generateTokens({ id: user.id, email: user.email, role: user.role });
+  await prisma.user.update({ where: { id: user.id }, data: { refreshToken: tokens.refreshToken } });
+
+  return { user: sanitizeUser(user), ...tokens };
+},
+
+async enableTwoFactor(userId: string) {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { twoFactorEnabled: true },
+  });
+},
+
+async disableTwoFactor(userId: string) {
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      twoFactorEnabled: false,
+      twoFactorCode: null,
+      twoFactorExpires: null,
     },
   });
 },

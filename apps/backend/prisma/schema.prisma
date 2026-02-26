@@ -20,6 +20,11 @@ model User {
   emailVerifyToken     String?
   emailVerifyExpires   DateTime?
 
+  // Double authentification
+twoFactorEnabled Boolean   @default(false)
+twoFactorCode    String?
+twoFactorExpires DateTime?
+
   // Réinitialisation mot de passe
   resetPasswordToken   String?
   resetPasswordExpires DateTime?

@@ -27,6 +27,31 @@ const sendVerifyEmail = async (email: string, token: string, firstName: string |
   });
 };
 
+const sendTwoFactorCode = async (email: string, code: string, firstName: string | null) => {
+  await resend.emails.send({
+    from: FROM_EMAIL,
+    to: email,
+    subject: 'Votre code de vérification',
+    html: `
+      <h2>Bonjour ${firstName || ''} 👋</h2>
+      <p>Voici votre code de vérification pour vous connecter :</p>
+      <div style="
+        display: inline-block;
+        padding: 16px 32px;
+        background: #f1f5f9;
+        border-radius: 8px;
+        font-size: 2rem;
+        font-weight: bold;
+        letter-spacing: 8px;
+        color: #1e40af;
+        margin: 16px 0;
+      ">${code}</div>
+      <p>Ce code expire dans <strong>5 minutes</strong>.</p>
+      <p>Si vous n'avez pas tenté de vous connecter, ignorez cet email.</p>
+    `,
+  });
+};
+
 // Email de réinitialisation du mot de passe
 const sendResetPasswordEmail = async (email: string, token: string, firstName: string | null) => {
   const resetUrl = `${process.env['FRONTEND_URL']}/reset-password?token=${token}`;
@@ -57,4 +82,6 @@ const sendResetPasswordEmail = async (email: string, token: string, firstName: s
 export const authMailer = {
   sendVerifyEmail,
   sendResetPasswordEmail,
+  sendTwoFactorCode,
 };
+

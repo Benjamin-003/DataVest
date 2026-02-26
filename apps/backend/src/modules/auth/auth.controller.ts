@@ -135,4 +135,31 @@ async verifyEmail(req: Request, res: Response, next: NextFunction) {
     next(err);
   }
 },
+
+async verifyTwoFactor(req: Request, res: Response, next: NextFunction) {
+  try {
+    const result = await authService.verifyTwoFactor(req.body.email, req.body.code);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+},
+
+async enableTwoFactor(req: Request, res: Response, next: NextFunction) {
+  try {
+    await authService.enableTwoFactor(req.user!.id);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+},
+
+async disableTwoFactor(req: Request, res: Response, next: NextFunction) {
+  try {
+    await authService.disableTwoFactor(req.user!.id);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+},
 };
