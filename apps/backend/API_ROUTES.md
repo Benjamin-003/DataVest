@@ -51,6 +51,26 @@ Base URL : `http://localhost:3000`
 **Retour 200 :**
 ```json
 {
+  "twoFactorRequired": true
+}
+```
+> La 2FA est obligatoire. Un code à 6 chiffres valable **5 minutes** est envoyé par email. Les tokens JWT ne sont retournés qu'après vérification du code via `/api/auth/2fa/verify`.
+
+---
+
+### `POST /api/auth/2fa/verify`
+
+**Body :**
+```json
+{
+  "email": "test@test.com",
+  "code": "123456"
+}
+```
+
+**Retour 200 :**
+```json
+{
   "user": {
     "id": "cmlv2l3c80000ik7khuj71g24",
     "email": "test@test.com",
@@ -117,8 +137,8 @@ Base URL : `http://localhost:3000`
   "message": "If this email exists, a reset link has been sent"
 }
 ```
-> Retourne toujours 200 même si l'email n'existe pas, pour ne pas révéler si un compte existe.
-> Un email avec un lien valide **1 heure** est envoyé si le compte existe.
+> Retourne toujours 200 même si l'email n'existe pas.
+> Lien valide **1 heure**.
 
 ---
 
@@ -151,13 +171,13 @@ Base URL : `http://localhost:3000`
   "message": "Email verified successfully"
 }
 ```
-> Le token de vérification est valide **24 heures**.
+> Token valide **24 heures**.
 
 ---
 
 ## Routes protégées 🔒
 
-> Header requis sur toutes ces routes :
+> Header requis :
 > ```
 > Authorization: Bearer <accessToken>
 > ```
@@ -184,7 +204,7 @@ Base URL : `http://localhost:3000`
 
 ### `PATCH /api/auth/me`
 
-> Tous les champs sont optionnels — envoyez uniquement ce que vous souhaitez modifier.
+> Tous les champs sont optionnels.
 
 **Body :**
 ```json
@@ -240,12 +260,34 @@ Base URL : `http://localhost:3000`
 
 ---
 
+## Flux d'authentification complet
+
+```
+1. POST /login
+   → { twoFactorRequired: true }
+   → Email avec code à 6 chiffres (valable 5 min)
+
+2. POST /2fa/verify avec le code
+   → { user, accessToken, refreshToken }
+
+3. Requêtes protégées
+   → Authorization: Bearer accessToken
+
+4. Access token expiré → 401
+   → POST /refresh
+   → nouveaux tokens
+
+5. Refresh token expiré → 401
+   → redirection /login
+```
+
+---
+
 ## Erreurs
 
-### Format d'une erreur de validation (422)
+### Validation (422)
 ```json
 {
-  "message": "Validation error",
   "errors": [
     { "field": "email", "message": "Adresse email invalide" },
     { "field": "password", "message": "Le mot de passe doit faire au moins 12 caractères" }
@@ -253,10 +295,10 @@ Base URL : `http://localhost:3000`
 }
 ```
 
-### Format d'une erreur métier
+### Erreur métier
 ```json
 {
-  "message": "Email déjà utilisé"
+  "message": "Identifiants invalides"
 }
 ```
 
@@ -270,9 +312,9 @@ Base URL : `http://localhost:3000`
 | Majuscule | Au moins une lettre majuscule |
 | Minuscule | Au moins une lettre minuscule |
 | Chiffre | Au moins un chiffre |
-| Caractère spécial | Au moins un caractère spécial (ex: `!`, `@`, `#`, `$`) |
+| Caractère spécial | Au moins un caractère spécial |
 
 **Exemples :**
-- ❌ `simple` — trop court, pas de majuscule ni chiffre
+- ❌ `simple` — trop court
 - ❌ `monmotdepasse` — pas de majuscule, chiffre ou caractère spécial
 - ✅ `MonMotDePasse123!` — valide

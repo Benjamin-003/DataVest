@@ -40,53 +40,68 @@ Backend/
 ## Prisma
 
 ### `prisma/schema.prisma`
-Décrit la structure de la base de données.
-Contient le modèle `User` avec tous ses champs dont les nouveaux champs pour la vérification email et la réinitialisation de mot de passe.
+Décrit la structure de la base de données. Contient le modèle `User` avec tous ses champs.
+
+**Champs du modèle User :**
+| Champ | Type | Description |
+|---|---|---|
+| id | String | Identifiant unique (cuid) |
+| email | String | Email unique |
+| password | String | Mot de passe hashé (bcrypt) |
+| firstName | String? | Prénom (optionnel) |
+| lastName | String? | Nom (optionnel) |
+| role | Role | Rôle (USER ou ADMIN) |
+| refreshToken | String? | Token de rafraîchissement |
+| emailVerified | Boolean | Email vérifié |
+| emailVerifyToken | String? | Token de vérification email |
+| emailVerifyExpires | DateTime? | Expiration du token de vérification |
+| resetPasswordToken | String? | Token de réinitialisation |
+| resetPasswordExpires | DateTime? | Expiration du token de réinitialisation |
+| twoFactorCode | String? | Code 2FA |
+| twoFactorExpires | DateTime? | Expiration du code 2FA |
+| createdAt | DateTime | Date de création |
+| updatedAt | DateTime | Date de mise à jour |
 
 ### `prisma.config.ts`
-Fichier de configuration propre à Prisma v7.
-Indique à Prisma où se trouve le schéma, les migrations, et comment se connecter à la base via `DATABASE_URL`.
+Configuration Prisma v7 — schéma, migrations et connexion à la base.
 
 ---
 
 ## Configuration
 
 ### `src/config/env.ts`
-Charge et valide toutes les variables d'environnement au démarrage du serveur.
-Si une variable obligatoire est manquante, le serveur refuse de démarrer avec un message d'erreur clair.
+Charge et valide toutes les variables d'environnement au démarrage.
 
 ### `src/config/mailer.ts`
-Initialise le client **Resend** avec la clé API.
-Exporte l'instance `resend` et l'adresse expéditeur `FROM_EMAIL`.
+Initialise le client **Resend** avec la clé API et exporte l'adresse expéditeur.
 
 ---
 
 ## Types TypeScript
 
 ### `src/types/env.d.ts`
-Déclare à TypeScript quelles variables existent dans `process.env`.
+Déclare les variables d'environnement pour TypeScript.
 
 ### `src/types/express.d.ts`
-Étend le type `Request` d'Express pour y ajouter la propriété `user`.
+Étend le type `Request` d'Express pour y ajouter `req.user`.
 
 ---
 
 ## Prisma Client
 
 ### `src/prisma/client.ts`
-Crée et exporte une seule instance de `PrismaClient` partagée dans toute l'application.
-Utilise l'adapter `@prisma/adapter-pg` requis par Prisma v7.
+Singleton `PrismaClient` partagé dans toute l'application.
+Utilise `@prisma/adapter-pg` requis par Prisma v7.
 
 ---
 
 ## Middlewares
 
 ### `src/middleware/error.middleware.ts`
-Intercepte toutes les erreurs et retourne une réponse JSON propre.
-Gère : erreurs Zod (422), erreurs métier AppError, erreurs inattendues (500).
+Intercepte toutes les erreurs — Zod (422), AppError, erreurs inattendues (500).
 
 ### `src/middleware/validate.middleware.ts`
-Valide les données d'une requête via un schéma Zod.
+Valide les données d'une requête via un schéma Zod. Retourne 422 si invalide.
 
 ### `src/middleware/auth.middleware.ts`
 - **`authenticate`** : vérifie le token JWT et injecte `req.user`
@@ -97,50 +112,59 @@ Valide les données d'une requête via un schéma Zod.
 ## Modules
 
 ### `src/modules/auth/auth.schema.ts`
-Définit toutes les règles de validation Zod.
+Définit toutes les règles de validation Zod et exporte les types TypeScript associés.
 
-Règles de validation du mot de passe :
-- Minimum **12 caractères**
-- Au moins **une majuscule**
-- Au moins **une minuscule**
-- Au moins **un chiffre**
-- Au moins **un caractère spécial**
+**Schémas disponibles :**
+- `registerSchema` / `loginSchema` / `refreshSchema`
+- `updateMeSchema` / `changePasswordSchema`
+- `checkEmailSchema`
+- `forgotPasswordSchema` / `resetPasswordSchema`
+- `verifyEmailSchema`
+- `verifyTwoFactorSchema`
+
+**Règle `passwordValidation` (réutilisée dans tous les schémas) :**
+- Minimum 12 caractères
+- Au moins une majuscule
+- Au moins une minuscule
+- Au moins un chiffre
+- Au moins un caractère spécial
 
 ### `src/modules/auth/auth.mailer.ts`
-Contient les templates HTML des emails transactionnels :
-- **`sendVerifyEmail`** — email de vérification après inscription (token valide 24h)
-- **`sendResetPasswordEmail`** — email de réinitialisation de mot de passe (token valide 1h)
+Templates HTML des emails transactionnels envoyés via Resend :
+- **`sendVerifyEmail`** — vérification email (token 24h)
+- **`sendResetPasswordEmail`** — réinitialisation mot de passe (token 1h)
+- **`sendTwoFactorCode`** — code 2FA (code 5 min)
 
 ### `src/modules/auth/auth.service.ts`
-Contient toute la logique métier, découpée en petites fonctions avec un rôle précis.
+Logique métier complète, découpée en petites fonctions.
 
-Fonctions utilitaires (hors authService) :
-- `generateTokens` — génère la paire access/refresh token
-- `generateSecureToken` — génère un token aléatoire sécurisé
-- `sanitizeUser` — retire les données sensibles avant de retourner l'utilisateur
-- `checkEmailAvailability` — vérifie qu'un email n'est pas déjà utilisé
-- `hashPassword` — hash le mot de passe avec bcrypt
-- `createUser` — crée l'utilisateur en base
-- `saveRefreshToken` — sauvegarde le refresh token en base
-- `updateUser` — met à jour partiellement le profil
+**Fonctions utilitaires (hors authService) :**
+- `generateTokens` — paire access/refresh token
+- `generateSecureToken` — token aléatoire sécurisé (crypto)
+- `sanitizeUser` — retire les données sensibles
+- `checkEmailAvailability` — vérifie qu'un email n'est pas utilisé
+- `hashPassword` — hash bcrypt (coût 12)
+- `createUser` — création en base
+- `saveRefreshToken` — sauvegarde refresh token
+- `updateUser` — mise à jour partielle
 
-Méthodes de authService :
-- **`register`** — inscription + envoi email de vérification
-- **`login`** — connexion
-- **`refresh`** — renouvellement des tokens
-- **`logout`** — invalidation du refresh token
-- **`getLoggedUser`** — profil de l'utilisateur connecté
+**Méthodes de authService :**
+- **`register`** — inscription + email de vérification
+- **`login`** — vérification credentials + envoi code 2FA
+- **`verifyTwoFactor`** — vérification code 2FA + retour tokens
+- **`refresh`** — renouvellement tokens
+- **`logout`** — invalidation refresh token
+- **`getLoggedUser`** — profil utilisateur connecté
 - **`updateMe`** — mise à jour partielle du profil
 - **`deleteMe`** — suppression du compte
-- **`checkEmail`** — vérification de disponibilité d'un email
-- **`changePassword`** — changement de mot de passe
-- **`forgotPassword`** — demande de réinitialisation + envoi email
+- **`checkEmail`** — disponibilité d'un email
+- **`changePassword`** — changement mot de passe
+- **`forgotPassword`** — demande réinitialisation + email
 - **`resetPassword`** — réinitialisation via token
-- **`verifyEmail`** — validation de l'adresse email via token
+- **`verifyEmail`** — validation adresse email
 
 ### `src/modules/auth/auth.controller.ts`
-Fait le lien entre les routes et le service.
-Ne contient aucune logique métier, uniquement de la gestion req/res.
+Lien entre routes et service. Gestion req/res uniquement, aucune logique métier.
 
 ### `src/modules/auth/auth.routes.ts`
 
@@ -148,6 +172,7 @@ Ne contient aucune logique métier, uniquement de la gestion req/res.
 |---|---|---|---|
 | POST | `/api/auth/register` | Public | Créer un compte |
 | POST | `/api/auth/login` | Public | Se connecter |
+| POST | `/api/auth/2fa/verify` | Public | Vérifier le code 2FA |
 | POST | `/api/auth/refresh` | Public | Renouveler le token |
 | POST | `/api/auth/check-email` | Public | Vérifier si un email existe |
 | POST | `/api/auth/forgot-password` | Public | Demander une réinitialisation |
@@ -168,39 +193,41 @@ Requête HTTP
      ↓
 authenticate        ← vérifie le token JWT (routes protégées)
      ↓
-validate(schema)    ← vérifie les données envoyées par le client
+validate(schema)    ← vérifie les données (Zod)
      ↓
-controller          ← traite la requête et appelle le service
+controller          ← gestion req/res
      ↓
-service             ← logique métier + appels à la base via Prisma
+service             ← logique métier + Prisma
      ↓
-mailer              ← envoi d'email si nécessaire (register, forgot-password)
+mailer              ← envoi email si nécessaire
      ↓
 Réponse JSON
-     ↓ (en cas d'erreur)
-errorHandler        ← formate et retourne l'erreur au client
+     ↓ (erreur)
+errorHandler
 ```
 
 ---
 
-## Flux d'authentification JWT
+## Flux d'authentification avec 2FA
 
 ```
-1. POST /login
-   ← accessToken (valide 7 jours) + refreshToken (valide 30 jours)
+1. POST /login (email + password)
+   → credentials vérifiés
+   → code 2FA généré et envoyé par email (5 min)
+   → { twoFactorRequired: true }
 
-2. Requêtes protégées
+2. POST /2fa/verify (email + code)
+   → code vérifié
+   → { user, accessToken, refreshToken }
+
+3. Requêtes protégées
    → Authorization: Bearer accessToken
-   ← réponse normale
 
-3. Access token expiré
-   ← 401 Unauthorized
+4. Access token expiré → 401
+   → POST /refresh → nouveaux tokens
 
-4. POST /refresh avec le refreshToken
-   ← nouveau accessToken + refreshToken
-
-5. Si refresh token expiré
-   ← 401 → redirection vers /login
+5. Refresh token expiré → 401
+   → redirection /login
 ```
 
 ---
@@ -208,25 +235,17 @@ errorHandler        ← formate et retourne l'erreur au client
 ## Flux de vérification email
 
 ```
-1. POST /register
-   → compte créé + email de vérification envoyé (token valide 24h)
-
-2. Utilisateur clique sur le lien dans l'email
-   → POST /verify-email avec le token
-   ← emailVerified = true
+1. POST /register → email de vérification envoyé (24h)
+2. POST /verify-email avec token → emailVerified = true
 ```
 
 ---
 
-## Flux de réinitialisation de mot de passe
+## Flux de réinitialisation mot de passe
 
 ```
-1. POST /forgot-password avec l'email
-   → email envoyé si le compte existe (token valide 1h)
-
-2. Utilisateur clique sur le lien dans l'email
-   → POST /reset-password avec le token + nouveau mot de passe
-   ← mot de passe mis à jour + token supprimé
+1. POST /forgot-password → email envoyé si compte existe (1h)
+2. POST /reset-password avec token + nouveau mot de passe → OK
 ```
 
 ---
@@ -244,5 +263,5 @@ errorHandler        ← formate et retourne l'erreur au client
 | JWT | - | Authentification |
 | Bcrypt | - | Hash des mots de passe |
 | Zod | - | Validation des données |
-| Resend | - | Envoi d'emails transactionnels |
+| Resend | - | Emails transactionnels |
 | @prisma/adapter-pg | - | Adapter PostgreSQL pour Prisma v7 |

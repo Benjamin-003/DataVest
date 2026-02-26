@@ -6,10 +6,8 @@ API REST construite avec **Express**, **TypeScript**, **Prisma v7** et **Postgre
 
 ## Prérequis
 
-Avant de commencer, assurez-vous d'avoir installé sur votre machine :
-
 - [Node.js](https://nodejs.org/) v18 ou supérieur
-- [Docker Desktop](https://www.docker.com/products/docker-desktop) (pour PostgreSQL)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop)
 - [Git](https://git-scm.com/)
 
 ---
@@ -31,13 +29,9 @@ npm install
 
 ### 3. Configurer les variables d'environnement
 
-Copiez le fichier `.env.example` et renommez-le `.env` :
-
 ```bash
 cp .env.example .env
 ```
-
-Puis remplissez les valeurs dans `.env` :
 
 ```env
 PORT=3000
@@ -56,13 +50,11 @@ RESEND_API_KEY=votre_cle_api_resend
 FRONTEND_URL=http://localhost:5173
 ```
 
-> ⚠️ Ne commitez jamais le fichier `.env` — il contient des informations sensibles.
+> ⚠️ Ne commitez jamais le fichier `.env`.
 
 ---
 
 ## Lancer PostgreSQL avec Docker
-
-### Démarrer le conteneur
 
 ```bash
 docker run --name database \
@@ -73,20 +65,10 @@ docker run --name database \
   -d postgres:16
 ```
 
-### Vérifier que le conteneur tourne
-
 ```bash
-docker ps
-```
-
-Vous devriez voir le conteneur `database` avec le statut **Up**.
-
-### Commandes utiles Docker
-
-```bash
-docker start database   # démarrer le conteneur
-docker stop database    # arrêter le conteneur
-docker rm database      # supprimer le conteneur
+docker start database   # démarrer
+docker stop database    # arrêter
+docker rm database      # supprimer
 ```
 
 > ⚠️ Le conteneur doit être démarré avant de lancer le serveur.
@@ -95,44 +77,21 @@ docker rm database      # supprimer le conteneur
 
 ## Base de données
 
-### Générer le client Prisma
-
 ```bash
-npx prisma generate
+npx prisma generate       # générer le client
+npx prisma migrate dev    # lancer les migrations
+npx prisma studio         # interface visuelle (http://localhost:5555)
 ```
-
-### Lancer les migrations
-
-```bash
-npx prisma migrate dev
-```
-
-### Visualiser les données (optionnel)
-
-```bash
-npx prisma studio
-```
-
-Ouvre une interface web sur `http://localhost:5555`.
 
 ---
 
 ## Lancer le serveur
 
-### Mode développement (avec rechargement automatique)
-
 ```bash
-npm run dev
+npm run dev       # développement
+npm run build     # compiler
+npm start         # production
 ```
-
-### Mode production
-
-```bash
-npm run build
-npm start
-```
-
-Si tout fonctionne, vous devriez voir dans le terminal :
 
 ```
 ✅ Database connected
@@ -144,8 +103,7 @@ Si tout fonctionne, vous devriez voir dans le terminal :
 
 ## Routes disponibles
 
-### Santé du serveur
-
+### Santé
 | Méthode | Route | Description |
 |---|---|---|
 | GET | `/health` | Vérifier que le serveur tourne |
@@ -155,10 +113,11 @@ Si tout fonctionne, vous devriez voir dans le terminal :
 | Méthode | Route | Accès | Description |
 |---|---|---|---|
 | POST | `/api/auth/register` | Public | Créer un compte |
-| POST | `/api/auth/login` | Public | Se connecter |
+| POST | `/api/auth/login` | Public | Se connecter (retourne twoFactorRequired) |
+| POST | `/api/auth/2fa/verify` | Public | Vérifier le code 2FA et obtenir les tokens |
 | POST | `/api/auth/refresh` | Public | Renouveler le token |
 | POST | `/api/auth/check-email` | Public | Vérifier si un email existe |
-| POST | `/api/auth/forgot-password` | Public | Demander une réinitialisation de mot de passe |
+| POST | `/api/auth/forgot-password` | Public | Demander une réinitialisation |
 | POST | `/api/auth/reset-password` | Public | Réinitialiser le mot de passe |
 | POST | `/api/auth/verify-email` | Public | Vérifier l'adresse email |
 | POST | `/api/auth/logout` | Protégé 🔒 | Se déconnecter |
@@ -169,30 +128,23 @@ Si tout fonctionne, vous devriez voir dans le terminal :
 
 ---
 
-## Règles de validation
+## Sécurité
 
-### Mot de passe
-Le mot de passe doit respecter les règles suivantes :
-- Minimum **12 caractères**
-- Au moins **une majuscule**
-- Au moins **une minuscule**
-- Au moins **un chiffre**
-- Au moins **un caractère spécial**
-
-### Email
-- Doit être une adresse email valide
+- **2FA obligatoire** par email à chaque connexion (code valable 5 minutes)
+- **JWT** access token (7 jours) + refresh token (30 jours)
+- **Bcrypt** pour le hash des mots de passe (coût 12)
+- **Zod** pour la validation des données entrantes
+- Mot de passe : minimum 12 caractères, majuscule, minuscule, chiffre, caractère spécial
 
 ---
 
-## Emails transactionnels
+## Emails transactionnels (Resend)
 
-Le service utilise **Resend** pour l'envoi des emails. Deux emails sont envoyés automatiquement :
-
-- **Vérification d'email** — après l'inscription, lien valide **24 heures**
-- **Réinitialisation de mot de passe** — sur demande, lien valide **1 heure**
-
-> En développement, utilisez l'adresse `onboarding@resend.dev` comme expéditeur.
-> En production, configurez votre propre domaine sur resend.com.
+| Email | Déclencheur | Expiration |
+|---|---|---|
+| Vérification email | Inscription | 24 heures |
+| Code 2FA | Connexion | 5 minutes |
+| Réinitialisation mot de passe | Forgot password | 1 heure |
 
 ---
 
