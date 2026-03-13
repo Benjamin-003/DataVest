@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "test": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -13,7 +14,6 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^7.4.1",
-    "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
@@ -31,7 +31,10 @@
   },
   "devDependencies": {
     "@prisma/adapter-pg": "^7.4.1",
+    "@types/bcryptjs": "^2.4.6",
     "@types/pg": "^8.16.0",
-    "pg": "^8.18.0"
+    "@vitest/coverage-v8": "^4.0.18",
+    "pg": "^8.18.0",
+    "vitest": "^4.0.18"
   }
 }
