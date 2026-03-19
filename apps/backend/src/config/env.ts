@@ -10,7 +10,7 @@ requiredEnvVars.forEach((envVar) => {
 });
 
 export const config = {
-  port: parseInt(process.env['PORT'] || '3000', 10),
+  port: Number.parseInt(process.env['PORT'] || '3000', 10),
   nodeEnv: process.env['NODE_ENV'] || 'development',
   jwt: {
     secret: process.env['JWT_SECRET'] as string,
