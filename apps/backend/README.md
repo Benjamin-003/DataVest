@@ -1,6 +1,6 @@
 # Projet Fullstack — Auth App
 
-Application fullstack avec authentification complète, 2FA par email, et gestion de profil.
+Application fullstack avec authentification complète, 2FA par email, gestion de profil, et conversion de fichiers XML en arborescence (data tree).
 
 ---
 
@@ -13,6 +13,8 @@ Application fullstack avec authentification complète, 2FA par email, et gestion
 - Zod (validation)
 - bcryptjs (hash mot de passe)
 - Resend (envoi emails)
+- Multer (upload de fichiers)
+- xml2js (parsing XML)
 
 ### Frontend
 - Vite + React + TypeScript
@@ -112,6 +114,17 @@ npm run dev               # http://localhost:5173
 5. Requêtes protégées   → Authorization: Bearer <accessToken>
 6. Token expiré         → POST /refresh → nouveaux tokens
 7. POST /logout         → déconnexion
+```
+
+---
+
+## Conversion XML → Data Tree
+
+```
+1. POST /api/conversions        → upload d'un fichier XML → arborescence JSON retournée
+2. GET  /api/conversions        → liste de toutes ses conversions
+3. GET  /api/conversions/:id    → détail d'une conversion
+4. DELETE /api/conversions/:id  → suppression d'une conversion
 ```
 
 ---

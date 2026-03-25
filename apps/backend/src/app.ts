@@ -3,6 +3,7 @@ import cors from 'cors';
 import { config } from './config/env';
 import { errorHandler } from './middleware/error.middleware';
 import authRoutes from './modules/auth/auth.routes';
+import conversionRouter from './modules/conversion/conversion.routes';
 
 const app = express();
 
@@ -27,6 +28,8 @@ app.get('/health', (_req, res) => {
 // Toutes les routes de auth.routes.ts seront préfixées par /api/auth
 // Ex: /register devient /api/auth/register
 app.use('/api/auth', authRoutes);
+
+app.use('/api/conversions', conversionRouter);
 
 // Handler 404 — si aucune route ne correspond à l'URL demandée
 app.use((_req, res) => {

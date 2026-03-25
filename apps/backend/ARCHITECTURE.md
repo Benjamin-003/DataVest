@@ -16,12 +16,17 @@ Backend/
 │   │   ├── error.middleware.ts
 │   │   └── validate.middleware.ts
 │   ├── modules/
-│   │   └── auth/
-│   │       ├── auth.mailer.ts
-│   │       ├── auth.schema.ts
-│   │       ├── auth.service.ts
-│   │       ├── auth.controller.ts
-│   │       └── auth.routes.ts
+│   │   ├── auth/
+│   │   │   ├── auth.mailer.ts
+│   │   │   ├── auth.schema.ts
+│   │   │   ├── auth.service.ts
+│   │   │   ├── auth.controller.ts
+│   │   │   └── auth.routes.ts
+│   │   └── conversions/
+│   │       ├── conversion.schema.ts
+│   │       ├── conversion.service.ts
+│   │       ├── conversion.controller.ts
+│   │       └── conversion.routes.ts
 │   ├── prisma/
 │   │   └── client.ts
 │   └── types/
@@ -52,18 +57,39 @@ Décrit la structure de la base de données. Contient le modèle `User` avec tou
 | lastName | String? | Nom (optionnel) |
 | role | Role | Rôle (USER ou ADMIN) |
 | refreshToken | String? | Token de rafraîchissement |
-| emailVerified | Boolean | Email vérifié |
+| emailVerified | Boolean | Email vérifié (défaut : false) |
 | emailVerifyToken | String? | Token de vérification email |
 | emailVerifyExpires | DateTime? | Expiration du token de vérification |
-| resetPasswordToken | String? | Token de réinitialisation |
-| resetPasswordExpires | DateTime? | Expiration du token de réinitialisation |
+| twoFactorEnabled | Boolean | 2FA activée (défaut : false) |
 | twoFactorCode | String? | Code 2FA |
 | twoFactorExpires | DateTime? | Expiration du code 2FA |
+| resetPasswordToken | String? | Token de réinitialisation |
+| resetPasswordExpires | DateTime? | Expiration du token de réinitialisation |
 | createdAt | DateTime | Date de création |
 | updatedAt | DateTime | Date de mise à jour |
 
 ### `prisma.config.ts`
 Configuration Prisma v7 — schéma, migrations et connexion à la base.
+
+**Champs du modèle Conversion :**
+| Champ | Type | Description |
+|---|---|---|
+| id | String | Identifiant unique (cuid) |
+| userId | String | Référence vers l'utilisateur propriétaire |
+| fileName | String | Nom du fichier XML uploadé |
+| xmlContent | String | Contenu brut du fichier XML (`@db.Text`) |
+| jsonContent | String | Représentation JSON du XML (`@db.Text`) |
+| treeContent | String | Tableau plat de nœuds représentant l'arborescence (`@db.Text`) |
+| createdAt | DateTime | Date de création |
+
+> La relation `User → Conversion` est en `onDelete: Cascade` : supprimer un utilisateur supprime toutes ses conversions.
+
+> **Structure d'un nœud `treeContent` :**
+> - `id` — index du nœud
+> - `tag` — nom du tag XML (`user_name` pour le nœud racine)
+> - `value` — valeur textuelle du nœud (vide si nœud parent)
+> - `parentId` — id du nœud parent (−1 pour la racine)
+> - `children` — tableau des `id` des enfants directs
 
 ---
 
@@ -184,6 +210,33 @@ Lien entre routes et service. Gestion req/res uniquement, aucune logique métier
 | PATCH | `/api/auth/password` | Protégé 🔒 | Changer son mot de passe |
 | DELETE | `/api/auth/me` | Protégé 🔒 | Supprimer son compte |
 
+### `src/modules/conversions/conversion.schema.ts`
+Schémas Zod pour la validation des données du module conversions.
+
+**Schémas disponibles :**
+- `createConversionSchema` — valide que le fichier uploadé est bien un XML
+
+### `src/modules/conversions/conversion.service.ts`
+Logique métier du module conversions.
+
+**Méthodes :**
+- **`create`** — parse le fichier XML, génère le JSON intermédiaire (`jsonContent`) et le tableau plat de nœuds (`treeContent`), puis persiste les 3 représentations en base
+- **`findAll`** — récupère toutes les conversions de l'utilisateur connecté
+- **`findOne`** — récupère une conversion par son id (vérifie l'ownership)
+- **`delete`** — supprime une conversion (vérifie l'ownership)
+
+### `src/modules/conversions/conversion.controller.ts`
+Lien entre routes et service. Gestion req/res uniquement, aucune logique métier.
+
+### `src/modules/conversions/conversion.routes.ts`
+
+| Méthode | Route | Accès | Description |
+|---|---|---|---|
+| POST | `/api/conversions` | Protégé 🔒 | Uploader un XML et générer l'arborescence |
+| GET | `/api/conversions` | Protégé 🔒 | Lister toutes ses conversions |
+| GET | `/api/conversions/:id` | Protégé 🔒 | Voir une conversion |
+| DELETE | `/api/conversions/:id` | Protégé 🔒 | Supprimer une conversion |
+
 ---
 
 ## Flux d'une requête
@@ -264,4 +317,3 @@ errorHandler
 | Bcrypt | - | Hash des mots de passe |
 | Zod | - | Validation des données |
 | Resend | - | Emails transactionnels |
-| @prisma/adapter-pg | - | Adapter PostgreSQL pour Prisma v7 |
