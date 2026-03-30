@@ -1,138 +1,440 @@
-# Projet Fullstack — Auth App
+# Architecture du projet Backend
 
-Application fullstack avec authentification complète, 2FA par email, gestion de profil, et conversion de fichiers XML en arborescence (data tree).
+## Structure des fichiers
+
+```
+Backend/
+├── prisma/
+│   ├── migrations/
+│   └── schema.prisma
+├── src/
+│   ├── config/
+│   │   ├── env.ts
+│   │   └── mailer.ts
+│   ├── middleware/
+│   │   ├── auth.middleware.ts
+│   │   ├── error.middleware.ts
+│   │   └── validate.middleware.ts
+│   ├── modules/
+│   │   ├── auth/
+│   │   │   ├── auth.mailer.ts
+│   │   │   ├── auth.schema.ts
+│   │   │   ├── auth.service.ts
+│   │   │   ├── auth.controller.ts
+│   │   │   └── auth.routes.ts
+│   │   └── conversions/
+│   │       ├── conversion.schema.ts
+│   │       ├── conversion.service.ts
+│   │       ├── conversion.controller.ts
+│   │       └── conversion.routes.ts
+│   ├── prisma/
+│   │   └── client.ts
+│   └── types/
+│       ├── env.d.ts
+│       └── express.d.ts
+├── .env
+├── .env.example
+├── .gitignore
+├── prisma.config.ts
+├── package.json
+└── tsconfig.json
+```
+
+---
+
+## Prisma
+
+### `prisma/schema.prisma`
+Décrit la structure de la base de données. Contient le modèle `User` avec tous ses champs.
+
+**Champs du modèle User :**
+| Champ | Type | Description |
+|---|---|---|
+| id | String | Identifiant unique (cuid) |
+| email | String | Email unique |
+| password | String | Mot de passe hashé (bcrypt) |
+| firstName | String? | Prénom (optionnel) |
+| lastName | String? | Nom (optionnel) |
+| role | Role | Rôle (USER ou ADMIN) |
+| refreshToken | String? | Token de rafraîchissement |
+| emailVerified | Boolean | Email vérifié (défaut : false) |
+| emailVerifyToken | String? | Token de vérification email |
+| emailVerifyExpires | DateTime? | Expiration du token de vérification |
+| twoFactorEnabled | Boolean | 2FA activée (défaut : false) |
+| twoFactorCode | String? | Code 2FA |
+| twoFactorExpires | DateTime? | Expiration du code 2FA |
+| resetPasswordToken | String? | Token de réinitialisation |
+| resetPasswordExpires | DateTime? | Expiration du token de réinitialisation |
+| createdAt | DateTime | Date de création |
+| updatedAt | DateTime | Date de mise à jour |
+
+### `prisma.config.ts`
+Configuration Prisma v7 — schéma, migrations et connexion à la base.
+
+**Champs du modèle Conversion :**
+| Champ | Type | Description |
+|---|---|---|
+| id | String | Identifiant unique (cuid) |
+| userId | String | Référence vers l'utilisateur propriétaire |
+| fileName | String | Nom du fichier XML uploadé |
+| xmlContent | String | Contenu brut du fichier XML (`@db.Text`) |
+| jsonContent | String | Représentation JSON du XML (`@db.Text`) |
+| treeContent | String | Tableau plat de nœuds représentant l'arborescence (`@db.Text`) |
+| createdAt | DateTime | Date de création |
+
+> La relation `User → Conversion` est en `onDelete: Cascade` : supprimer un utilisateur supprime toutes ses conversions.
+
+> **Structure d'un nœud `treeContent` :**
+> - `id` — index du nœud
+> - `tag` — nom du tag XML (`user_name` pour le nœud racine)
+> - `value` — valeur textuelle du nœud (vide si nœud parent)
+> - `parentId` — id du nœud parent (−1 pour la racine)
+> - `children` — tableau des `id` des enfants directs
+
+---
+
+## Configuration
+
+### `src/config/env.ts`
+Charge et valide toutes les variables d'environnement au démarrage.
+
+### `src/config/mailer.ts`
+Initialise le client **Resend** avec la clé API et exporte l'adresse expéditeur.
+
+---
+
+## Types TypeScript
+
+### `src/types/env.d.ts`
+Déclare les variables d'environnement pour TypeScript.
+
+### `src/types/express.d.ts`
+Étend le type `Request` d'Express pour y ajouter `req.user`.
+
+---
+
+## Prisma Client
+
+### `src/prisma/client.ts`
+Singleton `PrismaClient` partagé dans toute l'application.
+Utilise `@prisma/adapter-pg` requis par Prisma v7.
+
+---
+
+## Middlewares
+
+### `src/middleware/error.middleware.ts`
+Intercepte toutes les erreurs — Zod (422), AppError, erreurs inattendues (500).
+
+### `src/middleware/validate.middleware.ts`
+Valide les données d'une requête via un schéma Zod. Retourne 422 si invalide.
+
+### `src/middleware/auth.middleware.ts`
+- **`authenticate`** : vérifie le token JWT et injecte `req.user`
+- **`authorize(...roles)`** : vérifie le rôle de l'utilisateur
+
+---
+
+## Modules
+
+### `src/modules/auth/auth.schema.ts`
+Définit toutes les règles de validation Zod et exporte les types TypeScript associés.
+
+**Schémas disponibles :**
+- `registerSchema` / `loginSchema` / `refreshSchema`
+- `updateMeSchema` / `changePasswordSchema`
+- `checkEmailSchema`
+- `forgotPasswordSchema` / `resetPasswordSchema`
+- `verifyEmailSchema`
+- `verifyTwoFactorSchema`
+
+**Règle `passwordValidation` (réutilisée dans tous les schémas) :**
+- Minimum 12 caractères
+- Au moins une majuscule
+- Au moins une minuscule
+- Au moins un chiffre
+- Au moins un caractère spécial
+
+### `src/modules/auth/auth.mailer.ts`
+Templates HTML des emails transactionnels envoyés via Resend :
+- **`sendVerifyEmail`** — vérification email (token 24h)
+- **`sendResetPasswordEmail`** — réinitialisation mot de passe (token 1h)
+- **`sendTwoFactorCode`** — code 2FA (code 5 min)
+
+### `src/modules/auth/auth.service.ts`
+Logique métier complète, découpée en petites fonctions.
+
+**Fonctions utilitaires (hors authService) :**
+- `generateTokens` — paire access/refresh token
+- `generateSecureToken` — token aléatoire sécurisé (crypto)
+- `sanitizeUser` — retire les données sensibles
+- `checkEmailAvailability` — vérifie qu'un email n'est pas utilisé
+- `hashPassword` — hash bcrypt (coût 12)
+- `createUser` — création en base
+- `saveRefreshToken` — sauvegarde refresh token
+- `updateUser` — mise à jour partielle
+
+**Méthodes de authService :**
+- **`register`** — inscription + email de vérification
+- **`login`** — vérification credentials + envoi code 2FA
+- **`verifyTwoFactor`** — vérification code 2FA + retour tokens
+- **`refresh`** — renouvellement tokens
+- **`logout`** — invalidation refresh token
+- **`getLoggedUser`** — profil utilisateur connecté
+- **`updateMe`** — mise à jour partielle du profil
+- **`deleteMe`** — suppression du compte
+- **`checkEmail`** — disponibilité d'un email
+- **`changePassword`** — changement mot de passe
+- **`forgotPassword`** — demande réinitialisation + email
+- **`resetPassword`** — réinitialisation via token
+- **`verifyEmail`** — validation adresse email
+
+### `src/modules/auth/auth.controller.ts`
+Lien entre routes et service. Gestion req/res uniquement, aucune logique métier.
+
+### `src/modules/auth/auth.routes.ts`
+
+| Méthode | Route | Accès | Description |
+|---|---|---|---|
+| POST | `/api/auth/register` | Public | Créer un compte |
+| POST | `/api/auth/login` | Public | Se connecter |
+| POST | `/api/auth/2fa/verify` | Public | Vérifier le code 2FA |
+| POST | `/api/auth/refresh` | Public | Renouveler le token |
+| POST | `/api/auth/check-email` | Public | Vérifier si un email existe |
+| POST | `/api/auth/forgot-password` | Public | Demander une réinitialisation |
+| POST | `/api/auth/reset-password` | Public | Réinitialiser le mot de passe |
+| POST | `/api/auth/verify-email` | Public | Vérifier l'adresse email |
+| POST | `/api/auth/logout` | Protégé 🔒 | Se déconnecter |
+| GET | `/api/auth/me` | Protégé 🔒 | Voir son profil |
+| PATCH | `/api/auth/me` | Protégé 🔒 | Modifier son profil |
+| PATCH | `/api/auth/password` | Protégé 🔒 | Changer son mot de passe |
+| DELETE | `/api/auth/me` | Protégé 🔒 | Supprimer son compte |
+
+### `src/modules/conversions/conversion.schema.ts`
+Schémas Zod pour la validation des données du module conversions.
+
+**Schémas disponibles :**
+- `createConversionSchema` — valide que le fichier uploadé est bien un XML
+
+### `src/modules/conversions/conversion.service.ts`
+Logique métier du module conversions.
+
+**Méthodes :**
+- **`create`** — parse le fichier XML, génère le JSON intermédiaire (`jsonContent`) et le tableau plat de nœuds (`treeContent`), puis persiste les 3 représentations en base
+- **`findAll`** — récupère toutes les conversions de l'utilisateur connecté
+- **`findOne`** — récupère une conversion par son id (vérifie l'ownership)
+- **`delete`** — supprime une conversion (vérifie l'ownership)
+
+### `src/modules/conversions/conversion.controller.ts`
+Lien entre routes et service. Gestion req/res uniquement, aucune logique métier.
+
+### `src/modules/conversions/conversion.routes.ts`
+
+| Méthode | Route | Accès | Description |
+|---|---|---|---|
+| POST | `/api/conversions` | Protégé 🔒 | Uploader un XML et générer l'arborescence |
+| GET | `/api/conversions` | Protégé 🔒 | Lister toutes ses conversions |
+| GET | `/api/conversions/:id` | Protégé 🔒 | Voir une conversion |
+| DELETE | `/api/conversions/:id` | Protégé 🔒 | Supprimer une conversion |
+
+---
+
+## Flux d'une requête
+
+```
+Requête HTTP
+     ↓
+authenticate        ← vérifie le token JWT (routes protégées)
+     ↓
+validate(schema)    ← vérifie les données (Zod)
+     ↓
+controller          ← gestion req/res
+     ↓
+service             ← logique métier + Prisma
+     ↓
+mailer              ← envoi email si nécessaire
+     ↓
+Réponse JSON
+     ↓ (erreur)
+errorHandler
+```
+
+---
+
+## Flux d'authentification avec 2FA
+
+```
+1. POST /login (email + password)
+   → credentials vérifiés
+   → code 2FA généré et envoyé par email (5 min)
+   → { twoFactorRequired: true }
+
+2. POST /2fa/verify (email + code)
+   → code vérifié
+   → { user, accessToken, refreshToken }
+
+3. Requêtes protégées
+   → Authorization: Bearer accessToken
+
+4. Access token expiré → 401
+   → POST /refresh → nouveaux tokens
+
+5. Refresh token expiré → 401
+   → redirection /login
+```
+
+---
+
+## Flux de vérification email
+
+```
+1. POST /register → email de vérification envoyé (24h)
+2. POST /verify-email avec token → emailVerified = true
+```
+
+---
+
+## Flux de réinitialisation mot de passe
+
+```
+1. POST /forgot-password → email envoyé si compte existe (1h)
+2. POST /reset-password avec token + nouveau mot de passe → OK
+```
 
 ---
 
 ## Stack technique
 
-### Backend
-- Node.js + Express + TypeScript
-- Prisma v7 + PostgreSQL 16
-- JWT (access + refresh tokens)
-- Zod (validation)
-- bcryptjs (hash mot de passe)
-- Resend (envoi emails)
-- Multer (upload de fichiers)
-- xml2js (parsing XML)
-
-### Frontend
-- Vite + React + TypeScript
-- React Router DOM
-- Axios (avec intercepteurs)
-- Material UI (MUI)
-
+| Outil | Version | Rôle |
+|---|---|---|
+| Node.js | 18+ | Runtime JavaScript |
+| TypeScript | 5.x | Typage statique |
+| Express | 4.x | Framework HTTP |
+| Prisma | 7.x | ORM |
+| PostgreSQL | 16 | Base de données |
+| Docker | - | Conteneur PostgreSQL |
+| JWT | - | Authentification |
+| Bcrypt | - | Hash des mots de passe |
+| Zod | - | Validation des données |
+| Resend | - | Emails transactionnels |
 ---
 
-## Prérequis
+# Architecture du projet Frontend
 
-- Node.js 18+
-- Docker (pour PostgreSQL)
-
----
-
-## Installation
-
-### 1. Base de données
-
-```bash
-docker run --name database \
-  -e POSTGRES_USER=myuser \
-  -e POSTGRES_PASSWORD=mypassword \
-  -e POSTGRES_DB=mydb \
-  -p 5432:5432 \
-  -d postgres:16
-```
-
-### 2. Backend
-
-```bash
-cd backend
-npm install
-cp .env.example .env  # puis remplir les variables
-npx prisma migrate dev
-npm run dev
-```
-
-### 3. Frontend
-
-```bash
-cd frontend
-npm install
-cp .env.example .env
-npm run dev
-```
-
----
-
-## Variables d'environnement
-
-### Backend (.env)
+## Structure des fichiers
 
 ```
-PORT=3000
-NODE_ENV=development
-DATABASE_URL="postgresql://myuser:mypassword@localhost:5432/mydb?schema=public"
-JWT_SECRET=un_secret_long_et_complexe
-JWT_REFRESH_SECRET=un_autre_secret_long_et_complexe
-CORS_ORIGIN=http://localhost:5173
-RESEND_API_KEY=re_xxxxxxxxxxxxx
-FRONTEND_URL=http://localhost:5173
-```
-
-### Frontend (.env)
-
-```
-VITE_API_URL=/api
+Frontend/
+├── src/
+│   ├── components/
+│   │   ├── ConversionHistory.tsx
+│   │   ├── ConversionPage.tsx
+│   │   ├── ConversionTree.tsx
+│   │   ├── ConversionUpload.tsx
+│   │   ├── ForgotPassword.tsx
+│   │   ├── Home-Page.tsx
+│   │   ├── Login.tsx
+│   │   ├── Navbar.tsx
+│   │   ├── NotFound.tsx
+│   │   ├── Profile.tsx
+│   │   ├── Register.tsx
+│   │   ├── ResetPassword.tsx
+│   │   └── TwoFactor.tsx
+│   ├── context/
+│   │   └── AuthContext.tsx
+│   ├── interfaces/
+│   │   ├── auth.types.ts
+│   │   └── conversion.types.ts
+│   ├── services/
+│   │   ├── auth.api.ts
+│   │   ├── axios.ts
+│   │   └── conversion.api.ts
+│   ├── utils/
+│   │   └── api.utils.ts
+│   ├── App.tsx
+│   ├── i18n.ts
+│   ├── main.tsx
+│   └── index.css
+├── tests/
+│   └── home.spec.ts
+├── .env
+├── .env.example
+├── package.json
+├── vite.config.ts
+└── tsconfig.json
 ```
 
 ---
 
-## Commandes utiles
+## Routes frontend
 
-```bash
-# Backend
-docker start database
-npm run dev
-npx prisma generate
-npx prisma migrate dev
-npx prisma studio         # http://localhost:5555
-
-# Frontend
-npm run dev               # http://localhost:5173
-```
-
----
-
-## Flux d'authentification
-
-```
-1. POST /register       → inscription + email de vérification
-2. POST /verify-email   → validation du compte
-3. POST /login          → { twoFactorRequired: true } + code 2FA envoyé
-4. POST /2fa/verify     → { user, accessToken, refreshToken }
-5. Requêtes protégées   → Authorization: Bearer <accessToken>
-6. Token expiré         → POST /refresh → nouveaux tokens
-7. POST /logout         → déconnexion
-```
+| Route | Accès | Composant | Description |
+|---|---|---|---|
+| `/` | Public | — | Redirect vers `/login` |
+| `/login` | Public | `Login` | Connexion |
+| `/2fa` | Public | `TwoFactor` | Vérification code 2FA |
+| `/register` | Public | `Register` | Inscription |
+| `/forgot-password` | Public | `ForgotPassword` | Demande reset mot de passe |
+| `/reset-password` | Public | `ResetPassword` | Nouveau mot de passe via token |
+| `/home` | Protégé 🔒 | `HomePage` | Upload + historique des conversions |
+| `/conversion/:id` | Protégé 🔒 | `ConversionPage` | Arborescence d'une conversion |
+| `/profile` | Protégé 🔒 | `Profile` | Gestion du profil |
+| `*` | Public | `NotFound` | Page 404 |
 
 ---
 
-## Conversion XML → Data Tree
+## Couche service
 
-```
-1. POST /api/conversions        → upload d'un fichier XML → arborescence JSON retournée
-2. GET  /api/conversions        → liste de toutes ses conversions
-3. GET  /api/conversions/:id    → détail d'une conversion
-4. DELETE /api/conversions/:id  → suppression d'une conversion
-```
+### `src/services/axios.ts`
+Instance Axios configurée avec deux intercepteurs :
+- **Requête** — injecte automatiquement le `Bearer token` depuis le localStorage
+- **Réponse** — gère les 401 : tente un refresh token, rejoue la requête originale si succès, redirige vers `/login` si échec
+
+### `src/services/auth.api.ts`
+Appels API liés à l'authentification : `login`, `register`, `verifyTwoFactor`, `refresh`, `logout`, `getMe`, `updateMe`, `changePassword`, `forgotPassword`, `resetPassword`, `checkEmail`.
+
+### `src/services/conversion.api.ts`
+Appels API du module conversion :
+- **`create(file)`** — lit le fichier avec `FileReader`, envoie `{ fileName, xmlContent }` en JSON
+- **`findAll()`** — retourne la liste allégée `ConversionSummary[]`
+- **`findOne(id)`** — retourne la conversion complète avec `treeContent`
+- **`delete(id)`** — supprime une conversion
 
 ---
 
-## Règles mot de passe
+## Interfaces TypeScript
 
-- 12 caractères minimum
-- Au moins une majuscule
-- Au moins une minuscule
-- Au moins un chiffre
-- Au moins un caractère spécial
+### `src/interfaces/auth.types.ts`
+- `User` — profil utilisateur
+- `AuthResponse` — réponse login/2fa (user + tokens)
+- `LoginInput` — body du formulaire de connexion
+
+### `src/interfaces/conversion.types.ts`
+- `RootNode` — nœud racine (id=0, user_name, parentId=-1)
+- `TreeNode` — nœud standard (id, tag, value, parentId, children)
+- `AnyNode` — union RootNode | TreeNode
+- `Conversion` — conversion complète (xmlContent, jsonContent, treeContent)
+- `ConversionSummary` — version allégée pour la liste (id, fileName, createdAt)
+
+---
+
+## Contexte
+
+### `src/context/AuthContext.tsx`
+Fournit `user`, `accessToken`, `isLoading`, `login()`, `logout()` à toute l'application via `useAuth()`. Initialise l'état au démarrage via `GET /auth/me` si un token existe en localStorage.
+
+---
+
+## Composants conversion
+
+### `src/components/ConversionUpload.tsx`
+Formulaire d'import de fichier. Accepte `.xml`, `.dita`, `.ditamap`, `.xsl`, `.xslt`, `.xhtml`, `.svg`, `.rss`, `.atom`, `.xsd`, `.fo`. Valide l'extension côté client, appelle `conversionApi.create()` et remonte le résultat via `onSuccess`.
+
+### `src/components/ConversionHistory.tsx`
+Liste les conversions de l'utilisateur (`ConversionSummary[]`). Chargement initial au montage. Quand une nouvelle conversion est uploadée, l'ajoute en tête sans refaire un GET. Suppression inline avec confirmation visuelle. Notifie le parent via `onSelect(id)`.
+
+### `src/components/ConversionTree.tsx`
+Affiche l'arborescence d'une conversion avec React Flow. Calcule automatiquement les positions des nœuds (algorithme de layout en arbre). Le nœud racine est mis en évidence (fond bleu). Supporte zoom, minimap et pan.
+
+### `src/components/ConversionPage.tsx`
+Page dédiée à l'affichage d'une conversion. Charge la conversion via `useParams(:id)`, affiche `ConversionTree` en pleine largeur avec un bouton retour vers `/home`.
