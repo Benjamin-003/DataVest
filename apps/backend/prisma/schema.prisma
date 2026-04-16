@@ -7,30 +7,48 @@ datasource db {
 }
 
 model User {
-  id                   String    @id @default(cuid())
-  email                String    @unique
+  id                   String        @id @default(cuid())
+  email                String        @unique
   password             String
   firstName            String?
   lastName             String?
-  role                 Role      @default(USER)
+  role                 Role          @default(USER)
   refreshToken         String?
 
+  // Informations personnelles (Ottawa-Pigeon)
+  birthdate            DateTime?
+  address              String?
+  zipcode              String?
+  city                 String?
+  country              String?
+  newsletter           Boolean       @default(false)
+
+  // Préférences utilisateur
+  languageCode         String?
+  language             Language?     @relation(fields: [languageCode], references: [code])
+
+  currencyCode         String?
+  currency             Currency?     @relation(fields: [currencyCode], references: [code])
+
+  subscriptionCode     String?
+  subscription         Subscription? @relation(fields: [subscriptionCode], references: [code])
+
   // Vérification email
-  emailVerified        Boolean   @default(false)
+  emailVerified        Boolean       @default(false)
   emailVerifyToken     String?
   emailVerifyExpires   DateTime?
 
   // Double authentification
-twoFactorEnabled Boolean   @default(false)
-twoFactorCode    String?
-twoFactorExpires DateTime?
+  twoFactorEnabled     Boolean       @default(false)
+  twoFactorCode        String?
+  twoFactorExpires     DateTime?
 
   // Réinitialisation mot de passe
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
 
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
 
   @@map("users")
 }
@@ -38,4 +56,30 @@ twoFactorExpires DateTime?
 enum Role {
   USER
   ADMIN
+}
+
+model Currency {
+  code  String @id
+  label String
+  flag  String
+  users User[]
+
+  @@map("currencies")
+}
+
+model Language {
+  code  String @id
+  label String
+  users User[]
+
+  @@map("languages")
+}
+
+model Subscription {
+  code      String  @id
+  label     String
+  isDefault Boolean @default(false)
+  users     User[]
+
+  @@map("subscriptions")
 }

@@ -33,12 +33,23 @@ const generateTokens = (payload: {
 const generateSecureToken = () => crypto.randomBytes(32).toString("hex");
 
 const sanitizeUser = (user: any) => ({
-  id: user.id,
-  email: user.email,
-  firstName: user.firstName,
-  lastName: user.lastName,
-  role: user.role,
-  createdAt: user.createdAt,
+  id:               user.id,
+  email:            user.email,
+  firstName:        user.firstName,
+  lastName:         user.lastName,
+  role:             user.role,
+  // Informations personnelles
+  birthdate:        user.birthdate,
+  address:          user.address,
+  zipcode:          user.zipcode,
+  city:             user.city,
+  country:          user.country,
+  newsletter:       user.newsletter,
+  // Préférences
+  languageCode:     user.languageCode,
+  currencyCode:     user.currencyCode,
+  subscriptionCode: user.subscriptionCode,
+  createdAt:        user.createdAt,
 });
 
 const updateUser = async (userId: string, data: UpdateMeInput) => {
