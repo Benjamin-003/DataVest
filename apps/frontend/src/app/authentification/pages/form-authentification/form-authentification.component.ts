@@ -1,46 +1,71 @@
-import { Credentials } from '../../Interfaces/credentials.model';
-import { Component, OnInit,Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../core/auth/auth.service';
+import { ButtonModule } from 'primeng/button';
+import { PasswordModule } from 'primeng/password';
+import { InputTextModule } from 'primeng/inputtext';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
+/**
+ * Formulaire de connexion — étape 1 du flow 2FA.
+ *
+ * Changements vs v14 :
+ * - standalone: true (plus de AuthentificationModule)
+ * - inject() au lieu du constructeur
+ * - signal() pour l'état de chargement
+ * - Sur succès → redirection /authentication/2fa (nouveau)
+ *   au lieu de redirection directe dashboard (impossible sans 2FA)
+ * - Champ 'mail' renommé 'email' pour correspondre au backend
+ */
 @Component({
   selector: 'app-form-authentification',
-  templateUrl: './form-authentification.component.html'
+  standalone: true,
+  imports: [ReactiveFormsModule, ButtonModule, PasswordModule, InputTextModule, ToastModule],
+  providers: [MessageService],
+  templateUrl: './form-authentification.component.html',
 })
-export class FormAuthentificationComponent implements OnInit {
-  @Output() newConnexionEvent = new EventEmitter();
-  constructor(
-    private readonly formBuilder: FormBuilder
-  ) { }
+export class FormAuthentificationComponent {
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly messageService = inject(MessageService);
+  private readonly fb = inject(FormBuilder);
 
-  public formulaire!: FormGroup;
+  readonly loading = signal(false);
 
-  get mail() { return this.formulaire.get('mail'); }
+  readonly form = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required],
+  });
 
-  get password() { return this.formulaire.get('password'); }
+  get email() { return this.form.get('email'); }
+  get password() { return this.form.get('password'); }
 
-  ngOnInit(): void {
-    this.formulaire = this.formBuilder.group({
-      mail: [
-        "",
-        [
-          Validators.required
-        ],
-      ],
-      password: [
-        "",
-        [
-          Validators.required,
-        ],
-      ]
-    })
-  }
+  submit(): void {
+    if (this.form.invalid) return;
 
-  //Cette méthode envoie les identifiants au composant parent
-  validationSignIn() {
-    const credentials: Credentials = {
-      mail: this.mail?.value,
-      password: this.password?.value
-    }
-    this.newConnexionEvent.emit(credentials)
+    this.loading.set(true);
+
+    this.authService
+      .login({
+        email: this.form.value.email!,
+        password: this.form.value.password!,
+      })
+      .subscribe({
+        next: () => {
+          // Le backend a envoyé le code 2FA par email
+          // AuthService a stocké l'email dans pendingEmail()
+          this.router.navigate(['/authentication/2fa']);
+        },
+        error: () => {
+          this.loading.set(false);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: 'Email et/ou mot de passe incorrect',
+          });
+        },
+      });
   }
 }
