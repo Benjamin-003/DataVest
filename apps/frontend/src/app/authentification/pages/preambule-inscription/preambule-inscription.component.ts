@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { PrimeNGConfig } from 'primeng/api';
 @Component({
-  selector: 'app-preambule-inscription',
-  templateUrl: './preambule-inscription.component.html'
+    selector: 'app-preambule-inscription',
+    templateUrl: './preambule-inscription.component.html',
+    standalone: false
 })
 export class PreambuleInscriptionComponent implements OnInit {
 

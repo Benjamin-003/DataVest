@@ -3,8 +3,9 @@ import { Router } from '@angular/router';
 import { Subscription } from 'src/app/subscriptions/subscription.model';
 import { SubscriptionsService } from 'src/app/subscriptions/subscriptions.service';
 @Component({
-  selector: 'app-tarifs',
-  templateUrl: './tarifs.component.html'
+    selector: 'app-tarifs',
+    templateUrl: './tarifs.component.html',
+    standalone: false
 })
 export class TarifsComponent implements OnInit {
 

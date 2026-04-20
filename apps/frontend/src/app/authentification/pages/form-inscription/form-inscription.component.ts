@@ -6,8 +6,9 @@ import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationEr
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-form-inscription',
-  templateUrl: './form-inscription.component.html'
+    selector: 'app-form-inscription',
+    templateUrl: './form-inscription.component.html',
+    standalone: false
 })
 export class FormInscriptionComponent implements OnChanges {
 

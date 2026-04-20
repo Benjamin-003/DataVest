@@ -20,11 +20,10 @@ import { AuthService } from '../../../core/auth/auth.service';
  * - OnDestroy conservé pour nettoyer le timeout
  */
 @Component({
-  selector: 'app-reset-password',
-  standalone: true,
-  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, ToastModule],
-  providers: [MessageService],
-  templateUrl: './reset-password.component.html',
+    selector: 'app-reset-password',
+    imports: [ReactiveFormsModule, ButtonModule, InputTextModule, ToastModule],
+    providers: [MessageService],
+    templateUrl: './reset-password.component.html'
 })
 export class ResetPasswordComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);

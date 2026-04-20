@@ -16,10 +16,9 @@ import { AuthService } from '../../../core/auth/auth.service';
  * - deleteUserToken() + location.reload() → authService.logout() propre
  */
 @Component({
-  selector: 'app-header',
-  standalone: true,
-  imports: [RouterModule, MenubarModule, ButtonModule],
-  templateUrl: './header.component.html',
+    selector: 'app-header',
+    imports: [RouterModule, MenubarModule, ButtonModule],
+    templateUrl: './header.component.html'
 })
 export class HeaderComponent implements OnInit {
   protected readonly authService = inject(AuthService);

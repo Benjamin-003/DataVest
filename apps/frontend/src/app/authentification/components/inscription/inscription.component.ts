@@ -19,10 +19,9 @@ import { CommonModule } from '@angular/common';
  * - signal() pour le chargement
  */
 @Component({
-  selector: 'app-inscription',
-  standalone: true,
-  imports: [CommonModule, FormInscriptionComponent, EtapesInscriptionComponent],
-  templateUrl: './inscription.component.html',
+    selector: 'app-inscription',
+    imports: [CommonModule, FormInscriptionComponent, EtapesInscriptionComponent],
+    templateUrl: './inscription.component.html'
 })
 export class InscriptionComponent implements OnInit {
   private readonly authService = inject(AuthService);

@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Article } from './../../interfaces/article';
 import { MacroeconomicNewsService } from './../../services/macroeconomic-news.service';
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styles: [
-  ]
+    selector: 'app-dashboard',
+    templateUrl: './dashboard.component.html',
+    styles: [],
+    standalone: false
 })
 
 export class DashboardComponent implements OnInit {

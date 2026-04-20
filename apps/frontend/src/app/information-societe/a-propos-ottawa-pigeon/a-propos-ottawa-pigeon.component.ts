@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 const pictureAPI = "https://picsum.photos/200?random="
 @Component({
-  selector: 'app-a-propos-ottawa-pigeon',
-  templateUrl: './a-propos-ottawa-pigeon.component.html',
+    selector: 'app-a-propos-ottawa-pigeon',
+    templateUrl: './a-propos-ottawa-pigeon.component.html',
+    standalone: false
 })
 export class AProposOttawaPigeonComponent {
   responsiveOptions = [

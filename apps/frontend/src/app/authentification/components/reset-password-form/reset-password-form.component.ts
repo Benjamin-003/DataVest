@@ -12,9 +12,10 @@ import {
 import { MessageService } from 'primeng/api';
 
 @Component({
-  selector: 'app-reset-password-form',
-  templateUrl: './reset-password-form.component.html',
-  providers: [MessageService],
+    selector: 'app-reset-password-form',
+    templateUrl: './reset-password-form.component.html',
+    providers: [MessageService],
+    standalone: false
 })
 export class ResetPasswordFormComponent implements OnInit {
   constructor(

@@ -26,11 +26,10 @@ import { OtherSettingsComponent } from '../../components/other-settings/other-se
  * - deleteUserToken() → authService.logout() géré proprement dans deleteMe()
  */
 @Component({
-  selector: 'app-user-settings',
-  standalone: true,
-  imports: [CommonModule, ToastModule, PersonalDataComponent, CredentialsComponent, OtherSettingsComponent],
-  providers: [MessageService],
-  templateUrl: './user-settings.component.html',
+    selector: 'app-user-settings',
+    imports: [CommonModule, ToastModule, PersonalDataComponent, CredentialsComponent, OtherSettingsComponent],
+    providers: [MessageService],
+    templateUrl: './user-settings.component.html'
 })
 export class UserSettingsComponent implements OnInit {
   protected readonly authService = inject(AuthService);

@@ -1,5 +1,5 @@
 import { CoreModule } from './core/core.module';
-import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
+import { ErrorHandler, NgModule, inject, provideAppInitializer } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import * as Sentry from "@sentry/angular";
@@ -29,14 +29,12 @@ import { I18nModule } from './i18n/i18n.module';
             provide: Sentry.TraceService,
             deps: [Router],
         },
-        {
-            provide: APP_INITIALIZER,
-            useFactory: () => () => {
+        provideAppInitializer(() => {
+        const initializerFn = (() => () => {
                 // Empty Function
-            },
-            deps: [Sentry.TraceService],
-            multi: true,
-        },
+            })(inject(Sentry.TraceService));
+        return initializerFn();
+      }),
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthentificationInterceptor,

@@ -4,9 +4,10 @@ import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-authentification',
-  templateUrl: './authentification.component.html',
-  providers: [MessageService],
+    selector: 'app-authentification',
+    templateUrl: './authentification.component.html',
+    providers: [MessageService],
+    standalone: false
 })
 export class AuthentificationComponent {
   constructor(

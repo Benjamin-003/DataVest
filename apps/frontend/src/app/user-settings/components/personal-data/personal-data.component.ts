@@ -3,8 +3,9 @@ import { Component, EventEmitter, Input, Output, SimpleChanges, OnChanges } from
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 @Component({
-  selector: 'app-personal-data',
-  templateUrl: './personal-data.component.html'
+    selector: 'app-personal-data',
+    templateUrl: './personal-data.component.html',
+    standalone: false
 })
 export class PersonalDataComponent implements OnChanges {
 

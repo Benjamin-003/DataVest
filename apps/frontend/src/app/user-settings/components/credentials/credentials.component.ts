@@ -5,8 +5,9 @@ import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationEr
 import { UniqueMailValidator } from 'src/app/authentification/services/unique-mail-validator';
 
 @Component({
-  selector: 'app-credentials',
-  templateUrl: './credentials.component.html'
+    selector: 'app-credentials',
+    templateUrl: './credentials.component.html',
+    standalone: false
 })
 export class CredentialsComponent implements OnInit, OnChanges {
   @Input() userMail!: string;

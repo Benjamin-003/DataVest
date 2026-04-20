@@ -21,10 +21,9 @@ import { UpdateProfilePayload } from '../../../core/models/auth.models';
  *   et <p-dropdown> par <p-select> dans le template.
  */
 @Component({
-  selector: 'app-other-settings',
-  standalone: true,
-  imports: [ReactiveFormsModule, DropdownModule, ButtonModule],
-  templateUrl: './other-settings.component.html',
+    selector: 'app-other-settings',
+    imports: [ReactiveFormsModule, DropdownModule, ButtonModule],
+    templateUrl: './other-settings.component.html'
 })
 export class OtherSettingsComponent implements OnChanges {
   private readonly fb = inject(FormBuilder);

@@ -1,5 +1,5 @@
 import { registerLocaleData } from '@angular/common';
-import { APP_INITIALIZER, Injectable, LOCALE_ID } from '@angular/core';
+import { Injectable, LOCALE_ID, inject, provideAppInitializer } from '@angular/core';
 import { loadTranslations } from '@angular/localize';
 import { LanguagesService } from '../languages/languages.service';
 import { firstValueFrom, map} from 'rxjs';
@@ -59,12 +59,10 @@ class I18n {
 
 //Chargement des données locales au démarrage de l'application
 function setLocale() {
-  return {
-    provide: APP_INITIALIZER,
-    useFactory: (i18n: I18n) => () => i18n.setLocale(),
-    deps: [I18n],
-    multi: true,
-  };
+  return provideAppInitializer(() => {
+        const initializerFn = ((i18n: I18n) => () => i18n.setLocale())(inject(I18n));
+        return initializerFn();
+      });
 }
 
 //Définition des paramètres régionaux d'exécution de l'application

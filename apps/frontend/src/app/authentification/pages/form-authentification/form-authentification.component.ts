@@ -20,11 +20,10 @@ import { MessageService } from 'primeng/api';
  * - Champ 'mail' renommé 'email' pour correspondre au backend
  */
 @Component({
-  selector: 'app-form-authentification',
-  standalone: true,
-  imports: [ReactiveFormsModule, ButtonModule, PasswordModule, InputTextModule, ToastModule],
-  providers: [MessageService],
-  templateUrl: './form-authentification.component.html',
+    selector: 'app-form-authentification',
+    imports: [ReactiveFormsModule, ButtonModule, PasswordModule, InputTextModule, ToastModule],
+    providers: [MessageService],
+    templateUrl: './form-authentification.component.html'
 })
 export class FormAuthentificationComponent {
   private readonly authService = inject(AuthService);
