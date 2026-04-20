@@ -1,51 +1,70 @@
-import { MenuItem } from 'primeng/api';
-import { Component, OnInit } from '@angular/core';
-import { SubscriptionsService } from 'src/app/subscriptions/subscriptions.service';
-import { Subscription } from 'src/app/subscriptions/subscription.model';
-import { UserService } from 'src/app/users/services/user-service.service';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MenuItem } from 'primeng/api';
+import { SubscriptionsService } from '../../../subscriptions/subscriptions.service';
+import { Subscription } from '../../../subscriptions/subscription.model';
+import { AuthService } from '../../../core/auth/auth.service';
+import { RegisterPayload } from '../../../core/models/auth.models';
+// Sous-composant de formulaire — à rendre standalone lors de son propre portage
+import { FormInscriptionComponent } from '../../pages/form-inscription/form-inscription.component';
+import { EtapesInscriptionComponent } from '../../../core/components/etapes-inscription/etapes-inscription.component';
+import { CommonModule } from '@angular/common';
 
+/**
+ * Changements vs v14 :
+ * - standalone: true
+ * - inject() au lieu du constructeur
+ * - UserService.createUser() → AuthService.register()
+ * - RegisterPayload aligné sur les champs du backend (camelCase)
+ * - signal() pour le chargement
+ */
 @Component({
   selector: 'app-inscription',
-  templateUrl: './inscription.component.html'
+  standalone: true,
+  imports: [CommonModule, FormInscriptionComponent, EtapesInscriptionComponent],
+  templateUrl: './inscription.component.html',
 })
 export class InscriptionComponent implements OnInit {
-  public label!: MenuItem[]
+  private readonly authService = inject(AuthService);
+  private readonly subscriptionsService = inject(SubscriptionsService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
+  readonly loading = signal(false);
+
+  public label!: MenuItem[];
   public subscriptions!: Subscription[];
   public defaultBackOption!: string;
 
-  constructor(private readonly subscriptionsService: SubscriptionsService,
-    private readonly router: Router,
-    private readonly route: ActivatedRoute,
-    private readonly inscription: UserService
-  ) { }
-  public selectedOption!: string;
-
   ngOnInit() {
-    //Voici les label a transmettre pour le composant d'acheminement des étapes
     this.label = [
       { label: "Formulaire d'inscription" },
-      { label: 'Ouverture du compte' }
-    ]
-    //On récupère les formules d'abonnement
-    this.subscriptionsService.getSubscriptions().subscribe(results => {
-      this.subscriptions = results;
-      this.subscriptions.forEach(option=>{
-        if(option.isDefault){
-          this.defaultBackOption = option.code;
-        }
-      })});
-    }
+      { label: 'Ouverture du compte' },
+    ];
 
-  //On transmet les valeurs de formulaire depuis le componsant parent
-  validateFormToBack($event: any) {
-    this.inscription.createUser($event).subscribe({
-      error: () => {
-        this.router.navigate(['../echec'], { relativeTo: this.route }).then();
+    this.subscriptionsService.getSubscriptions().subscribe((results) => {
+      this.subscriptions = results;
+      const defaultSub = results.find((s) => s.isDefault);
+      if (defaultSub) this.defaultBackOption = defaultSub.code;
+    });
+  }
+
+  /**
+   * Reçoit les données du formulaire (FormInscriptionComponent).
+   * Les champs sont déjà en camelCase grâce au portage de form-inscription.
+   */
+  validateFormToBack(formValue: RegisterPayload) {
+    this.loading.set(true);
+
+    this.authService.register(formValue).subscribe({
+      next: () => {
+        // AuthService stocke les tokens et le user automatiquement
+        this.router.navigate(['../succes'], { relativeTo: this.route });
       },
-      complete: () => {
-        this.router.navigate(['../succes'], { relativeTo: this.route }).then();
-      }
-    })
+      error: () => {
+        this.loading.set(false);
+        this.router.navigate(['../echec'], { relativeTo: this.route });
+      },
+    });
   }
 }

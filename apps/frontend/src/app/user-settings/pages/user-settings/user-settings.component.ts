@@ -1,142 +1,123 @@
-import { CurrenciesService } from './../../../currencies/currencies.service';
-import { LanguagesService } from './../../../languages/languages.service';
-import { Language } from '../../../languages/interfaces/language.model';
-import { Password } from './../../../users/interfaces/password.model';
-import { Subscription } from 'rxjs';
-import { UserService } from './../../../users/services/user-service.service';
-import { PersonalData } from './../../../users/interfaces/personal-data.model';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
-import { Currency } from 'src/app/currencies/currency-model';
-import { Router } from '@angular/router';
-const USER_KEY = 'authentification-user';
+import { ToastModule } from 'primeng/toast';
+import { AuthService } from '../../../core/auth/auth.service';
+import { LanguagesService } from '../../../languages/languages.service';
+import { CurrenciesService } from '../../../currencies/currencies.service';
+import { Language } from '../../../languages/interfaces/language.model';
+import { Currency } from '../../../currencies/currency-model';
+import { UpdateProfilePayload, ChangePasswordPayload } from '../../../core/models/auth.models';
+import { PersonalDataComponent } from '../../components/personal-data/personal-data.component';
+import { CredentialsComponent } from '../../components/credentials/credentials.component';
+import { OtherSettingsComponent } from '../../components/other-settings/other-settings.component';
 
+/**
+ * Changements vs v14 :
+ * - standalone: true
+ * - UserService entièrement remplacé par AuthService
+ * - PersonalData (snake_case) → User (camelCase) depuis auth.models.ts
+ * - Plus de BehaviorSubject / Subscription manuelle → Signal user()
+ * - updateUser() → authService.updateMe() (PATCH /api/auth/me)
+ * - updatePassword() → authService.changePassword() (PATCH /api/auth/password)
+ *   Payload : { old_password, new_password } → { currentPassword, newPassword }
+ * - removeUpUserAccount() → authService.deleteMe() (DELETE /api/auth/me)
+ *   Plus besoin de getSignInUserId() — le backend identifie via le JWT
+ * - deleteUserToken() → authService.logout() géré proprement dans deleteMe()
+ */
 @Component({
   selector: 'app-user-settings',
-  templateUrl: './user-settings.component.html',
+  standalone: true,
+  imports: [CommonModule, ToastModule, PersonalDataComponent, CredentialsComponent, OtherSettingsComponent],
   providers: [MessageService],
+  templateUrl: './user-settings.component.html',
 })
-export class UserSettingsComponent implements OnInit, OnDestroy {
-  public personalData: PersonalData = {
-    surname: '',
-    firstname: '',
-    birth_date: '',
-    address: '',
-    zip_code: '',
-    city: '',
-    country: '',
-    mail: '',
-    language_code: '',
-    currency_code: '',
-    subscription_code: ''
+export class UserSettingsComponent implements OnInit {
+  protected readonly authService = inject(AuthService);
+  private readonly languageService = inject(LanguagesService);
+  private readonly currenciesService = inject(CurrenciesService);
+  private readonly messageService = inject(MessageService);
+
+  // Profil courant depuis le Signal (pas de subscription à gérer)
+  readonly user = this.authService.user;
+
+  // Données de référence
+  readonly languages = signal<Language[]>([]);
+  readonly currencies = signal<Currency[]>([]);
+
+  // Mémorise la langue au chargement pour détecter un changement (reload i18n)
+  private oldLanguageSetting = '';
+
+  private readonly messages = {
+    emailUpdated:    'Votre nouvelle adresse mail est bien prise en compte',
+    profileUpdated:  'Vos modifications ont bien été prises en compte',
+    profileError:    "Nous n'avons pas pu enregistrer vos modifications. Veuillez réessayer plus tard",
+    passwordUpdated: 'Votre nouveau mot de passe a bien été enregistré',
+    passwordError:   "Votre nouveau mot de passe n'a pas pu être sauvegardé. Veuillez réessayer plus tard",
+    deleteError:     "Une erreur est survenue et votre compte n'a pas pu être supprimé. Veuillez réessayer.",
+    deleteSuccess:   'Votre compte a bien été supprimé. Vous allez être redirigé dans quelques secondes.',
   };
-  private _personalDataSubscription!: Subscription;
-  private readonly message = [
-    'Votre nouvelle adresse mail est bien prise en compte',
-    'Vos modifications ont bien été prises en compte et votre profil a été mis à jour',
-    'Nous n\'avons pas pu enregistrer vos modifications. Veuillez réessayer plus tard',
-    'Votre nouveau mot de passe a bien été enregistré',
-    'Votre nouveau mot de passe n\'a pas pu être sauvegardé. Veuillez réessayer plus tard',
-    'Une erreur est survenue et votre compte n\'a pas pu être supprimé.Veuillez réessayer l\'opération plus tard.',
-    'Votre compte a bien été supprimé. Vous allez être redirigé dans quelques secondes.'
-  ];
-  oldLanguageSetting!: string;
-  languages!: Language[];
-  currencies!: Currency[];
-  constructor(
-    private readonly userService: UserService,
-    private readonly messageService: MessageService,
-    private readonly languageService: LanguagesService,
-    private readonly currenciesService: CurrenciesService,
-    private readonly router: Router
-  ) { }
 
   ngOnInit() {
-    this._personalDataSubscription =
-      this.userService.currentPersonalData$.subscribe((personalData) => {
-        this.personalData = personalData;
-        this.oldLanguageSetting = personalData.language_code;
-      });
-    this.languageService
-      .getLanguages()
-      .subscribe((languageData: Language[]) => {
-        this.languages = languageData;
-      });
-    this.currenciesService
-      .getCurrencies()
-      .subscribe((currencyData: Currency[]) => {
-        this.currencies = currencyData;
-      });
+    // Mémorise la langue initiale pour détecter un changement ultérieur
+    this.oldLanguageSetting = this.user()?.languageCode ?? '';
+
+    this.languageService.getLanguages().subscribe((data) => this.languages.set(data));
+    this.currenciesService.getCurrencies().subscribe((data) => this.currencies.set(data));
   }
 
-  ngOnDestroy() {
-    this._personalDataSubscription.unsubscribe();
-  }
-
-  //Cette méthode appelle le back pour mettre à jour les données de l'utilisateur autre que le mot de passe
-  updatePersonalData(personalData: PersonalData, indexMessage: number) {
-    this.userService.updateUser(personalData).subscribe({
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          detail: this.message[2],
-        });
+  /**
+   * Mise à jour du profil (données personnelles ou préférences).
+   * indexMessage permet au template de choisir le message de succès approprié.
+   */
+  updateProfile(payload: UpdateProfilePayload, successMessage: string) {
+    this.authService.updateMe(payload).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', detail: successMessage });
+        // Si la langue a changé, on recharge pour appliquer les nouvelles traductions
+        if (payload.languageCode && payload.languageCode !== this.oldLanguageSetting) {
+          location.reload();
+        }
       },
-      complete: () => {
-        this.messageService.add({
-          severity: 'success',
-          detail: this.message[indexMessage],
-        });
-        if (personalData.language_code !== this.oldLanguageSetting && personalData.language_code)
-          {
-            location.reload();
-          }
+      error: () => {
+        this.messageService.add({ severity: 'error', detail: this.messages.profileError });
       },
     });
   }
 
-  //Méthode qui appelle le back pour la modification du mot de passe de l'utilisateur
-  updatePassword(password: Password) {
-    this.userService.updatePassword(password).subscribe({
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          detail: this.message[4],
-        });
-      },
-      complete: () => {
-        this.messageService.add({
-          severity: 'success',
-          detail: this.message[3],
-        });
-      },
-    });
+  onPersonalDataUpdate(payload: UpdateProfilePayload) {
+    this.updateProfile(payload, this.messages.profileUpdated);
   }
 
-  afterAccountDeletion() {
-    this.userService.deleteUserToken();
-    this.router.navigate(['accueil']);
+  onEmailUpdate(payload: UpdateProfilePayload) {
+    this.updateProfile(payload, this.messages.emailUpdated);
+  }
+
+  onOtherSettingsUpdate(payload: UpdateProfilePayload) {
+    this.updateProfile(payload, this.messages.profileUpdated);
+  }
+
+  onPasswordUpdate(payload: ChangePasswordPayload) {
+    this.authService.changePassword(payload).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', detail: this.messages.passwordUpdated });
+      },
+      error: () => {
+        this.messageService.add({ severity: 'error', detail: this.messages.passwordError });
+      },
+    });
   }
 
   deleteAccount() {
-    const userId: {id: string} | null = this.userService.getSignInUserId();
-    if(userId){
-    this.userService.removeUpUserAccount(userId.id).subscribe({
-      error: () => {
-        this.messageService.add({
-          key: 'error',
-          severity: 'error',
-          detail: this.message[5],
-        });
+    this.authService.deleteMe().subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', detail: this.messages.deleteSuccess });
+        // AuthService.deleteMe() appelle clearSession() automatiquement
+        setTimeout(() => location.href = '/accueil', 3000);
       },
-      complete: () => {
-        this.messageService.add({
-          key: 'succes',
-          severity: 'success',
-          detail: this.message[6],
-        });
-      }
-    })
+      error: () => {
+        this.messageService.add({ severity: 'error', detail: this.messages.deleteError });
+      },
+    });
   }
-}
 }

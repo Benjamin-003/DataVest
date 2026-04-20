@@ -1,21 +1,35 @@
-import { UserService } from '../../../users/services/user-service.service';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
-import { Subscription } from 'rxjs';
-import { Router } from '@angular/router';
+import { MenubarModule } from 'primeng/menubar';
+import { ButtonModule } from 'primeng/button';
+import { AuthService } from '../../../core/auth/auth.service';
+
+/**
+ * Changements vs v14 :
+ * - standalone: true
+ * - inject() + computed() — plus de Subscription RxJS à gérer manuellement
+ * - Plus de ngOnDestroy / unsubscribe() : les Signals ne fuient pas
+ * - currentPersonalData$ (BehaviorSubject) → user() (Signal readonly)
+ * - loggedUserName → computed depuis user().firstName
+ * - isLogged → computed depuis authService.isLoggedIn()
+ * - deleteUserToken() + location.reload() → authService.logout() propre
+ */
 @Component({
   selector: 'app-header',
+  standalone: true,
+  imports: [RouterModule, MenubarModule, ButtonModule],
   templateUrl: './header.component.html',
 })
-export class HeaderComponent implements OnInit, OnDestroy {
-  public items!: MenuItem[];
-  public isLogged = false;
-  public loggedUserName!: string;
-  public signUp = $localize`:@@header.signUp:Ouvrir un compte`;
-  public signIn = $localize`:@@header.signIn:Accès client`;
-  private _currentUserSubscription!: Subscription;
+export class HeaderComponent implements OnInit {
+  protected readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
-  constructor(private readonly authentification: UserService, private readonly router: Router) { }
+  public items!: MenuItem[];
+
+  // Signals dérivés — mis à jour automatiquement quand user() change
+  readonly isLogged = this.authService.isLoggedIn;
+  readonly loggedUserName = computed(() => this.authService.user()?.firstName ?? '');
 
   ngOnInit() {
     this.items = [
@@ -33,31 +47,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
           { label: $localize`:@@header.whyChooseUs:Pourquoi nous choisir ?` },
         ],
       },
-      { label: $localize`:@@header.anyQuestions:Des questions ?` }
+      { label: $localize`:@@header.anyQuestions:Des questions ?` },
     ];
-    this.getLoggedUser();
   }
 
-  ngOnDestroy() {
-    this._currentUserSubscription.unsubscribe();
-  }
-
-  //Récupère le nom de l'utilisateur et passe le boolean a true si un utilisateur est connecté ou false dans le cas contraire
-  getLoggedUser() {
-    this._currentUserSubscription = this.authentification.currentPersonalData$.subscribe((personalData) => {
-      if (personalData.firstname) {
-        this.loggedUserName = personalData.firstname;
-        this.isLogged = true;
-      } else {
-        this.isLogged = false;
-      }
-    });
-  }
-
-
-  //Gère la deconnexion de l'utilsateur
   logOffUser() {
-    this.authentification.deleteUserToken()
-    this.router.navigate(['accueil']).then(() => location.reload())
+    this.authService.logout().subscribe({
+      // forceLogout() dans error() est déjà géré par auth.service.ts
+      complete: () => this.router.navigate(['/accueil']),
+      error: ()   => this.router.navigate(['/accueil']),
+    });
   }
 }
