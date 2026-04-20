@@ -1,123 +1,91 @@
-import { PersonalData } from './../../../users/interfaces/personal-data.model';
-import { Component, EventEmitter, Input, Output, SimpleChanges, OnChanges } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { InputTextModule } from 'primeng/inputtext';
+import { CalendarModule } from 'primeng/calendar';
+import { ButtonModule } from 'primeng/button';
+import { User, UpdateProfilePayload } from '../../../core/models/auth.models';
 
 @Component({
-    selector: 'app-personal-data',
-    templateUrl: './personal-data.component.html',
-    standalone: false
+  selector: 'app-personal-data',
+  standalone: true,
+  imports: [ReactiveFormsModule, InputTextModule, CalendarModule, ButtonModule],
+  templateUrl: './personal-data.component.html',
 })
 export class PersonalDataComponent implements OnChanges {
+  private readonly fb = inject(FormBuilder);
 
-  @Input() personalData!: PersonalData
+  @Input() user!: User;
+  @Output() modificationEvent = new EventEmitter<UpdateProfilePayload>();
 
-  @Output() modificationEvent = new EventEmitter();
+  form = this.fb.group({ firstName: [''], lastName: [''], birthdate: [new Date()], address: [''], zipcode: [''], city: [''], country: [''] });
 
-  public formulaire!: FormGroup;
+  get firstName() { return this.form.get('firstName'); }
+  get lastName()  { return this.form.get('lastName'); }
+  get birthdate() { return this.form.get('birthdate'); }
+  get address()   { return this.form.get('address'); }
+  get zipcode()   { return this.form.get('zipcode'); }
+  get city()      { return this.form.get('city'); }
+  get country()   { return this.form.get('country'); }
 
-  constructor(private readonly formBuilder: FormBuilder) { }
-
-  get surname() { return this.formulaire.get('surname'); }
-
-  get firstname() { return this.formulaire.get('firstname'); }
-
-  get birth_date() { return this.formulaire.get('birth_date'); }
-
-  get address() { return this.formulaire.get('address'); }
-
-  get zip_code() { return this.formulaire.get('zip_code'); }
-
-  get city() { return this.formulaire.get('city'); }
-
-  get country() { return this.formulaire.get('country'); }
-
-  public messagesErreur = "Ce champ est obligatoire, merci de saisir l'information demandée"
-
-  ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges["personalData"]) {
-      this.initForm(simpleChanges["personalData"].currentValue)
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['user']?.currentValue) {
+      this.initForm(changes['user'].currentValue as User);
     }
   }
 
-  initForm(personalData: PersonalData) {
-    this.formulaire = this.formBuilder.group({
-      surname: [
-        personalData.surname,
-        [
-          Validators.required
-        ],
-      ],
-      firstname: [
-        personalData.firstname,
-        [
-          Validators.required,
-        ],
-      ],
-      birth_date: [
-        new Date(+personalData.birth_date.substring(0, 4), +personalData.birth_date.substring(5, 7) - 1, +personalData.birth_date.substring(8)),
-        [
-          Validators.required
-        ]
-      ],
-      address: [
-        personalData.address,
-        [
-          Validators.required
-        ]
-      ],
-      zip_code: [
-        personalData.zip_code,
-        [
-          Validators.required
-        ]
-      ],
-      city: [
-        personalData.city,
-        [
-          Validators.required
-        ]
-      ],
-      country: [
-        personalData.country,
-        [
-          Validators.required
-        ]
-      ]
-    }, { validators: [this.noChangeValuesValidator(personalData)] })
+  initForm(user: User) {
+    const birthdateValue = user.birthdate ? new Date(user.birthdate) : new Date();
+    this.form = this.fb.group(
+      {
+        firstName: [user.firstName ?? '', Validators.required],
+        lastName:  [user.lastName  ?? '', Validators.required],
+        birthdate: [birthdateValue,       Validators.required],
+        address:   [user.address   ?? '', Validators.required],
+        zipcode:   [user.zipcode   ?? '', Validators.required],
+        city:      [user.city      ?? '', Validators.required],
+        country:   [user.country   ?? '', Validators.required],
+      },
+      { validators: [this.noChangeValidator(user, birthdateValue)] }
+    );
   }
 
-  noChangeValuesValidator(personalData: PersonalData): ValidatorFn {
+  private noChangeValidator(original: User, originalDate: Date): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      const surname = control.get('surname');
-      const firstname = control.get('firstname');
-      const birthDate = control.get('birth_date');
-      const address = control.get('address');
-      const zipCode = control.get('zip_code');
-      const city = control.get('city');
-      const country = control.get('country');
-      return surname?.value === personalData.surname
-        && firstname?.value === personalData.firstname
-        && this.dateToString(birthDate?.value) === personalData.birth_date
-        && address?.value === personalData.address
-        && zipCode?.value === personalData.zip_code
-        && city?.value === personalData.city
-        && country?.value === personalData.country
-        ? { noChangeValues: true } : null;
+      const sameDate = this.dateToISO(control.get('birthdate')?.value) === this.dateToISO(originalDate);
+      const unchanged =
+        control.get('firstName')?.value === (original.firstName ?? '') &&
+        control.get('lastName')?.value  === (original.lastName  ?? '') &&
+        sameDate &&
+        control.get('address')?.value   === (original.address   ?? '') &&
+        control.get('zipcode')?.value   === (original.zipcode   ?? '') &&
+        control.get('city')?.value      === (original.city      ?? '') &&
+        control.get('country')?.value   === (original.country   ?? '');
+      return unchanged ? { noChangeValues: true } : null;
     };
   }
 
-  dateToString(date: Date): string {
-    const day: string = date.getDate().toString().padStart(2, "0")
-    const month: string = (date.getMonth() + 1).toString().padStart(2, "0")
-    const year: string = date.getFullYear().toString()
-    return `${year}-${month}-${day}`
+  private dateToISO(date: Date): string {
+    if (!date || !(date instanceof Date)) return '';
+    const day   = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    return `${date.getFullYear()}-${month}-${day}`;
   }
 
-  //On emet les données au composant parent
-  saveModification() {
-    if (this.formulaire.valid) {
-      this.formulaire.value.birth_date = this.dateToString(this.formulaire.value.birth_date)
-      this.modificationEvent.emit(this.formulaire.value)
-    }
-  }
+ saveModification() {
+  if (this.form.invalid) return;
+  const { birthdate, ...rest } = this.form.value;
+
+  // Convertit null → undefined pour correspondre à UpdateProfilePayload
+  const payload: UpdateProfilePayload = {
+    firstName: rest.firstName ?? undefined,
+    lastName:  rest.lastName  ?? undefined,
+    address:   rest.address   ?? undefined,
+    zipcode:   rest.zipcode   ?? undefined,
+    city:      rest.city      ?? undefined,
+    country:   rest.country   ?? undefined,
+    birthdate: this.dateToISO(birthdate as Date),
+  };
+
+  this.modificationEvent.emit(payload);
+}
 }

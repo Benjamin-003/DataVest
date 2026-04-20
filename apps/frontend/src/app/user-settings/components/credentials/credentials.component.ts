@@ -47,13 +47,13 @@ export class CredentialsComponent implements OnInit, OnChanges {
     this.initPasswordForm();
   }
 
+  
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['userEmail']) {
-      // Indique au validateur d'ignorer l'email actuel (évite le faux positif)
-      this.uniqueEmailValidator.currentEmail = changes['userEmail'].currentValue;
-      this.initEmailForm(changes['userEmail'].currentValue);
-    }
+  if (changes['userEmail']) {
+    this.uniqueEmailValidator.currentEmail = changes['userEmail'].currentValue as string;
+    this.initEmailForm(changes['userEmail'].currentValue as string);
   }
+}
 
   initEmailForm(email: string) {
     this.emailForm = this.fb.group(
@@ -63,8 +63,9 @@ export class CredentialsComponent implements OnInit, OnChanges {
           {
             validators: [Validators.required, Validators.email],
             asyncValidators: [
-              this.uniqueEmailValidator.validate.bind(this.uniqueEmailValidator),
-            ] as AsyncValidatorFn[],
+  (control: AbstractControl) => 
+    this.uniqueEmailValidator.validate(control) as ReturnType<AsyncValidatorFn>
+] as AsyncValidatorFn[],
             updateOn: 'blur',
           },
         ],
@@ -104,13 +105,12 @@ export class CredentialsComponent implements OnInit, OnChanges {
     }
   }
 
-  savePassword() {
-    if (this.passwordForm.valid) {
-      const payload: ChangePasswordPayload = {
-        currentPassword: this.currentPassword!.value,
-        newPassword:     this.newPassword!.value,
-      };
-      this.modifyPassword.emit(payload);
-    }
-  }
+ savePassword() {
+  if (this.passwordForm.invalid) return;
+  const payload: ChangePasswordPayload = {
+    currentPassword: this.currentPassword!.value ?? '',
+    newPassword:     this.newPassword!.value     ?? '',
+  };
+  this.modifyPassword.emit(payload);
+}
 }
