@@ -1,106 +1,116 @@
-import { PersonalData } from './../../../users/interfaces/personal-data.model';
-import { Password } from './../../../users/interfaces/password.model';
-import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
-import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { UniqueMailValidator } from 'src/app/authentification/services/unique-mail-validator';
+import { Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { AbstractControl, AsyncValidatorFn, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { InputTextModule } from 'primeng/inputtext';
+import { PasswordModule } from 'primeng/password';
+import { ButtonModule } from 'primeng/button';
+import { UniqueEmailValidator } from '../../../core/auth/unique-email.validator';
+import { UpdateProfilePayload, ChangePasswordPayload } from '../../../core/models/auth.models';
 
+/**
+ * Changements vs v14 :
+ * - standalone: true, inject()
+ * - Champ 'mail' → 'email' (aligné backend + HTML)
+ * - UniqueMailValidator → UniqueEmailValidator (nouvelle classe, nouvel endpoint)
+ *   currentMail → currentEmail
+ * - Payload mot de passe : { old_password, new_password } → ChangePasswordPayload
+ *   { currentPassword, newPassword } (aligné backend PATCH /api/auth/password)
+ * - Output emailEvent émet UpdateProfilePayload { email }
+ * - Output passwordEvent émet ChangePasswordPayload
+ */
 @Component({
-    selector: 'app-credentials',
-    templateUrl: './credentials.component.html',
-    standalone: false
+  selector: 'app-credentials',
+  standalone: true,
+  imports: [ReactiveFormsModule, InputTextModule, PasswordModule, ButtonModule],
+  templateUrl: './credentials.component.html',
 })
 export class CredentialsComponent implements OnInit, OnChanges {
-  @Input() userMail!: string;
-  @Output("modifyEmail") emailEvent = new EventEmitter();
-  @Output("modifyPassword") passwordEvent = new EventEmitter();
-  public emailForm!: FormGroup;
-  public passwordForm!: FormGroup;
-  get mail() { return this.emailForm.get('mail'); }
-  get currentPassword() { return this.passwordForm.get('currentPassword'); }
-  get newPassword() { return this.passwordForm.get('newPassword'); }
-  get confirmPassword() { return this.passwordForm.get('confirmPassword'); }
-  public readonly strongPasswordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!-\/:-@[-`{-~])[a-zA-Z0-9!-\/:-@[-`{-~]{8,}$"
-  public messagesErreur = [
-    "Il semble y avoir une erreur de saisie ici",
-    "Ce champ est obligatoire, merci de saisir l'information demandée"
-  ];
+  private readonly fb = inject(FormBuilder);
+  private readonly uniqueEmailValidator = inject(UniqueEmailValidator);
 
-  constructor(private readonly formBuilder: FormBuilder, private readonly uniqueMail: UniqueMailValidator) { }
+  @Input() userEmail!: string;
+  @Output() modifyEmail    = new EventEmitter<UpdateProfilePayload>();
+  @Output() modifyPassword = new EventEmitter<ChangePasswordPayload>();
+
+  emailForm    = this.fb.group({ email: [''] });
+  passwordForm = this.fb.group({
+    currentPassword: [''],
+    newPassword:     [''],
+    confirmPassword: [''],
+  });
+
+  get email()           { return this.emailForm.get('email'); }
+  get currentPassword() { return this.passwordForm.get('currentPassword'); }
+  get newPassword()     { return this.passwordForm.get('newPassword'); }
+  get confirmPassword() { return this.passwordForm.get('confirmPassword'); }
 
   ngOnInit() {
-    this.uniqueMail.currentMail = this.userMail;
-    this.initPasswordForm()
+    this.initPasswordForm();
   }
 
-  ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges["userMail"]) {
-      this.initMailForm(simpleChanges["userMail"].currentValue)
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['userEmail']) {
+      // Indique au validateur d'ignorer l'email actuel (évite le faux positif)
+      this.uniqueEmailValidator.currentEmail = changes['userEmail'].currentValue;
+      this.initEmailForm(changes['userEmail'].currentValue);
     }
   }
 
-  initMailForm(email: string) {
-    this.emailForm = this.formBuilder.group({
-      mail: [
-        email,
-        {
-          validators: [
-            Validators.required,
-            Validators.email
-          ],
-          asyncValidators: [
-            this.uniqueMail.validate.bind(this.uniqueMail)
-          ] as AsyncValidatorFn[],
-          updateOn: 'change',
-        }
-      ]
-    }, { validators: this.noChangeValuesValidator() }
-    )
+  initEmailForm(email: string) {
+    this.emailForm = this.fb.group(
+      {
+        email: [
+          email,
+          {
+            validators: [Validators.required, Validators.email],
+            asyncValidators: [
+              this.uniqueEmailValidator.validate.bind(this.uniqueEmailValidator),
+            ] as AsyncValidatorFn[],
+            updateOn: 'blur',
+          },
+        ],
+      },
+      { validators: this.noChangeValidator() }
+    );
   }
 
   initPasswordForm() {
-    this.passwordForm = this.formBuilder.group({
-      currentPassword: ["",
-        [
-          Validators.required
-        ],
-      ],
-      newPassword: ["",
-        [
-          Validators.required
-        ],
-      ],
-      confirmPassword: ["",
-        [
-          Validators.required
-        ],
-      ],
-    }, { validators: [this.validationMatchingPassword] }
-    )
+    this.passwordForm = this.fb.group(
+      {
+        currentPassword: ['', Validators.required],
+        newPassword:     ['', [Validators.required, Validators.minLength(12)]],
+        confirmPassword: ['', Validators.required],
+      },
+      { validators: [this.matchingPasswordsValidator] }
+    );
   }
 
-  noChangeValuesValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      return control.get('mail')?.value === this.userMail
-        ? { noChangeValues: true } : null;
-    };
+  /** Bloque le submit si l'email n'a pas changé */
+  private noChangeValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null =>
+      control.get('email')?.value === this.userEmail ? { noChangeValues: true } : null;
   }
 
-  //Vérification si le mot de passe de confirmation match avec le champs de nouveau mot de passe .
-  validationMatchingPassword: ValidatorFn = (controle: AbstractControl): ValidationErrors | null => {
-    const newPassword = controle.get('newPassword');
-    const confirmPassword = controle.get('confirmPassword');
-    return newPassword?.value === confirmPassword?.value ? null : { notmatched: true };
-  }
+  private matchingPasswordsValidator: ValidatorFn = (
+    control: AbstractControl
+  ): ValidationErrors | null => {
+    const newPwd     = control.get('newPassword')?.value;
+    const confirmPwd = control.get('confirmPassword')?.value;
+    return newPwd === confirmPwd ? null : { notmatched: true };
+  };
 
-  saveMail() {
-    if(this.emailForm.valid){
-      this.emailEvent.emit(this.emailForm.value as PersonalData);
+  saveEmail() {
+    if (this.emailForm.valid) {
+      this.modifyEmail.emit({ email: this.emailForm.value.email! });
     }
   }
+
   savePassword() {
-    if(this.passwordForm.valid){
-      const password: Password = { old_password: this.currentPassword?.value, new_password: this.newPassword?.value }
-      this.passwordEvent.emit(password)
+    if (this.passwordForm.valid) {
+      const payload: ChangePasswordPayload = {
+        currentPassword: this.currentPassword!.value,
+        newPassword:     this.newPassword!.value,
+      };
+      this.modifyPassword.emit(payload);
     }
   }
 }

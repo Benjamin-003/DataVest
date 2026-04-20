@@ -1,95 +1,104 @@
-import { UserService } from 'src/app/users/services/user-service.service';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
-import {
-  AbstractControl,
-  FormGroup,
-  ValidationErrors,
-  ValidatorFn,
-  Validators,
-  FormBuilder,
-} from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import { PasswordModule } from 'primeng/password';
+import { ToastModule } from 'primeng/toast';
+import { AuthService } from '../../../core/auth/auth.service';
 
+/**
+ * Formulaire de réinitialisation du mot de passe via le lien reçu par email.
+ *
+ * Changements MAJEURS vs v14 :
+ * - L'ancienne version décodait le token de l'URL avec jwtDecode() pour en
+ *   extraire l'ID utilisateur, puis appelait PUT /api/v1/users/:id/password.
+ *   C'était une faille de sécurité (l'ID venait du JWT non vérifié côté front)
+ *   ET la route n'existe plus dans le nouveau backend.
+ *
+ * - Nouvelle version : le token de l'URL est envoyé tel quel au backend via
+ *   POST /api/auth/reset-password { token, newPassword }.
+ *   Le backend vérifie l'authenticité ET l'expiration du token.
+ *
+ * - Standalone, inject(), signal(), plus de jwtDecode côté front
+ * - Validation de la force du mot de passe alignée sur les règles backend
+ *   (12 caractères min au lieu de 8, regex inchangée)
+ */
 @Component({
-    selector: 'app-reset-password-form',
-    templateUrl: './reset-password-form.component.html',
-    providers: [MessageService],
-    standalone: false
+  selector: 'app-reset-password-form',
+  standalone: true,
+  imports: [ReactiveFormsModule, PasswordModule, ButtonModule, ToastModule],
+  providers: [MessageService],
+  templateUrl: './reset-password-form.component.html',
 })
 export class ResetPasswordFormComponent implements OnInit {
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    private readonly userService: UserService,
-    private readonly messageService: MessageService
-  ) { }
-  public resetPasswordForm!: FormGroup;
-  public userToken!: string | null;
-  get newPassword() {
-    return this.resetPasswordForm.get('newPassword');
-  }
-  get confirmPassword() {
-    return this.resetPasswordForm.get('confirmPassword');
-  }
-  public readonly strongPasswordRegex =
-    '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!-/:-@[-`{-~])[a-zA-Z0-9!-/:-@[-`{-~]{8,}$';
-  public messagesErreur = [
-    'Il semble y avoir une erreur de saisie ici',
-    "Ce champ est obligatoire, merci de saisir l'information demandée",
-  ];
+  private readonly authService = inject(AuthService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly messageService = inject(MessageService);
+  private readonly fb = inject(FormBuilder);
+
+  readonly loading = signal(false);
+ /** Vérifie que newPassword et confirmPassword sont identiques */
+  private matchingPasswordsValidator: ValidatorFn = (control) => {
+  const a = control.get('newPassword')?.value;
+  const b = control.get('confirmPassword')?.value;
+  return a === b ? null : { notmatched: true };
+};
+
+  /** Token extrait du paramètre de route /reset-password/:token */
+  private resetToken!: string;
+
+  readonly form = this.fb.group(
+    {
+      newPassword: ['', [Validators.required, Validators.minLength(12)]],
+      confirmPassword: ['', [Validators.required]],
+    },
+    { validators: [this.matchingPasswordsValidator] }
+  );
+
+  get newPassword() { return this.form.get('newPassword'); }
+  get confirmPassword() { return this.form.get('confirmPassword'); }
+
+ 
 
   ngOnInit() {
-    this.userToken = this.route.snapshot.paramMap.get('token');
-    this.resetPasswordForm = this.formBuilder.group(
-      {
-        newPassword: ['', [Validators.required]],
-        confirmPassword: ['', [Validators.required]],
-      },
-      { validators: [this.validationMatchingPassword] }
-    );
+    // Récupère le token depuis l'URL — le resetPasswordGuard garantit sa présence
+    this.resetToken = this.route.snapshot.paramMap.get('token')!;
   }
 
-  //Vérification si le mot de passe de confirmation match avec le champs de nouveau mot de passe .
-  validationMatchingPassword: ValidatorFn = (
-    controle: AbstractControl
-  ): ValidationErrors | null => {
-    const newPassword = controle.get('newPassword');
-    const confirmPassword = controle.get('confirmPassword');
-    return newPassword?.value === confirmPassword?.value
-      ? null
-      : { notmatched: true };
-  };
-  saveNewPassword() {
-    if (this.resetPasswordForm.valid) {
-      const newPassword = this.resetPasswordForm.value.newPassword;
-      const userID = this.userService.getIDIntoRefreshToken(this.userToken);
-      if (userID && this.userToken) {
-        this.userService
-          .updatePasswordWithoutLogin({ new_password: newPassword }, userID, this.userToken)
-          .subscribe({
-            error: () => {
-              this.messageService.add({
-                severity: 'error',
-                detail:
-                  'Désolé, une erreur est survenue. Veuillez réessayer plus tard',
-              });
-            },
-            complete: () => {
-              this.messageService.add({
-                severity: 'success',
-                detail:
-                  'Votre mot de passe a bien été mis à jour. Vous allez être redirigé dans un instant',
-              });
-              setTimeout(
-                () => this.router.navigate(['authentication/connexion']),
-                3000
-              );
-            },
+
+  submit() {
+    if (this.form.invalid) return;
+
+    this.loading.set(true);
+
+    this.authService
+      .resetPassword({
+        token: this.resetToken,
+        newPassword: this.form.value.newPassword!,
+      })
+      .subscribe({
+        next: () => {
+          this.loading.set(false);
+          this.messageService.add({
+            severity: 'success',
+            detail:
+              'Votre mot de passe a bien été mis à jour. Vous allez être redirigé dans un instant.',
           });
-      }
-    }
+          setTimeout(
+            () => this.router.navigate(['authentication/connexion']),
+            3000
+          );
+        },
+        error: () => {
+          this.loading.set(false);
+          this.messageService.add({
+            severity: 'error',
+            detail:
+              'Ce lien est invalide ou expiré. Veuillez refaire une demande de réinitialisation.',
+          });
+        },
+      });
   }
 }
-
