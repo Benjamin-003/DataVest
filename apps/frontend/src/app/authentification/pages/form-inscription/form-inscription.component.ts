@@ -1,148 +1,154 @@
-
-import { Subscription } from '../../../subscriptions/subscription.model';
-import { UniqueMailValidator } from './../../services/unique-mail-validator';
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
+import { Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { AbstractControl, AsyncValidatorFn, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { InputTextModule } from 'primeng/inputtext';
+import { PasswordModule } from 'primeng/password';
+import { CalendarModule } from 'primeng/calendar';
+import { DropdownModule } from 'primeng/dropdown';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DividerModule } from 'primeng/divider';
+import { ButtonModule } from 'primeng/button';
+import { RippleModule } from 'primeng/ripple';
+import { CardModule } from 'primeng/card';
+// Correction 1 : chemin corrigé → core/auth/
+import { UniqueEmailValidator } from '../../../core/auth/unique-email.validator';
+import { RegisterPayload } from '../../../core/models/auth.models';
+import { Subscription } from '../../../subscriptions/subscription.model';
 
 @Component({
-    selector: 'app-form-inscription',
-    templateUrl: './form-inscription.component.html',
-    standalone: false
+  selector: 'app-form-inscription',
+  standalone: true,
+  imports: [
+    CommonModule, ReactiveFormsModule,
+    InputTextModule, PasswordModule, CalendarModule,
+    DropdownModule, CheckboxModule, DividerModule,
+    ButtonModule, RippleModule, CardModule,
+  ],
+  templateUrl: './form-inscription.component.html',
 })
 export class FormInscriptionComponent implements OnChanges {
+  private readonly fb = inject(FormBuilder);
+  private readonly uniqueEmailValidator = inject(UniqueEmailValidator);
+  private readonly route = inject(ActivatedRoute);
 
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly uniqueMail: UniqueMailValidator,
-    private readonly route: ActivatedRoute
-  ) { }
-
-  public formulaire!: FormGroup;
-  public messagesErreur = [
-    "Il semble y avoir une erreur de saisie ici",
-    "Ce champ est obligatoire, merci de saisir l'information demandée",
-    "Un compte est déjà associé à cette adresse email",
-  ]
-
-  /**
-   * Expression régulière pour détecter un mot de passe dit "fort".
-   *
-   * Un mot de passe est "fort" lorsqu'il contient :
-   * - au moins une lettre minuscule
-   * - au moins une lettre majuscule
-   * - au moins un chiffre
-   * - au moins un caractère spécial
-   * - au moins 8 caractères
-   *
-   * Les caractères spéciaux sont issus de :
-   *
-   * https://en.wikipedia.org/wiki/List_of_Special_Characters_for_Passwords
-   *
-   * À l'exception du caractère "espace" (décimal 32).
-   */
-  public readonly strongPasswordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!-\/:-@[-`{-~])[a-zA-Z0-9!-\/:-@[-`{-~]{8,}$";
   @Input() subscriptions!: Subscription[];
   @Input() defaultBackOption!: string;
-  @Output() submitForm = new EventEmitter();
-  public selectedOptionCode!: string
+  @Output() submitForm = new EventEmitter<RegisterPayload>();
 
-  //on utilise des getters pour acceder aux valeurs saisie dans le formulaire
-  get surname() { return this.formulaire?.get('surname'); }
+  public selectedOptionCode!: string;
 
-  get firstname() { return this.formulaire?.get('firstname'); }
+  public readonly messagesErreur = [
+    'Il semble y avoir une erreur de saisie ici',
+    "Ce champ est obligatoire, merci de saisir l'information demandée",
+    'Un compte est déjà associé à cette adresse email',
+  ];
 
-  get birth_date() { return this.formulaire?.get('birth_date'); }
+  public readonly strongPasswordRegex =
+    '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!-\\/:-@[-`{-~])[a-zA-Z0-9!-\\/:-@[-`{-~]{12,}$';
 
-  get address() { return this.formulaire?.get('address'); }
+  // Déclaré AVANT buildForm() — évite TS2729
+  private readonly matchingPasswordsValidator: ValidatorFn = (
+    control: AbstractControl
+  ): ValidationErrors | null => {
+    const pwd     = control.get('password')?.value;
+    const confirm = control.get('confirmPassword')?.value;
+    return pwd === confirm ? null : { notmatched: true };
+  };
 
-  get zip_code() { return this.formulaire?.get('zip_code'); }
+  // Correction 2 : une seule méthode buildForm() utilisée à l'init ET dans ngOnChanges
+  // → TypeScript infère un seul type cohérent, plus de conflit FormGroup<{}>
+  formulaire = this.buildForm();
 
-  get city() { return this.formulaire?.get('city'); }
-
-  get country() { return this.formulaire?.get('country'); }
-
-  get mail() { return this.formulaire?.get('mail'); }
-
-  get password() { return this.formulaire?.get('password'); }
-
-  get confirmPassword() { return this.formulaire?.get('confirmPassword'); }
+  get lastName()        { return this.formulaire.get('lastName'); }
+  get firstName()       { return this.formulaire.get('firstName'); }
+  get birthdate()       { return this.formulaire.get('birthdate'); }
+  get address()         { return this.formulaire.get('address'); }
+  get zipcode()         { return this.formulaire.get('zipcode'); }
+  get city()            { return this.formulaire.get('city'); }
+  get country()         { return this.formulaire.get('country'); }
+  get email()           { return this.formulaire.get('email'); }
+  get password()        { return this.formulaire.get('password'); }
+  get confirmPassword() { return this.formulaire.get('confirmPassword'); }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['defaultBackOption']) {
-      this.selectedOptionCode = this.route.snapshot.paramMap.get('option')
-        ? this.route.snapshot.paramMap.get('option') :
-        changes['defaultBackOption'].currentValue
-      this.initForm()
+      // Correction 3 : cast explicite de currentValue (unknown → string)
+      const option = this.route.snapshot.paramMap.get('option');
+      this.selectedOptionCode = option ?? (changes['defaultBackOption'].currentValue as string);
+      this.formulaire = this.buildForm();
     }
   }
 
-  initForm() {
-    this.formulaire = this.formBuilder.group({
-      surname: [
-        "",
-        [
-          Validators.required
+  private buildForm() {
+    this.uniqueEmailValidator.currentEmail = '';
+    return this.fb.group(
+      {
+        lastName:         ['', Validators.required],
+        firstName:        ['', Validators.required],
+        birthdate:        ['', Validators.required],
+        address:          ['', Validators.required],
+        zipcode:          ['', Validators.required],
+        city:             ['', Validators.required],
+        country:          ['', Validators.required],
+        email: [
+          '',
+          {
+            validators: [Validators.required, Validators.email],
+            // Correction 4 : cast pour satisfaire AsyncValidatorFn strict
+            asyncValidators: [
+              (control: AbstractControl) =>
+                this.uniqueEmailValidator.validate(control) as ReturnType<AsyncValidatorFn>,
+            ],
+            updateOn: 'blur',
+          },
         ],
-      ],
-      firstname: [
-        "",
-        [
-          Validators.required,
-        ],
-      ],
-      birth_date: ["", Validators.required],
-      address: ["", Validators.required],
-      zip_code: ["", Validators.required],
-      city: ["", Validators.required],
-      country: ["", Validators.required],
-      mail: [
-        "",
-        {
-          validators: [
-            Validators.required,
-            Validators.email
-          ],
-          asyncValidators: [
-            this.uniqueMail.validate.bind(this.uniqueMail),
-          ] as AsyncValidatorFn[],
-          updateOn: 'blur',
-        }
-      ],
-      password: [
-        "",
-        [
-          Validators.required
-        ],
-      ],
-      confirmPassword: [
-        "",
-        [
-          Validators.required
-          ,
-        ],
-      ],
-      subscription_code: [
-        this.selectedOptionCode, [Validators.required]
-      ],
-      newsletter: [false],
-    }, { validators: [this.validationMatchingPassword] })
+        password:         ['', [Validators.required, Validators.minLength(12)]],
+        confirmPassword:  ['', Validators.required],
+        subscriptionCode: [this.selectedOptionCode ?? '', Validators.required],
+        newsletter:       [false],
+      },
+      { validators: [this.matchingPasswordsValidator] }
+    );
   }
 
-  //Vérification si le mot de passe de confirmation match avec le champs de mot de passe .
-  validationMatchingPassword: ValidatorFn = (controle: AbstractControl): ValidationErrors | null => {
-    const password = controle.get('password');
-    const confirmPassword = controle.get('confirmPassword');
-    return password?.value === confirmPassword?.value ? null : { notmatched: true };
-  }
-
-  //On soumet le formulaire et on redirige vers la page de succès ou d'échec
   validationForm() {
-    if (this.formulaire.valid) {
-      const { confirmPassword, birth_date, ...user } = this.formulaire.value
-      //On transforme l'objet Date en chaine de caractère au format ISO
-      user.birth_date = birth_date.toISOString()
-      this.submitForm.emit(user)
-    }
+    if (this.formulaire.invalid) return;
+
+    // Correction 5 : typage explicite de form.value pour destructuration sûre
+    const raw = this.formulaire.value as {
+      lastName?: string | null;
+      firstName?: string | null;
+      birthdate?: Date | string | null;
+      address?: string | null;
+      zipcode?: string | null;
+      city?: string | null;
+      country?: string | null;
+      email?: string | null;
+      password?: string | null;
+      confirmPassword?: string | null;
+      subscriptionCode?: string | null;
+      newsletter?: boolean | null;
+    };
+
+    const { confirmPassword: _confirm, birthdate, ...rest } = raw;
+
+    const payload: RegisterPayload = {
+      email:            rest.email            ?? '',
+      password:         rest.password         ?? '',
+      lastName:         rest.lastName         ?? undefined,
+      firstName:        rest.firstName        ?? undefined,
+      address:          rest.address          ?? undefined,
+      zipcode:          rest.zipcode          ?? undefined,
+      city:             rest.city             ?? undefined,
+      country:          rest.country          ?? undefined,
+      subscriptionCode: rest.subscriptionCode ?? undefined,
+      newsletter:       rest.newsletter       ?? false,
+      birthdate: birthdate instanceof Date
+        ? birthdate.toISOString()
+        : String(birthdate ?? ''),
+    };
+
+    this.submitForm.emit(payload);
   }
 }

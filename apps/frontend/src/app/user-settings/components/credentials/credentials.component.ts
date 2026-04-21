@@ -26,6 +26,8 @@ import { UpdateProfilePayload, ChangePasswordPayload } from '../../../core/model
 export class CredentialsComponent implements OnInit, OnChanges {
   private readonly fb = inject(FormBuilder);
   private readonly uniqueEmailValidator = inject(UniqueEmailValidator);
+  public readonly strongPasswordRegex =
+  '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!-\\/:-@[-`{-~])[a-zA-Z0-9!-\\/:-@[-`{-~]{12,}$';
 
   @Input() userEmail!: string;
   @Output() modifyEmail    = new EventEmitter<UpdateProfilePayload>();

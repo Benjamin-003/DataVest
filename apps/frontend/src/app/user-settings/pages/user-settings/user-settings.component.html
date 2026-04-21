@@ -4,34 +4,36 @@
     Vous pouvez utiliser cette page pour visualiser vos informations
     personnelles, modifier vos préférences et d'autres paramètres.
   </p>
-  <app-personal-data
-    [personalData]="personalData"
-    (modificationEvent)="updatePersonalData($event, 1)"
-  >
-  </app-personal-data>
-  <app-credentials
-    [userMail]="personalData.mail"
-    (modifyEmail)="updatePersonalData($event, 0)"
-    (modifyPassword)="updatePassword($event)"
-  >
-  </app-credentials>
-  <app-account-data (deletionEvent)="deleteAccount()"> </app-account-data>
-  <app-other-settings
-    [languages]="languages"
-    [userLanguage]="personalData.language_code"
-    [currencies]="currencies"
-    [userCurrency]="personalData.currency_code"
-    (modifyOtherSettings)="updatePersonalData($event, 1)"
-  >
-  </app-other-settings>
-  <p-toast
-    position="bottom-right"
-    key="succes"
-    (onClose)="afterAccountDeletion()"
-  ></p-toast>
-  <p-toast
-    position="bottom-right"
-    key="error"
-  >
-  </p-toast>
+
+  <!-- user() est un Signal → appelé avec () dans le template -->
+  @if (user()) {
+
+    <!-- Données personnelles -->
+    <app-personal-data
+      [user]="user()!"
+      (modificationEvent)="onPersonalDataUpdate($event)">
+    </app-personal-data>
+
+    <!-- Email & mot de passe -->
+    <app-credentials
+      [userEmail]="user()!.email"
+      (modifyEmail)="onEmailUpdate($event)"
+      (modifyPassword)="onPasswordUpdate($event)">
+    </app-credentials>
+
+    <!-- Langue & devise -->
+    <app-other-settings
+      [languages]="languages()"
+      [userLanguage]="user()!.languageCode ?? ''"
+      [currencies]="currencies()"
+      [userCurrency]="user()!.currencyCode ?? ''"
+      (modifyOtherSettings)="onOtherSettingsUpdate($event)">
+    </app-other-settings>
+
+    <!-- Suppression de compte -->
+    <app-account-data (deletionEvent)="deleteAccount()"></app-account-data>
+
+  }
+
+  <p-toast position="bottom-right"></p-toast>
 </div>

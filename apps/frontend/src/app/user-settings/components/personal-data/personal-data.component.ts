@@ -13,6 +13,7 @@ import { User, UpdateProfilePayload } from '../../../core/models/auth.models';
 })
 export class PersonalDataComponent implements OnChanges {
   private readonly fb = inject(FormBuilder);
+  public readonly messagesErreur = "Ce champ est obligatoire, merci de saisir l'information demandée";
 
   @Input() user!: User;
   @Output() modificationEvent = new EventEmitter<UpdateProfilePayload>();
