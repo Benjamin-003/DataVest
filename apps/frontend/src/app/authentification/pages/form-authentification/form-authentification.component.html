@@ -1,24 +1,40 @@
-<form [formGroup]="formulaire" (ngSubmit)="validationSignIn()">
+<form [formGroup]="form" (ngSubmit)="submit()">
   <div class="grid mt-5 mx-2 p-fluid">
     <div class="col-12 lg:col-offset-4 lg:col-4 shadow-2 bg-primary-300">
       <p-card>
+
         <div class="field mb-6">
           <span class="p-float-label mb-2">
-            <input id="mail" type="text" formControlName="mail" pInputText />
-            <label for="mail">Email de connexion</label>
+            <input id="email" type="text" formControlName="email" pInputText />
+            <label for="email">Email de connexion</label>
           </span>
+          @if (email?.touched && email?.hasError('required')) {
+            <div class="p-error"><small>Ce champ est obligatoire</small></div>
+          }
         </div>
+
         <div class="field mb-6">
           <span class="p-float-label mb-2">
             <input id="password" type="password" formControlName="password" pInputText />
             <label for="password">Mot de passe</label>
           </span>
+          @if (password?.touched && password?.hasError('required')) {
+            <div class="p-error"><small>Ce champ est obligatoire</small></div>
+          }
         </div>
+
         <div class="col-offset-2 col-8 flex flex-wrap">
-          <button pButton pRipple type="submit" label="Se connecter" class="p-button-raised"></button>
+          <button pButton pRipple [disabled]="form.invalid" [loading]="loading()"
+            type="submit" label="Se connecter" class="p-button-raised">
+          </button>
         </div>
-          <div class="mt-2"><a [routerLink]="['../password']">Mot de passe oublié</a></div>
-          <div class="mt-1"><a [routerLink]="['../preambule']">Pas encore client ? Ouvrir un compte</a></div>
+        <div class="mt-2">
+          <a routerLink="../password">Mot de passe oublié</a>
+        </div>
+        <div class="mt-1">
+          <a routerLink="../preambule">Pas encore client ? Ouvrir un compte</a>
+        </div>
+
       </p-card>
     </div>
   </div>

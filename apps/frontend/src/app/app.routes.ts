@@ -1,16 +1,18 @@
 import { Routes } from '@angular/router';
 import { authGuard, twoFactorGuard, resetPasswordGuard } from './core/auth/auth.guards';
 
-
+/**
+ * Routes hybrides — loadComponent pour les composants standalone migrés,
+ * loadChildren pour les modules pas encore migrés (dashboard, investissement, etc.)
+ */
 export const routes: Routes = [
-  // ─── Redirection racine ───────────────────────────────────────────────────
   {
     path: '',
     redirectTo: 'authentication/connexion',
     pathMatch: 'full',
   },
 
-  // ─── Authentification (public) ────────────────────────────────────────────
+  // ─── Authentification (standalone) ───────────────────────────────────────
   {
     path: 'authentication',
     children: [
@@ -22,7 +24,7 @@ export const routes: Routes = [
       },
       {
         path: '2fa',
-        canActivate: [twoFactorGuard], // bloque l'accès direct sans passer par /login
+        canActivate: [twoFactorGuard],
         loadComponent: () =>
           import('./authentification/pages/two-factor/two-factor.component')
             .then((c) => c.TwoFactorComponent),
@@ -73,39 +75,7 @@ export const routes: Routes = [
     ],
   },
 
-  // ─── Routes protégées ─────────────────────────────────────────────────────
-  {
-    path: 'dashboard',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./dashboard/dashboard.component').then((c) => c.DashboardComponent),
-    children: [
-      {
-        path: 'macroeconomicnews',
-        loadComponent: () =>
-          import('./dashboard/pages/macroeconomic-news/macroeconomic-news.component')
-            .then((c) => c.MacroeconomicNewsComponent),
-      },
-      // Ajouter les autres sous-routes du dashboard ici
-    ],
-  },
-  {
-    path: 'investissement',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./investissement/investissement.component').then((c) => c.InvestissementComponent),
-  },
-  {
-    path: 'tarifs',
-    loadComponent: () =>
-      import('./tarifs/tarifs.component').then((c) => c.TarifsComponent),
-  },
-  {
-    path: 'information-societe',
-    loadComponent: () =>
-      import('./information-societe/information-societe.component')
-        .then((c) => c.InformationSocieteComponent),
-  },
+  // ─── Routes protégées (standalone) ───────────────────────────────────────
   {
     path: 'parametres',
     canActivate: [authGuard],
@@ -114,10 +84,40 @@ export const routes: Routes = [
         .then((c) => c.UserSettingsComponent),
   },
 
-  // ─── 404 ──────────────────────────────────────────────────────────────────
+  // ─── Modules pas encore migrés → loadChildren ────────────────────────────
+  {
+    path: 'dashboard',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
+  },
+  {
+    path: 'investissement',
+    loadChildren: () =>
+      import('./investissement/investissement.module').then((m) => m.InvestissementModule),
+  },
+  {
+    path: 'tarifs',
+    loadChildren: () =>
+      import('./tarifs/tarifs.module').then((m) => m.TarifsModule),
+  },
+  {
+    path: 'information-societe',
+    loadChildren: () =>
+      import('./information-societe/information-societe.module')
+        .then((m) => m.InformationSocieteModule),
+  },
+
+  // ─── Accueil (CoreModule) ─────────────────────────────────────────────────
+  {
+    path: 'accueil',
+    loadChildren: () =>
+      import('./core/core.module').then((m) => m.CoreModule),
+  },
+
+  // ─── 404 ─────────────────────────────────────────────────────────────────
   {
     path: '**',
-    loadComponent: () =>
-      import('./core/page/not-found/not-found.component').then((c) => c.NotFoundComponent),
+    redirectTo: 'authentication/connexion',
   },
 ];

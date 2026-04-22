@@ -1,12 +1,16 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+import { ButtonModule } from 'primeng/button';
+import { RippleModule } from 'primeng/ripple';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
-    selector: 'app-account-data',
-    templateUrl: './account-data.component.html',
-    standalone: false
+  selector: 'app-account-data',
+  standalone: true,
+  imports: [ButtonModule, RippleModule, DialogModule],
+  templateUrl: './account-data.component.html',
 })
 export class AccountDataComponent {
-  @Output() deletionEvent = new EventEmitter();
+  @Output() deletionEvent = new EventEmitter<void>();
   isVisible = false;
 
   deleteAccount() {
@@ -14,4 +18,3 @@ export class AccountDataComponent {
     this.isVisible = false;
   }
 }
-
