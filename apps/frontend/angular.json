@@ -41,7 +41,6 @@
               "src/assets/layout/css/orange/layout-dark.css",
               "node_modules/primeicons/primeicons.css",
               "node_modules/primeflex/primeflex.css",
-              "node_modules/flag-icons/sass/flag-icons.scss",
               "src/styles.scss"
             ],
             "scripts": [],

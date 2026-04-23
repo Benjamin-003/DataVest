@@ -5,20 +5,11 @@ import { MenubarModule } from 'primeng/menubar';
 import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../../core/auth/auth.service';
 
-/**
- * Changements vs v14 :
- * - standalone: true
- * - inject() + computed() — plus de Subscription RxJS à gérer manuellement
- * - Plus de ngOnDestroy / unsubscribe() : les Signals ne fuient pas
- * - currentPersonalData$ (BehaviorSubject) → user() (Signal readonly)
- * - loggedUserName → computed depuis user().firstName
- * - isLogged → computed depuis authService.isLoggedIn()
- * - deleteUserToken() + location.reload() → authService.logout() propre
- */
 @Component({
-    selector: 'app-header',
-    imports: [RouterModule, MenubarModule, ButtonModule],
-    templateUrl: './header.component.html'
+  selector: 'app-header',
+  standalone: true,
+  imports: [RouterModule, MenubarModule, ButtonModule],
+  templateUrl: './header.component.html',
 })
 export class HeaderComponent implements OnInit {
   protected readonly authService = inject(AuthService);
@@ -26,7 +17,6 @@ export class HeaderComponent implements OnInit {
 
   public items!: MenuItem[];
 
-  // Signals dérivés — mis à jour automatiquement quand user() change
   readonly isLogged = this.authService.isLoggedIn;
   readonly loggedUserName = computed(() => this.authService.user()?.firstName ?? '');
 
@@ -52,9 +42,8 @@ export class HeaderComponent implements OnInit {
 
   logOffUser() {
     this.authService.logout().subscribe({
-      // forceLogout() dans error() est déjà géré par auth.service.ts
       complete: () => this.router.navigate(['/accueil']),
-      error: ()   => this.router.navigate(['/accueil']),
+      error:    () => this.router.navigate(['/accueil']),
     });
   }
 }

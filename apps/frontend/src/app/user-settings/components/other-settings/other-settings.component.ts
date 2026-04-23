@@ -6,24 +6,11 @@ import { Language } from '../../../languages/interfaces/language.model';
 import { Currency } from '../../../currencies/currency-model';
 import { UpdateProfilePayload } from '../../../core/models/auth.models';
 
-/**
- * Changements vs v14 :
- * - standalone: true, inject()
- * - Champs renommés :
- *     language_code → languageCode
- *     currency_code → currencyCode
- * - @Output() émet UpdateProfilePayload { languageCode, currencyCode }
- *   au lieu de PersonalData (snake_case)
- * - noChangeValidator adapté aux nouveaux noms
- *
- * Note PrimeNG 19 : p-dropdown → p-select (renommage dans PrimeNG 19).
- *   Si migration PrimeNG 19 faite, remplacer DropdownModule par SelectModule
- *   et <p-dropdown> par <p-select> dans le template.
- */
 @Component({
-    selector: 'app-other-settings',
-    imports: [ReactiveFormsModule, DropdownModule, ButtonModule],
-    templateUrl: './other-settings.component.html'
+  selector: 'app-other-settings',
+  standalone: true,
+  imports: [ReactiveFormsModule, DropdownModule, ButtonModule],
+  templateUrl: './other-settings.component.html',
 })
 export class OtherSettingsComponent implements OnChanges {
   private readonly fb = inject(FormBuilder);

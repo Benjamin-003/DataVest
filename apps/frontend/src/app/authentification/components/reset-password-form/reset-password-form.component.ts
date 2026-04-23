@@ -3,31 +3,16 @@ import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Va
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { DividerModule } from 'primeng/divider';
 import { PasswordModule } from 'primeng/password';
 import { ToastModule } from 'primeng/toast';
 import { AuthService } from '../../../core/auth/auth.service';
 
-/**
- * Formulaire de réinitialisation du mot de passe via le lien reçu par email.
- *
- * Changements MAJEURS vs v14 :
- * - L'ancienne version décodait le token de l'URL avec jwtDecode() pour en
- *   extraire l'ID utilisateur, puis appelait PUT /api/v1/users/:id/password.
- *   C'était une faille de sécurité (l'ID venait du JWT non vérifié côté front)
- *   ET la route n'existe plus dans le nouveau backend.
- *
- * - Nouvelle version : le token de l'URL est envoyé tel quel au backend via
- *   POST /api/auth/reset-password { token, newPassword }.
- *   Le backend vérifie l'authenticité ET l'expiration du token.
- *
- * - Standalone, inject(), signal(), plus de jwtDecode côté front
- * - Validation de la force du mot de passe alignée sur les règles backend
- *   (12 caractères min au lieu de 8, regex inchangée)
- */
 @Component({
   selector: 'app-reset-password-form',
   standalone: true,
-  imports: [ReactiveFormsModule, PasswordModule, ButtonModule, ToastModule],
+  imports: [ReactiveFormsModule, PasswordModule, ButtonModule, ToastModule, CardModule, DividerModule],
   providers: [MessageService],
   templateUrl: './reset-password-form.component.html',
 })
@@ -39,66 +24,42 @@ export class ResetPasswordFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   readonly loading = signal(false);
- /** Vérifie que newPassword et confirmPassword sont identiques */
-  private matchingPasswordsValidator: ValidatorFn = (control) => {
-  const a = control.get('newPassword')?.value;
-  const b = control.get('confirmPassword')?.value;
-  return a === b ? null : { notmatched: true };
-};
-
-  /** Token extrait du paramètre de route /reset-password/:token */
   private resetToken!: string;
+
+  private readonly matchingPasswordsValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    const a = control.get('newPassword')?.value;
+    const b = control.get('confirmPassword')?.value;
+    return a === b ? null : { notmatched: true };
+  };
 
   readonly form = this.fb.group(
     {
-      newPassword: ['', [Validators.required, Validators.minLength(12)]],
-      confirmPassword: ['', [Validators.required]],
+      newPassword:     ['', [Validators.required, Validators.minLength(12)]],
+      confirmPassword: ['', Validators.required],
     },
     { validators: [this.matchingPasswordsValidator] }
   );
 
-  get newPassword() { return this.form.get('newPassword'); }
+  get newPassword()     { return this.form.get('newPassword'); }
   get confirmPassword() { return this.form.get('confirmPassword'); }
 
- 
-
   ngOnInit() {
-    // Récupère le token depuis l'URL — le resetPasswordGuard garantit sa présence
     this.resetToken = this.route.snapshot.paramMap.get('token')!;
   }
 
-
   submit() {
     if (this.form.invalid) return;
-
     this.loading.set(true);
-
-    this.authService
-      .resetPassword({
-        token: this.resetToken,
-        newPassword: this.form.value.newPassword!,
-      })
-      .subscribe({
-        next: () => {
-          this.loading.set(false);
-          this.messageService.add({
-            severity: 'success',
-            detail:
-              'Votre mot de passe a bien été mis à jour. Vous allez être redirigé dans un instant.',
-          });
-          setTimeout(
-            () => this.router.navigate(['authentication/connexion']),
-            3000
-          );
-        },
-        error: () => {
-          this.loading.set(false);
-          this.messageService.add({
-            severity: 'error',
-            detail:
-              'Ce lien est invalide ou expiré. Veuillez refaire une demande de réinitialisation.',
-          });
-        },
-      });
+    this.authService.resetPassword({ token: this.resetToken, newPassword: this.form.value.newPassword! }).subscribe({
+      next: () => {
+        this.loading.set(false);
+        this.messageService.add({ severity: 'success', detail: 'Votre mot de passe a bien été mis à jour. Vous allez être redirigé dans un instant.' });
+        setTimeout(() => this.router.navigate(['authentication/connexion']), 3000);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.messageService.add({ severity: 'error', detail: 'Ce lien est invalide ou expiré. Veuillez refaire une demande de réinitialisation.' });
+      },
+    });
   }
 }
