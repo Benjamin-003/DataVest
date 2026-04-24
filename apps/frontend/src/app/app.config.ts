@@ -9,21 +9,34 @@ import { I18nService } from './i18n/i18n.service';
 import * as Sentry from '@sentry/angular';
 import { Router } from '@angular/router';
 import { ErrorHandler } from '@angular/core';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeng/themes/aura';
+import { definePreset } from '@primeng/themes';
 
 /**
- * Remplace AppModule + I18nModule.setLocale() + I18nModule.setLocaleId().
- *
- * Changements i18n vs v14 :
- *   - I18nModule.setLocale()   → APP_INITIALIZER sur I18nService.init()
- *   - I18nModule.setLocaleId() → LOCALE_ID factory depuis I18nService.locale
- *   - Plus de dépendance à webpack : imports statiques dans i18n.service.ts
- *
- * IMPORTANT : I18nService.init() doit s'exécuter AVANT AuthService.init()
- * car loadTranslations() doit être appelé avant que les composants
- * utilisant $localize soient instanciés.
- * L'ordre des providers n'est pas garanti → on utilise un seul APP_INITIALIZER
- * qui enchaîne les deux initialisations.
+ * Thème personnalisé Ottawa Pigeon :
+ * - Base : Aura (PrimeNG 19 preset)
+ * - Couleur primaire : #D08770 (orange du thème original)
+ * - Mode sombre activé via la classe CSS .dark sur <html>
  */
+const OttawaPigeonPreset = definePreset(Aura, {
+  semantic: {
+    primary: {
+      50:  '{orange.50}',
+      100: '{orange.100}',
+      200: '{orange.200}',
+      300: '{orange.300}',
+      400: '{orange.400}',
+      500: '#D08770',
+      600: '#b8735e',
+      700: '#9e5f4c',
+      800: '#844b3a',
+      900: '#6a3728',
+      950: '#501e16',
+    },
+  },
+});
+
 export const appConfig: ApplicationConfig = {
   providers: [
     // ─── Routing ────────────────────────────────────────────────────────────
@@ -35,27 +48,38 @@ export const appConfig: ApplicationConfig = {
     // ─── Animations ──────────────────────────────────────────────────────────
     provideAnimationsAsync(),
 
-    // ─── i18n : locale ID dynamique depuis I18nService ───────────────────────
+    // ─── PrimeNG 19 — preset Aura avec couleurs Ottawa Pigeon ────────────────
+    providePrimeNG({
+      theme: {
+        preset: OttawaPigeonPreset,
+        options: {
+          darkModeSelector: '.dark',  // ajouter class="dark" sur <html> pour le mode sombre
+          cssLayer: false,
+        },
+      },
+      ripple: true,
+    }),
+
+    // ─── i18n ─────────────────────────────────────────────────────────────────
     {
       provide: LOCALE_ID,
       useFactory: (i18nService: I18nService) => i18nService.locale,
       deps: [I18nService],
     },
 
-    // ─── Initialisation : i18n PUIS session auth ─────────────────────────────
-    // Un seul APP_INITIALIZER pour garantir l'ordre d'exécution
+    // ─── Initialisation ───────────────────────────────────────────────────────
     {
       provide: APP_INITIALIZER,
       useFactory: (i18nService: I18nService, authService: AuthService) =>
         async () => {
-          await i18nService.init();   // 1. Charge les traductions
-          await authService.init();   // 2. Restaure la session
+          await i18nService.init();
+          await authService.init();
         },
       deps: [I18nService, AuthService],
       multi: true,
     },
 
-    // ─── Sentry (v8) ─────────────────────────────────────────────────────────
+    // ─── Sentry ───────────────────────────────────────────────────────────────
     {
       provide: ErrorHandler,
       useValue: Sentry.createErrorHandler(),
@@ -70,12 +94,5 @@ export const appConfig: ApplicationConfig = {
       deps: [Sentry.TraceService],
       multi: true,
     },
-
-    // ─── PrimeNG 19 ──────────────────────────────────────────────────────────
-    // À décommenter après : npm install primeng@19
-    //
-    // import { providePrimeNG } from 'primeng/config';
-    // import Aura from '@primeng/themes/aura';
-    // providePrimeNG({ theme: { preset: Aura } }),
   ],
 };

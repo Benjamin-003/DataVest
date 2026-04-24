@@ -18,7 +18,11 @@ import { AccountDataComponent } from '../../components/account-data/account-data
   standalone: true,
   imports: [
     CommonModule,
-    ToastModule
+    ToastModule,
+    PersonalDataComponent,
+  CredentialsComponent,
+  OtherSettingsComponent,
+  AccountDataComponent,
 ],
   providers: [MessageService],
   templateUrl: './user-settings.component.html',

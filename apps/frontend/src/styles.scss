@@ -1,3 +1,58 @@
-.p-menubar-start > a{
+/* ─── Global Ottawa Pigeon ─────────────────────────────────────────────────── */
+
+/* Navigation */
+.p-menubar-start > a {
   text-decoration: none;
+}
+
+/* ─── Layout général ─────────────────────────────────────────────────────── */
+body {
+  margin: 0;
+  font-family: var(--p-font-family);
+  background-color: var(--p-surface-ground);
+  color: var(--p-text-color);
+}
+
+/* ─── Float labels PrimeNG 19 ─────────────────────────────────────────────── */
+/* En PrimeNG 19, p-float-label wraps natively — ce style assure la hauteur */
+.p-float-label {
+  display: block;
+  width: 100%;
+}
+
+.p-float-label input,
+.p-float-label textarea {
+  width: 100%;
+}
+
+/* ─── Formulaires ─────────────────────────────────────────────────────────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.p-error small {
+  color: var(--p-red-500);
+  font-size: 0.75rem;
+}
+
+/* ─── Cards ───────────────────────────────────────────────────────────────── */
+.p-card {
+  background: var(--p-surface-card);
+  border-radius: var(--p-border-radius-xl);
+  padding: 1.5rem;
+}
+
+/* ─── Mode sombre ─────────────────────────────────────────────────────────── */
+/* Pour activer : ajouter class="dark" sur <html> dans index.html */
+.dark body {
+  background-color: var(--p-surface-ground);
+}
+
+/* ─── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .p-card {
+    padding: 1rem;
+  }
 }

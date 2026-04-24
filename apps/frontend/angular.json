@@ -37,11 +37,10 @@
               "src/assets"
             ],
             "styles": [
-              "src/assets/theme/orange/theme-dark.css",
-              "src/assets/layout/css/orange/layout-dark.css",
-              "node_modules/primeicons/primeicons.css",
-              "node_modules/primeflex/primeflex.css",
-              "src/styles.scss"
+               "node_modules/primeicons/primeicons.css",
+  "node_modules/primeflex/primeflex.css",
+  "src/styles.scss"
+
             ],
             "scripts": [],
             "browser": "src/main.ts"
