@@ -15,7 +15,7 @@ export class MacroeconomicNewsService {
 
   //Appel le flux RSS d'un journal
   getNews(URLStream: string) {
-    const encodedURL = encodeURIComponent(URLStream)
+const encodedURL = btoa(URLStream);
     return this.http.get(`${FTEndpoint}${encodedURL}`, { responseType: 'text' }).pipe(
       map(articleResult => {
         return JSON.parse(parsedResult(articleResult))
