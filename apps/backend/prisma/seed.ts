@@ -1,25 +1,29 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import 'dotenv/config';
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL as string,
+});
+
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log('🌱 Seeding...');
 
-  // Devises
   await prisma.currency.createMany({
     data: [
-      { code: 'USD', label: 'US Dollar',          flag: '🇺🇸' },
-      { code: 'EUR', label: 'Euro',                flag: '🇪🇺' },
-      { code: 'GBP', label: 'British Pound',       flag: '🇬🇧' },
-      { code: 'JPY', label: 'Japanese Yen',        flag: '🇯🇵' },
-      { code: 'CHF', label: 'Swiss Franc',         flag: '🇨🇭' },
-      { code: 'CAD', label: 'Canadian Dollar',     flag: '🇨🇦' },
-      { code: 'AUD', label: 'Australian Dollar',   flag: '🇦🇺' },
+      { code: 'USD', label: 'US Dollar',        flag: '🇺🇸' },
+      { code: 'EUR', label: 'Euro',              flag: '🇪🇺' },
+      { code: 'GBP', label: 'British Pound',     flag: '🇬🇧' },
+      { code: 'JPY', label: 'Japanese Yen',      flag: '🇯🇵' },
+      { code: 'CHF', label: 'Swiss Franc',       flag: '🇨🇭' },
+      { code: 'CAD', label: 'Canadian Dollar',   flag: '🇨🇦' },
+      { code: 'AUD', label: 'Australian Dollar', flag: '🇦🇺' },
     ],
     skipDuplicates: true,
   });
 
-  // Langues
   await prisma.language.createMany({
     data: [
       { code: 'FR', label: 'Français' },
@@ -31,12 +35,11 @@ async function main() {
     skipDuplicates: true,
   });
 
-  // Abonnements
   await prisma.subscription.createMany({
     data: [
-      { code: 'FREE',    label: 'Gratuit',     isDefault: true  },
-      { code: 'BASIC',   label: 'Basic',       isDefault: false },
-      { code: 'PREMIUM', label: 'Premium',     isDefault: false },
+      { code: 'FREE',    label: 'Gratuit', isDefault: true  },
+      { code: 'BASIC',   label: 'Basic',   isDefault: false },
+      { code: 'PREMIUM', label: 'Premium', isDefault: false },
     ],
     skipDuplicates: true,
   });
