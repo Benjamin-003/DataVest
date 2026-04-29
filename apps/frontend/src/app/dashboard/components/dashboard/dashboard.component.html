@@ -1,21 +1,21 @@
 <h5 class="text-center">Macro-economic news</h5>
 
-<div>
-  <p-tabMenu [model]="items" [activeItem]="items[0]"></p-tabMenu>
-</div>
-<ng-container *ngIf="!isError; else elseTemplate">
-<div class="grid mx-2">
-  <div class="col-12 lg:col-3">
-    <app-last-article-card
-      [firstArticle]="firstArticle"
-    ></app-last-article-card>
+<p-tabs (onChange)="onTabChange($event.index)">
+  @for (stream of streams; track stream.label) {
+    <p-tab [value]="stream.label">{{ stream.label }}</p-tab>
+  }
+</p-tabs>
+
+@if (!isError) {
+  <div class="grid mx-2">
+    <div class="col-12 lg:col-3">
+      <app-last-article-card [firstArticle]="firstArticle"></app-last-article-card>
+    </div>
+    <div class="col-12 md:col-9">
+      <app-article-table [articleListe]="articleListe"></app-article-table>
+    </div>
   </div>
-  <div class="col-12 md:col-9">
-    <app-article-table [articleListe]="articleListe"></app-article-table>
-  </div>
-</div>
-<app-table-footer [firstArticle]="firstArticle"></app-table-footer>
-</ng-container>
-<ng-template #elseTemplate>
+  <app-table-footer [firstArticle]="firstArticle"></app-table-footer>
+} @else {
   <p class="m-6">News can not be retrieved. Please try again later</p>
-</ng-template>
+}

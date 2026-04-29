@@ -1,34 +1,17 @@
 import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
 import { Article } from '../../interfaces/article';
 
 @Component({
-    selector: 'app-article-table',
-    templateUrl: './article-table.component.html',
-    standalone: false
+  selector: 'app-article-table',
+  standalone: true,
+  imports: [CommonModule, TableModule, TooltipModule],
+  templateUrl: './article-table.component.html',
 })
 export class ArticleTableComponent {
-  @Input() articleListe!: Article[]
-  public first = 0;
-  public rows = 10;
+  @Input() articleListe!: Article[];
   public titleLength = 50;
-
-  next() {
-    this.first = this.first + this.rows;
-  }
-
-  prev() {
-    this.first = this.first - this.rows;
-  }
-
-  reset() {
-    this.first = 0;
-  }
-
-  isLastPage(): boolean {
-    return this.articleListe ? this.first === (this.articleListe.length - this.rows) : true;
-  }
-
-  isFirstPage(): boolean {
-    return this.articleListe ? this.first === 0 : true;
-  }
 }
+ 

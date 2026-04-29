@@ -1,41 +1,22 @@
-<p-table
-  [value]="articleListe"
-  [paginator]="true"
-  [rows]="10"
-  [showCurrentPageReport]="true"
->
+<p-table [value]="articleListe" [paginator]="true" [rows]="10" [showCurrentPageReport]="true">
   <ng-template pTemplate="header">
     <tr>
       <th id="time">Date and time</th>
       <th id="title">Article title</th>
     </tr>
   </ng-template>
-  <ng-template let-articleListe pTemplate="body">
+  <ng-template let-article pTemplate="body">
     <tr>
+      <td>{{ article.publicationDate | date : "dd MMM y HH:mm:ss" }}</td>
       <td>
-        {{ articleListe.publicationDate | date : "dd MMM y HH:mm:ss" }}
-      </td>
-      <td>
-        <ng-container
-          *ngIf="articleListe.title.length <= titleLength; else elseTemplate"
-        >
-          <a
-            href="{{ articleListe.link }}"
-            target="_blank"
-            rel="noopener"
-            >{{ articleListe.title }}
+        @if (article.title.length <= titleLength) {
+          <a href="{{ article.link }}" target="_blank" rel="noopener">{{ article.title }}</a>
+        } @else {
+          <a href="{{ article.link }}" target="_blank" rel="noopener"
+            [pTooltip]="article.title" tooltipPosition="bottom">
+            {{ article.title.substring(0, titleLength) }} [...]
           </a>
-        </ng-container>
-        <ng-template #elseTemplate>
-          <a
-            href="{{ articleListe.link }}"
-            target="_blank"
-            [pTooltip]="articleListe.title"
-            tooltipPosition="bottom"
-            rel="noopener"
-            >{{ articleListe.title.substr(0, titleLength) }} [...]
-          </a>
-        </ng-template>
+        }
       </td>
     </tr>
   </ng-template>

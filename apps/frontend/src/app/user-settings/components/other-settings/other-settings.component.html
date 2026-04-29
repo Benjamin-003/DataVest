@@ -5,13 +5,13 @@
     <!-- Langue -->
     <div class="field col-12 md:col-4">
       <span class="p-float-label">
-        <p-dropdown
+        <p-select
           [options]="languages"
           optionLabel="label"
           optionValue="code"
           inputId="language"
           formControlName="languageCode">
-        </p-dropdown>
+        </p-select>
         <label for="language">Langue</label>
       </span>
     </div>
@@ -19,7 +19,7 @@
     <!-- Devise -->
     <div class="field col-12 md:col-4">
       <span class="p-float-label">
-        <p-dropdown
+        <p-select
           [options]="currencies"
           optionValue="code"
           inputId="currency"
@@ -32,18 +32,14 @@
             <span [class]="'fi fi-' + currency.flag"></span>
             <span class="ml-2">{{ currency.label }}</span>
           </ng-template>
-        </p-dropdown>
+        </p-select>
         <label for="currency">Devise</label>
       </span>
     </div>
 
     <div class="grid p-fluid col-12 md:col-offset-4 md:col-4 justify-content-center">
-      <button
-        pButton pRipple
-        [disabled]="form.invalid"
-        type="submit"
-        label="Sauvegarder mes préférences"
-        class="p-button-raised">
+      <button pButton pRipple [disabled]="form.invalid" type="submit"
+        label="Sauvegarder mes préférences" class="p-button-raised">
       </button>
     </div>
 

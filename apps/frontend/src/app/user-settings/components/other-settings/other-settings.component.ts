@@ -1,6 +1,6 @@
 import { Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { Language } from '../../../languages/interfaces/language.model';
 import { Currency } from '../../../currencies/currency-model';
@@ -9,7 +9,7 @@ import { UpdateProfilePayload } from '../../../core/models/auth.models';
 @Component({
   selector: 'app-other-settings',
   standalone: true,
-  imports: [ReactiveFormsModule, DropdownModule, ButtonModule],
+  imports: [ReactiveFormsModule, SelectModule, ButtonModule],
   templateUrl: './other-settings.component.html',
 })
 export class OtherSettingsComponent implements OnChanges {

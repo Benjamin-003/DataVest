@@ -4,14 +4,13 @@ import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
-import { CalendarModule } from 'primeng/calendar';
-import { DropdownModule } from 'primeng/dropdown';
+import { DatePickerModule } from 'primeng/datepicker';
+import { SelectModule } from 'primeng/select';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DividerModule } from 'primeng/divider';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { CardModule } from 'primeng/card';
-// Correction 1 : chemin corrigé → core/auth/
 import { UniqueEmailValidator } from '../../../core/auth/unique-email.validator';
 import { RegisterPayload } from '../../../core/models/auth.models';
 import { Subscription } from '../../../subscriptions/subscription.model';
@@ -21,8 +20,8 @@ import { Subscription } from '../../../subscriptions/subscription.model';
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule,
-    InputTextModule, PasswordModule, CalendarModule,
-    DropdownModule, CheckboxModule, DividerModule,
+    InputTextModule, PasswordModule, DatePickerModule,
+    SelectModule, CheckboxModule, DividerModule,
     ButtonModule, RippleModule, CardModule,
   ],
   templateUrl: './form-inscription.component.html',
@@ -47,7 +46,6 @@ export class FormInscriptionComponent implements OnChanges {
   public readonly strongPasswordRegex =
     '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!-\\/:-@[-`{-~])[a-zA-Z0-9!-\\/:-@[-`{-~]{12,}$';
 
-  // Déclaré AVANT buildForm() — évite TS2729
   private readonly matchingPasswordsValidator: ValidatorFn = (
     control: AbstractControl
   ): ValidationErrors | null => {
@@ -56,8 +54,6 @@ export class FormInscriptionComponent implements OnChanges {
     return pwd === confirm ? null : { notmatched: true };
   };
 
-  // Correction 2 : une seule méthode buildForm() utilisée à l'init ET dans ngOnChanges
-  // → TypeScript infère un seul type cohérent, plus de conflit FormGroup<{}>
   formulaire = this.buildForm();
 
   get lastName()        { return this.formulaire.get('lastName'); }
@@ -73,7 +69,6 @@ export class FormInscriptionComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['defaultBackOption']) {
-      // Correction 3 : cast explicite de currentValue (unknown → string)
       const option = this.route.snapshot.paramMap.get('option');
       this.selectedOptionCode = option ?? (changes['defaultBackOption'].currentValue as string);
       this.formulaire = this.buildForm();
@@ -95,7 +90,6 @@ export class FormInscriptionComponent implements OnChanges {
           '',
           {
             validators: [Validators.required, Validators.email],
-            // Correction 4 : cast pour satisfaire AsyncValidatorFn strict
             asyncValidators: [
               (control: AbstractControl) =>
                 this.uniqueEmailValidator.validate(control) as ReturnType<AsyncValidatorFn>,
@@ -115,7 +109,6 @@ export class FormInscriptionComponent implements OnChanges {
   validationForm() {
     if (this.formulaire.invalid) return;
 
-    // Correction 5 : typage explicite de form.value pour destructuration sûre
     const raw = this.formulaire.value as {
       lastName?: string | null;
       firstName?: string | null;

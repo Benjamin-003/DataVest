@@ -1,14 +1,14 @@
 import { Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
-import { CalendarModule } from 'primeng/calendar';
+import { DatePickerModule } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
 import { User, UpdateProfilePayload } from '../../../core/models/auth.models';
 
 @Component({
   selector: 'app-personal-data',
   standalone: true,
-  imports: [ReactiveFormsModule, InputTextModule, CalendarModule, ButtonModule],
+  imports: [ReactiveFormsModule, InputTextModule, DatePickerModule, ButtonModule],
   templateUrl: './personal-data.component.html',
 })
 export class PersonalDataComponent implements OnChanges {
@@ -72,21 +72,18 @@ export class PersonalDataComponent implements OnChanges {
     return `${date.getFullYear()}-${month}-${day}`;
   }
 
- saveModification() {
-  if (this.form.invalid) return;
-  const { birthdate, ...rest } = this.form.value;
-
-  // Convertit null → undefined pour correspondre à UpdateProfilePayload
-  const payload: UpdateProfilePayload = {
-    firstName: rest.firstName ?? undefined,
-    lastName:  rest.lastName  ?? undefined,
-    address:   rest.address   ?? undefined,
-    zipcode:   rest.zipcode   ?? undefined,
-    city:      rest.city      ?? undefined,
-    country:   rest.country   ?? undefined,
-    birthdate: this.dateToISO(birthdate as Date),
-  };
-
-  this.modificationEvent.emit(payload);
-}
+  saveModification() {
+    if (this.form.invalid) return;
+    const { birthdate, ...rest } = this.form.value;
+    const payload: UpdateProfilePayload = {
+      firstName: rest.firstName ?? undefined,
+      lastName:  rest.lastName  ?? undefined,
+      address:   rest.address   ?? undefined,
+      zipcode:   rest.zipcode   ?? undefined,
+      city:      rest.city      ?? undefined,
+      country:   rest.country   ?? undefined,
+      birthdate: this.dateToISO(birthdate as Date),
+    };
+    this.modificationEvent.emit(payload);
+  }
 }
