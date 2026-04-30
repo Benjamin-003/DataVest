@@ -16,6 +16,7 @@ import { TableFooterComponent } from '../../pages/table-footer/table-footer.comp
 export class DashboardComponent implements OnInit {
   private readonly macroEconomicNews = inject(MacroeconomicNewsService);
 
+public activeTab = 0;
   public isError = true;
   public articleListe: Article[] = [];
   public firstArticle: Article = { title: '', description: '', publicationDate: '', link: '' };
@@ -30,10 +31,11 @@ export class DashboardComponent implements OnInit {
     this.getStream(this.streams[0].url, this.streams[0].attr);
   }
 
-  onTabChange(index: number): void {
-    const stream = this.streams[index];
-    this.getStream(stream.url, stream.attr);
-  }
+ onTabChange(index: number): void {
+  this.activeTab = index;
+  const stream = this.streams[index];
+  this.getStream(stream.url, stream.attr);
+}
 
   getStream(url: string, attributeTitle: string): void {
     this.macroEconomicNews.getNews(url).subscribe({

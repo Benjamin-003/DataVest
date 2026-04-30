@@ -1,9 +1,11 @@
 <h5 class="text-center">Macro-economic news</h5>
 
-<p-tabs>
-  @for (stream of streams; track stream.label; let i = $index) {
-    <p-tab [value]="stream.label" (click)="onTabChange(i)">{{ stream.label }}</p-tab>
-  }
+<p-tabs [value]="activeTab" (valueChange)="onTabChange(+($event))">
+  <p-tablist>
+    @for (stream of streams; track stream.label; let i = $index) {
+      <p-tab [value]="i">{{ stream.label }}</p-tab>
+    }
+  </p-tablist>
 </p-tabs>
 
 @if (!isError) {
