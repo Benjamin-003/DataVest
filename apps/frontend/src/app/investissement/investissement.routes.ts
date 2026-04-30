@@ -1,8 +1,5 @@
 import { Routes } from '@angular/router';
 
-// Note : les composants d'investissement ont été déplacés vers src/app/investissement/composants/
-// Le dossier "actualités" (avec accent) a été renommé "actualites" pour éviter les problèmes d'encodage
-
 export const investissementRoutes: Routes = [
   {
     path: '',
@@ -39,6 +36,8 @@ export const investissementRoutes: Routes = [
     loadComponent: () =>
       import('./composants/cotations/matieres-premieres/matieres-premieres.component').then(c => c.MatieresPremieresComponent),
   },
+  // Note : le dossier s'appelle "actualités" avec accent — Angular/TypeScript
+  // gère correctement les chemins avec caractères Unicode dans les imports dynamiques
   {
     path: 'LaSeances',
     loadComponent: () =>

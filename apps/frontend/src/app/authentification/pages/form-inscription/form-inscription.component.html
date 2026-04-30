@@ -36,9 +36,9 @@
         <!-- Date de naissance -->
         <div class="field mb-6">
           <span class="p-float-label mb-2">
-            <p-calendar inputId="birthdate" formControlName="birthdate"
+            <p-datepicker inputId="birthdate" formControlName="birthdate"
               dateFormat="dd/mm/yy" [showIcon]="true">
-            </p-calendar>
+            </p-datepicker>
             <label for="birthdate">Date de naissance</label>
           </span>
           @if (birthdate?.touched) {
@@ -189,13 +189,13 @@
         <!-- Abonnement -->
         <div class="field col-12 md:col-4">
           <span class="p-float-label">
-            <p-dropdown
+            <p-select
               [options]="subscriptions"
               optionLabel="label"
               optionValue="code"
               inputId="subscriptionCode"
               formControlName="subscriptionCode">
-            </p-dropdown>
+            </p-select>
             <label for="subscriptionCode">Abonnement</label>
           </span>
         </div>
