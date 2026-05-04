@@ -6,7 +6,8 @@
 Backend/
 ├── prisma/
 │   ├── migrations/
-│   └── schema.prisma
+│   ├── schema.prisma
+│   └── seed.ts
 ├── src/
 │   ├── config/
 │   │   ├── env.ts
@@ -22,11 +23,19 @@ Backend/
 │   │   │   ├── auth.service.ts
 │   │   │   ├── auth.controller.ts
 │   │   │   └── auth.routes.ts
-│   │   └── conversions/
-│   │       ├── conversion.schema.ts
-│   │       ├── conversion.service.ts
-│   │       ├── conversion.controller.ts
-│   │       └── conversion.routes.ts
+│   │   ├── articles/
+│   │   │   ├── article.service.ts
+│   │   │   ├── article.controller.ts
+│   │   │   └── article.routes.ts
+│   │   ├── currencies/
+│   │   │   ├── currency.controller.ts
+│   │   │   └── currency.routes.ts
+│   │   ├── languages/
+│   │   │   ├── language.controller.ts
+│   │   │   └── language.routes.ts
+│   │   └── subscriptions/
+│   │       ├── subscription.controller.ts
+│   │       └── subscription.routes.ts
 │   ├── prisma/
 │   │   └── client.ts
 │   └── types/
@@ -42,200 +51,247 @@ Backend/
 
 ---
 
+## Variables d'environnement
+
+Fichier `.env` requis à la racine du projet :
+
+| Variable | Obligatoire | Description | Exemple |
+|---|---|---|---|
+| `DATABASE_URL` | ✅ | URL de connexion PostgreSQL | `postgresql://user:pass@localhost:5433/mydb?schema=public` |
+| `JWT_SECRET` | ✅ | Clé secrète access token | chaîne longue et aléatoire |
+| `JWT_REFRESH_SECRET` | ✅ | Clé secrète refresh token | chaîne longue et aléatoire |
+| `PORT` | — | Port d'écoute (défaut : 3000) | `3000` |
+| `NODE_ENV` | — | Environnement (défaut : development) | `development` |
+| `JWT_EXPIRES_IN` | — | Durée access token (défaut : 7d) | `15m` |
+| `JWT_REFRESH_EXPIRES_IN` | — | Durée refresh token (défaut : 30d) | `30d` |
+| `CORS_ORIGIN` | — | Origine autorisée (défaut : localhost:5173) | `http://localhost:4200` |
+| `RESEND_API_KEY` | — | Clé API Resend (emails) | `re_...` |
+| `FRONTEND_URL` | — | URL du frontend (liens dans les emails) | `http://localhost:4200` |
+
+---
+
 ## Prisma
 
 ### `prisma/schema.prisma`
-Décrit la structure de la base de données. Contient le modèle `User` avec tous ses champs.
 
-**Champs du modèle User :**
+**Modèle `User` :**
 | Champ | Type | Description |
 |---|---|---|
 | id | String | Identifiant unique (cuid) |
 | email | String | Email unique |
-| password | String | Mot de passe hashé (bcrypt) |
-| firstName | String? | Prénom (optionnel) |
-| lastName | String? | Nom (optionnel) |
-| role | Role | Rôle (USER ou ADMIN) |
-| refreshToken | String? | Token de rafraîchissement |
+| password | String | Mot de passe hashé (bcrypt, coût 12) |
+| firstName | String? | Prénom |
+| lastName | String? | Nom |
+| role | Role | Rôle : `USER` ou `ADMIN` |
+| refreshToken | String? | Token de rafraîchissement JWT |
+| birthdate | DateTime? | Date de naissance |
+| address | String? | Adresse postale |
+| zipcode | String? | Code postal |
+| city | String? | Ville |
+| country | String? | Pays |
+| newsletter | Boolean | Abonné à la newsletter (défaut : false) |
+| languageCode | String? | Référence vers `Language.code` |
+| currencyCode | String? | Référence vers `Currency.code` |
+| subscriptionCode | String? | Référence vers `Subscription.code` |
 | emailVerified | Boolean | Email vérifié (défaut : false) |
 | emailVerifyToken | String? | Token de vérification email |
-| emailVerifyExpires | DateTime? | Expiration du token de vérification |
+| emailVerifyExpires | DateTime? | Expiration token de vérification |
 | twoFactorEnabled | Boolean | 2FA activée (défaut : false) |
-| twoFactorCode | String? | Code 2FA |
+| twoFactorCode | String? | Code 2FA temporaire |
 | twoFactorExpires | DateTime? | Expiration du code 2FA |
-| resetPasswordToken | String? | Token de réinitialisation |
+| resetPasswordToken | String? | Token de réinitialisation mot de passe |
 | resetPasswordExpires | DateTime? | Expiration du token de réinitialisation |
 | createdAt | DateTime | Date de création |
-| updatedAt | DateTime | Date de mise à jour |
+| updatedAt | DateTime | Date de dernière modification |
 
-### `prisma.config.ts`
-Configuration Prisma v7 — schéma, migrations et connexion à la base.
-
-**Champs du modèle Conversion :**
+**Modèle `Currency` :**
 | Champ | Type | Description |
 |---|---|---|
-| id | String | Identifiant unique (cuid) |
-| userId | String | Référence vers l'utilisateur propriétaire |
-| fileName | String | Nom du fichier XML uploadé |
-| xmlContent | String | Contenu brut du fichier XML (`@db.Text`) |
-| jsonContent | String | Représentation JSON du XML (`@db.Text`) |
-| treeContent | String | Tableau plat de nœuds représentant l'arborescence (`@db.Text`) |
-| createdAt | DateTime | Date de création |
+| code | String | Clé primaire (ex: `EUR`, `USD`) |
+| label | String | Libellé affiché |
+| flag | String | Code du drapeau (ex: `eu`, `us`) |
 
-> La relation `User → Conversion` est en `onDelete: Cascade` : supprimer un utilisateur supprime toutes ses conversions.
+**Modèle `Language` :**
+| Champ | Type | Description |
+|---|---|---|
+| code | String | Clé primaire (ex: `FR`, `EN`) |
+| label | String | Libellé affiché |
 
-> **Structure d'un nœud `treeContent` :**
-> - `id` — index du nœud
-> - `tag` — nom du tag XML (`user_name` pour le nœud racine)
-> - `value` — valeur textuelle du nœud (vide si nœud parent)
-> - `parentId` — id du nœud parent (−1 pour la racine)
-> - `children` — tableau des `id` des enfants directs
+**Modèle `Subscription` :**
+| Champ | Type | Description |
+|---|---|---|
+| code | String | Clé primaire (ex: `FREE`, `PREMIUM`) |
+| label | String | Libellé affiché |
+| isDefault | Boolean | Abonnement par défaut à l'inscription |
+
+### `prisma/seed.ts`
+
+Insère les données de référence initiales (currencies, languages, subscriptions).
+
+```bash
+npx prisma db seed
+```
+
+### `prisma.config.ts`
+
+Configuration Prisma v7 — schéma, migrations, seed et connexion à la base via `DATABASE_URL`.
 
 ---
 
 ## Configuration
 
 ### `src/config/env.ts`
-Charge et valide toutes les variables d'environnement au démarrage.
+
+Charge et valide les variables d'environnement au démarrage. Lance une exception si `DATABASE_URL`, `JWT_SECRET` ou `JWT_REFRESH_SECRET` sont absentes.
+
+Exporte l'objet `config` utilisé dans toute l'application :
+```typescript
+config.port           // PORT
+config.jwt.secret     // JWT_SECRET
+config.jwt.expiresIn  // JWT_EXPIRES_IN
+config.cors.origin    // CORS_ORIGIN
+```
 
 ### `src/config/mailer.ts`
-Initialise le client **Resend** avec la clé API et exporte l'adresse expéditeur.
+
+Initialise le client **Resend** avec `RESEND_API_KEY`. Exporte l'adresse expéditeur utilisée par `auth.mailer.ts`.
 
 ---
 
 ## Types TypeScript
 
 ### `src/types/env.d.ts`
-Déclare les variables d'environnement pour TypeScript.
+Augmente `NodeJS.ProcessEnv` avec les types des variables d'environnement.
 
 ### `src/types/express.d.ts`
-Étend le type `Request` d'Express pour y ajouter `req.user`.
+Augmente `Express.Request` avec `req.user` (profil utilisateur injecté par le middleware `authenticate`).
 
 ---
 
 ## Prisma Client
 
 ### `src/prisma/client.ts`
-Singleton `PrismaClient` partagé dans toute l'application.
-Utilise `@prisma/adapter-pg` requis par Prisma v7.
+
+Singleton `PrismaClient` partagé dans toute l'application. Utilise `@prisma/adapter-pg` (requis par Prisma v7 avec PostgreSQL).
 
 ---
 
 ## Middlewares
 
-### `src/middleware/error.middleware.ts`
-Intercepte toutes les erreurs — Zod (422), AppError, erreurs inattendues (500).
+### `src/middleware/auth.middleware.ts`
+
+- **`authenticate`** — vérifie le Bearer token JWT, injecte `req.user`, retourne 401 si invalide ou expiré
+- **`authorize(...roles)`** — vérifie que `req.user.role` est dans la liste, retourne 403 sinon
 
 ### `src/middleware/validate.middleware.ts`
-Valide les données d'une requête via un schéma Zod. Retourne 422 si invalide.
 
-### `src/middleware/auth.middleware.ts`
-- **`authenticate`** : vérifie le token JWT et injecte `req.user`
-- **`authorize(...roles)`** : vérifie le rôle de l'utilisateur
+Valide le body de la requête via un schéma Zod. Retourne 422 avec la liste des erreurs de validation si invalide.
+
+### `src/middleware/error.middleware.ts`
+
+Handler global d'erreurs Express. Gère :
+- Erreurs Zod → 422
+- `AppError` (erreurs métier) → code HTTP personnalisé
+- Erreurs inattendues → 500
 
 ---
 
 ## Modules
 
-### `src/modules/auth/auth.schema.ts`
-Définit toutes les règles de validation Zod et exporte les types TypeScript associés.
+### `src/modules/auth/`
 
-**Schémas disponibles :**
+**`auth.schema.ts`** — schémas Zod et types TypeScript :
 - `registerSchema` / `loginSchema` / `refreshSchema`
 - `updateMeSchema` / `changePasswordSchema`
 - `checkEmailSchema`
 - `forgotPasswordSchema` / `resetPasswordSchema`
-- `verifyEmailSchema`
-- `verifyTwoFactorSchema`
+- `verifyEmailSchema` / `verifyTwoFactorSchema`
 
-**Règle `passwordValidation` (réutilisée dans tous les schémas) :**
-- Minimum 12 caractères
-- Au moins une majuscule
-- Au moins une minuscule
-- Au moins un chiffre
-- Au moins un caractère spécial
+**`auth.mailer.ts`** — emails transactionnels via Resend :
+- `sendVerifyEmail(email, token)` — vérification email (token 24h)
+- `sendResetPasswordEmail(email, token)` — réinitialisation mot de passe (token 1h)
+- `sendTwoFactorCode(email, code)` — code 2FA (code 5 min)
 
-### `src/modules/auth/auth.mailer.ts`
-Templates HTML des emails transactionnels envoyés via Resend :
-- **`sendVerifyEmail`** — vérification email (token 24h)
-- **`sendResetPasswordEmail`** — réinitialisation mot de passe (token 1h)
-- **`sendTwoFactorCode`** — code 2FA (code 5 min)
+**`auth.service.ts`** — logique métier :
 
-### `src/modules/auth/auth.service.ts`
-Logique métier complète, découpée en petites fonctions.
+| Fonction | Description |
+|---|---|
+| `register` | Crée le compte, envoie l'email de vérification |
+| `login` | Vérifie les credentials, génère et envoie le code 2FA |
+| `verifyTwoFactor` | Valide le code 2FA, retourne les tokens JWT |
+| `refresh` | Renouvelle la paire access/refresh token |
+| `logout` | Invalide le refresh token en base |
+| `getLoggedUser` | Retourne le profil complet (sans données sensibles) |
+| `updateMe` | Met à jour les champs du profil (optionnels) |
+| `deleteMe` | Supprime le compte |
+| `checkEmail` | Vérifie la disponibilité d'un email |
+| `changePassword` | Change le mot de passe (vérifie l'ancien) |
+| `forgotPassword` | Génère un token de reset et envoie l'email |
+| `resetPassword` | Réinitialise le mot de passe via le token |
+| `verifyEmail` | Valide l'adresse email via le token |
 
-**Fonctions utilitaires (hors authService) :**
-- `generateTokens` — paire access/refresh token
-- `generateSecureToken` — token aléatoire sécurisé (crypto)
-- `sanitizeUser` — retire les données sensibles
-- `checkEmailAvailability` — vérifie qu'un email n'est pas utilisé
-- `hashPassword` — hash bcrypt (coût 12)
-- `createUser` — création en base
-- `saveRefreshToken` — sauvegarde refresh token
-- `updateUser` — mise à jour partielle
-
-**Méthodes de authService :**
-- **`register`** — inscription + email de vérification
-- **`login`** — vérification credentials + envoi code 2FA
-- **`verifyTwoFactor`** — vérification code 2FA + retour tokens
-- **`refresh`** — renouvellement tokens
-- **`logout`** — invalidation refresh token
-- **`getLoggedUser`** — profil utilisateur connecté
-- **`updateMe`** — mise à jour partielle du profil
-- **`deleteMe`** — suppression du compte
-- **`checkEmail`** — disponibilité d'un email
-- **`changePassword`** — changement mot de passe
-- **`forgotPassword`** — demande réinitialisation + email
-- **`resetPassword`** — réinitialisation via token
-- **`verifyEmail`** — validation adresse email
-
-### `src/modules/auth/auth.controller.ts`
-Lien entre routes et service. Gestion req/res uniquement, aucune logique métier.
-
-### `src/modules/auth/auth.routes.ts`
+**`auth.routes.ts`** :
 
 | Méthode | Route | Accès | Description |
 |---|---|---|---|
 | POST | `/api/auth/register` | Public | Créer un compte |
-| POST | `/api/auth/login` | Public | Se connecter |
-| POST | `/api/auth/2fa/verify` | Public | Vérifier le code 2FA |
-| POST | `/api/auth/refresh` | Public | Renouveler le token |
-| POST | `/api/auth/check-email` | Public | Vérifier si un email existe |
+| POST | `/api/auth/login` | Public | Se connecter (étape 1) |
+| POST | `/api/auth/2fa/verify` | Public | Valider le code 2FA (étape 2) |
+| POST | `/api/auth/refresh` | Public | Renouveler les tokens |
+| POST | `/api/auth/check-email` | Public | Vérifier la disponibilité d'un email |
 | POST | `/api/auth/forgot-password` | Public | Demander une réinitialisation |
 | POST | `/api/auth/reset-password` | Public | Réinitialiser le mot de passe |
 | POST | `/api/auth/verify-email` | Public | Vérifier l'adresse email |
-| POST | `/api/auth/logout` | Protégé 🔒 | Se déconnecter |
-| GET | `/api/auth/me` | Protégé 🔒 | Voir son profil |
-| PATCH | `/api/auth/me` | Protégé 🔒 | Modifier son profil |
-| PATCH | `/api/auth/password` | Protégé 🔒 | Changer son mot de passe |
-| DELETE | `/api/auth/me` | Protégé 🔒 | Supprimer son compte |
+| POST | `/api/auth/logout` | 🔒 Protégé | Se déconnecter |
+| GET | `/api/auth/me` | 🔒 Protégé | Voir son profil |
+| PATCH | `/api/auth/me` | 🔒 Protégé | Modifier son profil |
+| PATCH | `/api/auth/password` | 🔒 Protégé | Changer son mot de passe |
+| DELETE | `/api/auth/me` | 🔒 Protégé | Supprimer son compte |
 
-### `src/modules/conversions/conversion.schema.ts`
-Schémas Zod pour la validation des données du module conversions.
+---
 
-**Schémas disponibles :**
-- `createConversionSchema` — valide que le fichier uploadé est bien un XML
+### `src/modules/articles/`
 
-### `src/modules/conversions/conversion.service.ts`
-Logique métier du module conversions.
+Proxy RSS — récupère le contenu XML d'un flux RSS externe et le retourne brut au frontend. L'URL est encodée en base64 pour éviter les conflits avec les slashes dans la route Express.
 
-**Méthodes :**
-- **`create`** — parse le fichier XML, génère le JSON intermédiaire (`jsonContent`) et le tableau plat de nœuds (`treeContent`), puis persiste les 3 représentations en base
-- **`findAll`** — récupère toutes les conversions de l'utilisateur connecté
-- **`findOne`** — récupère une conversion par son id (vérifie l'ownership)
-- **`delete`** — supprime une conversion (vérifie l'ownership)
+**`article.service.ts`** :
+- `getArticles(encodedUrl)` — décode l'URL base64, fetche le flux RSS, retourne le XML brut
 
-### `src/modules/conversions/conversion.controller.ts`
-Lien entre routes et service. Gestion req/res uniquement, aucune logique métier.
-
-### `src/modules/conversions/conversion.routes.ts`
+**`article.routes.ts`** :
 
 | Méthode | Route | Accès | Description |
 |---|---|---|---|
-| POST | `/api/conversions` | Protégé 🔒 | Uploader un XML et générer l'arborescence |
-| GET | `/api/conversions` | Protégé 🔒 | Lister toutes ses conversions |
-| GET | `/api/conversions/:id` | Protégé 🔒 | Voir une conversion |
-| DELETE | `/api/conversions/:id` | Protégé 🔒 | Supprimer une conversion |
+| GET | `/api/articles/:url` | 🔒 Protégé | Proxifier un flux RSS (`:url` = URL encodée en base64) |
+
+---
+
+### `src/modules/currencies/`
+
+Données de référence — liste des devises disponibles.
+
+| Méthode | Route | Accès | Description |
+|---|---|---|---|
+| GET | `/api/currencies` | Public | Liste toutes les devises |
+
+---
+
+### `src/modules/languages/`
+
+Données de référence — liste des langues disponibles.
+
+| Méthode | Route | Accès | Description |
+|---|---|---|---|
+| GET | `/api/languages` | Public | Liste toutes les langues |
+
+---
+
+### `src/modules/subscriptions/`
+
+Données de référence — liste des abonnements disponibles.
+
+| Méthode | Route | Accès | Description |
+|---|---|---|---|
+| GET | `/api/subscriptions` | Public | Liste tous les abonnements |
 
 ---
 
@@ -244,19 +300,23 @@ Lien entre routes et service. Gestion req/res uniquement, aucune logique métier
 ```
 Requête HTTP
      ↓
-authenticate        ← vérifie le token JWT (routes protégées)
+cors()              ← vérifie l'origine (CORS_ORIGIN)
      ↓
-validate(schema)    ← vérifie les données (Zod)
+express.json()      ← parse le body JSON
+     ↓
+authenticate()      ← vérifie le Bearer token (routes protégées)
+     ↓
+validate(schema)    ← valide le body avec Zod
      ↓
 controller          ← gestion req/res
      ↓
 service             ← logique métier + Prisma
      ↓
-mailer              ← envoi email si nécessaire
+mailer              ← envoi email si nécessaire (Resend)
      ↓
 Réponse JSON
      ↓ (erreur)
-errorHandler
+errorHandler        ← 422 / 4xx / 500
 ```
 
 ---
@@ -264,23 +324,25 @@ errorHandler
 ## Flux d'authentification avec 2FA
 
 ```
-1. POST /login (email + password)
-   → credentials vérifiés
-   → code 2FA généré et envoyé par email (5 min)
+1. POST /api/auth/login (email + password)
+   → credentials vérifiés en base
+   → code 2FA généré, hashé et stocké (expire dans 5 min)
+   → email envoyé via Resend
    → { twoFactorRequired: true }
 
-2. POST /2fa/verify (email + code)
-   → code vérifié
-   → { user, accessToken, refreshToken }
+2. POST /api/auth/2fa/verify (email + code)
+   → code comparé et expiration vérifiée
+   → { user, accessToken (7j), refreshToken (30j) }
 
 3. Requêtes protégées
-   → Authorization: Bearer accessToken
+   → Authorization: Bearer <accessToken>
 
 4. Access token expiré → 401
-   → POST /refresh → nouveaux tokens
+   → POST /api/auth/refresh → nouveaux tokens
+   → L'intercepteur Angular rejoue la requête originale
 
 5. Refresh token expiré → 401
-   → redirection /login
+   → forceLogout() → redirection /authentication/connexion
 ```
 
 ---
@@ -288,8 +350,9 @@ errorHandler
 ## Flux de vérification email
 
 ```
-1. POST /register → email de vérification envoyé (24h)
-2. POST /verify-email avec token → emailVerified = true
+1. POST /api/auth/register → email de vérification envoyé (token 24h)
+2. Clic sur le lien → POST /api/auth/verify-email { token }
+   → emailVerified = true
 ```
 
 ---
@@ -297,8 +360,11 @@ errorHandler
 ## Flux de réinitialisation mot de passe
 
 ```
-1. POST /forgot-password → email envoyé si compte existe (1h)
-2. POST /reset-password avec token + nouveau mot de passe → OK
+1. POST /api/auth/forgot-password { email }
+   → email envoyé avec lien contenant le token (expire 1h)
+2. POST /api/auth/reset-password { token, newPassword }
+   → mot de passe hashé et mis à jour
+   → token invalidé
 ```
 
 ---
@@ -308,133 +374,45 @@ errorHandler
 | Outil | Version | Rôle |
 |---|---|---|
 | Node.js | 18+ | Runtime JavaScript |
-| TypeScript | 5.x | Typage statique |
-| Express | 4.x | Framework HTTP |
+| TypeScript | 5.9 | Typage statique |
+| Express | 5.x | Framework HTTP |
 | Prisma | 7.x | ORM |
+| @prisma/adapter-pg | 7.x | Adaptateur PostgreSQL pour Prisma v7 |
 | PostgreSQL | 16 | Base de données |
-| Docker | - | Conteneur PostgreSQL |
-| JWT | - | Authentification |
-| Bcrypt | - | Hash des mots de passe |
-| Zod | - | Validation des données |
-| Resend | - | Emails transactionnels |
+| Docker | — | Conteneur PostgreSQL de développement |
+| jsonwebtoken | 9.x | Génération et vérification des JWT |
+| bcryptjs | 3.x | Hash des mots de passe (coût 12) |
+| Zod | 4.x | Validation des données |
+| Resend | 6.x | Emails transactionnels |
+| Vitest | 4.x | Tests unitaires |
+| ts-node-dev | 2.x | Hot reload en développement |
+
 ---
 
-# Architecture du projet Frontend
+## Démarrage
 
-## Structure des fichiers
+```bash
+# 1. Démarrer PostgreSQL
+docker run -d --name database \
+  -e POSTGRES_USER=myuser \
+  -e POSTGRES_PASSWORD=mypassword \
+  -e POSTGRES_DB=mydb \
+  -p 5433:5432 postgres:16
 
+# 2. Configurer .env
+cp .env.example .env
+# Renseigner DATABASE_URL, JWT_SECRET, JWT_REFRESH_SECRET
+
+# 3. Installer les dépendances
+npm install
+
+# 4. Appliquer les migrations
+npx prisma migrate dev
+
+# 5. Seeder les données de référence
+npx prisma db seed
+
+# 6. Démarrer le serveur
+npm run dev
+# → http://localhost:3000
 ```
-Frontend/
-├── src/
-│   ├── components/
-│   │   ├── ConversionHistory.tsx
-│   │   ├── ConversionPage.tsx
-│   │   ├── ConversionTree.tsx
-│   │   ├── ConversionUpload.tsx
-│   │   ├── ForgotPassword.tsx
-│   │   ├── Home-Page.tsx
-│   │   ├── Login.tsx
-│   │   ├── Navbar.tsx
-│   │   ├── NotFound.tsx
-│   │   ├── Profile.tsx
-│   │   ├── Register.tsx
-│   │   ├── ResetPassword.tsx
-│   │   └── TwoFactor.tsx
-│   ├── context/
-│   │   └── AuthContext.tsx
-│   ├── interfaces/
-│   │   ├── auth.types.ts
-│   │   └── conversion.types.ts
-│   ├── services/
-│   │   ├── auth.api.ts
-│   │   ├── axios.ts
-│   │   └── conversion.api.ts
-│   ├── utils/
-│   │   └── api.utils.ts
-│   ├── App.tsx
-│   ├── i18n.ts
-│   ├── main.tsx
-│   └── index.css
-├── tests/
-│   └── home.spec.ts
-├── .env
-├── .env.example
-├── package.json
-├── vite.config.ts
-└── tsconfig.json
-```
-
----
-
-## Routes frontend
-
-| Route | Accès | Composant | Description |
-|---|---|---|---|
-| `/` | Public | — | Redirect vers `/login` |
-| `/login` | Public | `Login` | Connexion |
-| `/2fa` | Public | `TwoFactor` | Vérification code 2FA |
-| `/register` | Public | `Register` | Inscription |
-| `/forgot-password` | Public | `ForgotPassword` | Demande reset mot de passe |
-| `/reset-password` | Public | `ResetPassword` | Nouveau mot de passe via token |
-| `/home` | Protégé 🔒 | `HomePage` | Upload + historique des conversions |
-| `/conversion/:id` | Protégé 🔒 | `ConversionPage` | Arborescence d'une conversion |
-| `/profile` | Protégé 🔒 | `Profile` | Gestion du profil |
-| `*` | Public | `NotFound` | Page 404 |
-
----
-
-## Couche service
-
-### `src/services/axios.ts`
-Instance Axios configurée avec deux intercepteurs :
-- **Requête** — injecte automatiquement le `Bearer token` depuis le localStorage
-- **Réponse** — gère les 401 : tente un refresh token, rejoue la requête originale si succès, redirige vers `/login` si échec
-
-### `src/services/auth.api.ts`
-Appels API liés à l'authentification : `login`, `register`, `verifyTwoFactor`, `refresh`, `logout`, `getMe`, `updateMe`, `changePassword`, `forgotPassword`, `resetPassword`, `checkEmail`.
-
-### `src/services/conversion.api.ts`
-Appels API du module conversion :
-- **`create(file)`** — lit le fichier avec `FileReader`, envoie `{ fileName, xmlContent }` en JSON
-- **`findAll()`** — retourne la liste allégée `ConversionSummary[]`
-- **`findOne(id)`** — retourne la conversion complète avec `treeContent`
-- **`delete(id)`** — supprime une conversion
-
----
-
-## Interfaces TypeScript
-
-### `src/interfaces/auth.types.ts`
-- `User` — profil utilisateur
-- `AuthResponse` — réponse login/2fa (user + tokens)
-- `LoginInput` — body du formulaire de connexion
-
-### `src/interfaces/conversion.types.ts`
-- `RootNode` — nœud racine (id=0, user_name, parentId=-1)
-- `TreeNode` — nœud standard (id, tag, value, parentId, children)
-- `AnyNode` — union RootNode | TreeNode
-- `Conversion` — conversion complète (xmlContent, jsonContent, treeContent)
-- `ConversionSummary` — version allégée pour la liste (id, fileName, createdAt)
-
----
-
-## Contexte
-
-### `src/context/AuthContext.tsx`
-Fournit `user`, `accessToken`, `isLoading`, `login()`, `logout()` à toute l'application via `useAuth()`. Initialise l'état au démarrage via `GET /auth/me` si un token existe en localStorage.
-
----
-
-## Composants conversion
-
-### `src/components/ConversionUpload.tsx`
-Formulaire d'import de fichier. Accepte `.xml`, `.dita`, `.ditamap`, `.xsl`, `.xslt`, `.xhtml`, `.svg`, `.rss`, `.atom`, `.xsd`, `.fo`. Valide l'extension côté client, appelle `conversionApi.create()` et remonte le résultat via `onSuccess`.
-
-### `src/components/ConversionHistory.tsx`
-Liste les conversions de l'utilisateur (`ConversionSummary[]`). Chargement initial au montage. Quand une nouvelle conversion est uploadée, l'ajoute en tête sans refaire un GET. Suppression inline avec confirmation visuelle. Notifie le parent via `onSelect(id)`.
-
-### `src/components/ConversionTree.tsx`
-Affiche l'arborescence d'une conversion avec React Flow. Calcule automatiquement les positions des nœuds (algorithme de layout en arbre). Le nœud racine est mis en évidence (fond bleu). Supporte zoom, minimap et pan.
-
-### `src/components/ConversionPage.tsx`
-Page dédiée à l'affichage d'une conversion. Charge la conversion via `useParams(:id)`, affiche `ConversionTree` en pleine largeur avec un bouton retour vers `/home`.
