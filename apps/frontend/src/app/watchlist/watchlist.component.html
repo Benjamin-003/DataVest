@@ -1,0 +1,56 @@
+<div class="p-4">
+  <h2>Ma Watchlist</h2>
+
+  <!-- Formulaire d'ajout -->
+  <form [formGroup]="form" (ngSubmit)="add()" class="grid p-fluid mb-4">
+    <div class="field col-12 md:col-4">
+      <label>Symbole</label>
+      <input pInputText formControlName="symbol" placeholder="ex: AAPL" />
+    </div>
+    <div class="field col-12 md:col-4">
+      <label>Nom</label>
+      <input pInputText formControlName="name" placeholder="ex: Apple Inc." />
+    </div>
+    <div class="field col-12 md:col-3">
+      <label>Type</label>
+      <p-select [options]="assetTypes" formControlName="type"
+        optionLabel="label" optionValue="value" placeholder="Sélectionner">
+      </p-select>
+    </div>
+    <div class="col-12 md:col-1 flex align-items-end">
+      <button pButton type="submit" icon="pi pi-plus"
+        [disabled]="form.invalid" [loading]="loading()">
+      </button>
+    </div>
+  </form>
+
+  <!-- Liste -->
+  <p-table [value]="items()" [paginator]="true" [rows]="10">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Symbole</th>
+        <th>Nom</th>
+        <th>Type</th>
+        <th>Ajouté le</th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template let-item pTemplate="body">
+      <tr>
+        <td><strong>{{ item.symbol }}</strong></td>
+        <td>{{ item.name }}</td>
+        <td>{{ getTypeLabel(item.type) }}</td>
+        <td>{{ item.createdAt | date:'dd/MM/yyyy' }}</td>
+        <td>
+          <button pButton icon="pi pi-trash" severity="danger"
+            (click)="remove(item.id, item.symbol)">
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr><td colspan="5">Votre watchlist est vide.</td></tr>
+    </ng-template>
+  </p-table>
+</div>
+<p-toast position="bottom-right"></p-toast>

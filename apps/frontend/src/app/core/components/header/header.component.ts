@@ -4,11 +4,12 @@ import { MenuItem } from 'primeng/api';
 import { MenubarModule } from 'primeng/menubar';
 import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../../core/auth/auth.service';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterModule, MenubarModule, ButtonModule],
+  imports: [RouterModule, MenubarModule, ButtonModule, TooltipModule],
   templateUrl: './header.component.html',
 })
 export class HeaderComponent implements OnInit {
@@ -24,7 +25,6 @@ export class HeaderComponent implements OnInit {
     this.items = [
       { label: $localize`:@@header.price:Tarif`, routerLink: 'tarifs' },
       { label: $localize`:@@header.invest:Investir`, routerLink: 'investissement' },
-      { label: $localize`:@@header.academy:Académie` },
       {
         label: $localize`:@@header.aboutSVBInd:À propos de SVB Ind`,
         items: [

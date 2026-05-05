@@ -115,7 +115,12 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./core/core.module').then(m => m.CoreModule),
   },
-
+{
+  path: 'watchlist',
+  canActivate: [authGuard],
+  loadComponent: () =>
+    import('./watchlist/watchlist.component').then(c => c.WatchlistComponent),
+},
   // ─── 404 ─────────────────────────────────────────────────────────────────
   {
     path: '**',
