@@ -7,6 +7,7 @@ import currencyRoutes     from './modules/currencies/currency.routes';
 import languageRoutes     from './modules/languages/language.routes';
 import subscriptionRoutes from './modules/subscriptions/subscription.routes';
 import articleRoutes      from './modules/articles/article.routes';
+import watchlistRoutes from './modules/watchlist/watchlist.routes';
 
 const app = express();
 
@@ -28,10 +29,12 @@ app.use('/api/subscriptions', subscriptionRoutes);
 
 // Flux RSS — protégé
 app.use('/api/articles', articleRoutes);
+app.use('/api/watchlist', watchlistRoutes);
 
 app.use((_req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
+
 
 app.use(errorHandler);
 

@@ -14,6 +14,7 @@ model User {
   lastName             String?
   role                 Role          @default(USER)
   refreshToken         String?
+  watchlist WatchlistItem[]
 
   // Informations personnelles (Ottawa-Pigeon)
   birthdate            DateTime?
@@ -82,4 +83,25 @@ model Subscription {
   users     User[]
 
   @@map("subscriptions")
+}
+
+model WatchlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  symbol    String   // ex: "AAPL", "BTC", "CAC40"
+  name      String   // ex: "Apple Inc.", "Bitcoin"
+  type      AssetType
+  createdAt DateTime @default(now())
+
+  @@unique([userId, symbol]) // un utilisateur ne peut pas ajouter le même actif deux fois
+  @@map("watchlist_items")
+}
+
+enum AssetType {
+  STOCK       // action
+  CRYPTO      // cryptomonnaie
+  COMMODITY   // matière première
+  INDEX       // indice (CAC40, S&P500...)
+  FOREX       // paire de devises
 }
