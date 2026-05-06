@@ -121,6 +121,12 @@ export const routes: Routes = [
   loadComponent: () =>
     import('./watchlist/watchlist.component').then(c => c.WatchlistComponent),
 },
+{
+  path: 'portfolio',
+  canActivate: [authGuard],
+  loadComponent: () =>
+    import('./portfolio/portfolio.component').then(c => c.PortfolioComponent),
+},
   // ─── 404 ─────────────────────────────────────────────────────────────────
   {
     path: '**',

@@ -1,0 +1,137 @@
+<div class="p-4">
+  <h2>Mon Portfolio</h2>
+
+  <!-- Résumé global -->
+  <div class="grid mb-4">
+    <div class="col-12 md:col-3">
+      <p-card>
+        <div class="text-color-secondary mb-1">Investi</div>
+        <div class="text-2xl font-bold">{{ totalCost() | currency:'USD' }}</div>
+      </p-card>
+    </div>
+    <div class="col-12 md:col-3">
+      <p-card>
+        <div class="text-color-secondary mb-1">Valeur actuelle</div>
+        <div class="text-2xl font-bold">{{ totalValue() | currency:'USD' }}</div>
+      </p-card>
+    </div>
+    <div class="col-12 md:col-3">
+      <p-card>
+        <div class="text-color-secondary mb-1">P&L</div>
+        <div class="text-2xl font-bold"
+          [class.text-green-400]="isPnlPositive(totalPnl())"
+          [class.text-red-400]="!isPnlPositive(totalPnl())">
+          {{ totalPnl() | currency:'USD':'+' }}
+        </div>
+      </p-card>
+    </div>
+    <div class="col-12 md:col-3">
+      <p-card>
+        <div class="text-color-secondary mb-1">Performance</div>
+        <div class="text-2xl font-bold"
+          [class.text-green-400]="isPnlPositive(totalPnl())"
+          [class.text-red-400]="!isPnlPositive(totalPnl())">
+          {{ totalPnlPercent() | number:'1.2-2' }}%
+        </div>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Formulaire d'ajout -->
+  <form [formGroup]="form" (ngSubmit)="add()" class="grid p-fluid mb-4">
+    <div class="field col-12 md:col-3">
+      <label>Symbole</label>
+      <input pInputText formControlName="symbol" placeholder="ex: AAPL" />
+    </div>
+    <div class="field col-12 md:col-3">
+      <label>Nom</label>
+      <input pInputText formControlName="name" placeholder="ex: Apple Inc." />
+    </div>
+    <div class="field col-12 md:col-2">
+      <label>Quantité</label>
+      <p-inputnumber formControlName="quantity"
+        [minFractionDigits]="0" [maxFractionDigits]="4"
+        placeholder="ex: 10">
+      </p-inputnumber>
+    </div>
+    <div class="field col-12 md:col-3">
+      <label>Prix d'achat ($)</label>
+      <p-inputnumber formControlName="buyPrice"
+        mode="currency" currency="USD"
+        placeholder="ex: 150.00">
+      </p-inputnumber>
+    </div>
+    <div class="col-12 md:col-1 flex align-items-end">
+      <button pButton type="submit" icon="pi pi-plus"
+        [disabled]="form.invalid" [loading]="loading()">
+      </button>
+    </div>
+  </form>
+
+  <!-- Tableau des positions -->
+  <p-table [value]="positions()" [paginator]="true" [rows]="10">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Symbole</th>
+        <th>Nom</th>
+        <th>Quantité</th>
+        <th>Prix achat</th>
+        <th>Prix actuel</th>
+        <th>Valeur</th>
+        <th>P&L</th>
+        <th>P&L %</th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template let-position pTemplate="body">
+      <tr>
+        <td><strong>{{ position.symbol }}</strong></td>
+        <td>{{ position.name }}</td>
+        <td>{{ position.quantity }}</td>
+        <td>{{ position.buyPrice | currency:'USD' }}</td>
+        <td>
+          @if (position.currentPrice) {
+            {{ position.currentPrice | currency:'USD' }}
+          } @else {
+            <span class="text-color-secondary">N/A</span>
+          }
+        </td>
+        <td>
+          @if (position.value) {
+            {{ position.value | currency:'USD' }}
+          } @else {
+            <span class="text-color-secondary">N/A</span>
+          }
+        </td>
+        <td [class.text-green-400]="isPnlPositive(position.pnl)"
+            [class.text-red-400]="!isPnlPositive(position.pnl)">
+          @if (position.pnl !== null) {
+            {{ position.pnl | currency:'USD':'+' }}
+          } @else {
+            <span class="text-color-secondary">N/A</span>
+          }
+        </td>
+        <td [class.text-green-400]="isPnlPositive(position.pnl)"
+            [class.text-red-400]="!isPnlPositive(position.pnl)">
+          @if (position.pnlPercent !== null) {
+            {{ position.pnlPercent | number:'1.2-2' }}%
+          } @else {
+            <span class="text-color-secondary">N/A</span>
+          }
+        </td>
+        <td>
+          <button pButton icon="pi pi-trash" severity="danger"
+            (click)="remove(position.id, position.symbol)">
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="9">Votre portfolio est vide.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-toast position="bottom-right"></p-toast>
