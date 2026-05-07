@@ -9,6 +9,7 @@ import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { CardModule } from 'primeng/card';
 import { MessageService } from 'primeng/api';
+import { PriceChartComponent } from '../price-chart/price-chart.component';
 
 @Component({
   selector: 'app-portfolio',
@@ -16,7 +17,7 @@ import { MessageService } from 'primeng/api';
   imports: [
     CommonModule, ReactiveFormsModule,
     ButtonModule, InputTextModule, InputNumberModule,
-    TableModule, ToastModule, CardModule,
+    TableModule, ToastModule, CardModule, PriceChartComponent,
   ],
   providers: [MessageService],
   templateUrl: './portfolio.component.html',
@@ -32,7 +33,8 @@ export class PortfolioComponent implements OnInit {
   readonly totalPnl        = this.portfolioService.totalPnl;
   readonly totalPnlPercent = this.portfolioService.totalPnlPercent;
   readonly loading         = signal(false);
-
+readonly selectedSymbol = signal<string | null>(null);
+readonly selectedName   = signal<string | null>(null);
   readonly form = this.fb.group({
     symbol:   ['', [Validators.required, Validators.maxLength(20)]],
     name:     ['', [Validators.required, Validators.maxLength(100)]],
@@ -82,6 +84,17 @@ export class PortfolioComponent implements OnInit {
       }),
     });
   }
+
+  selectPosition(symbol: string, name: string) {
+  if (this.selectedSymbol() === symbol) {
+    // Deuxième clic sur le même actif → ferme le graphique
+    this.selectedSymbol.set(null);
+    this.selectedName.set(null);
+  } else {
+    this.selectedSymbol.set(symbol);
+    this.selectedName.set(name);
+  }
+}
 
   isPnlPositive(pnl: number | null): boolean {
     return pnl !== null && pnl >= 0;

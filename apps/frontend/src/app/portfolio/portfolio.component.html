@@ -84,7 +84,8 @@
       </tr>
     </ng-template>
     <ng-template let-position pTemplate="body">
-      <tr>
+      <tr (click)="selectPosition(position.symbol, position.name)"
+    style="cursor: pointer;">
         <td><strong>{{ position.symbol }}</strong></td>
         <td>{{ position.name }}</td>
         <td>{{ position.quantity }}</td>
@@ -132,6 +133,14 @@
       </tr>
     </ng-template>
   </p-table>
+  @if (selectedSymbol()) {
+  <div class="mt-4">
+    <app-price-chart
+      [symbol]="selectedSymbol()!"
+      [name]="selectedName()!">
+    </app-price-chart>
+  </div>
+}
 </div>
 
 <p-toast position="bottom-right"></p-toast>
