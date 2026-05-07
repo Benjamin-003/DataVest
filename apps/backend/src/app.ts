@@ -9,6 +9,7 @@ import subscriptionRoutes from './modules/subscriptions/subscription.routes';
 import articleRoutes      from './modules/articles/article.routes';
 import watchlistRoutes from './modules/watchlist/watchlist.routes';
 import portfolioRoutes from './modules/portfolio/portfolio.routes';
+import priceHistoryRoutes from './modules/prices/price-history.routes';
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/articles', articleRoutes);
 app.use('/api/watchlist', watchlistRoutes);
 app.use('/api/portfolio', portfolioRoutes);
+app.use('/api/prices', priceHistoryRoutes);
 
 app.use((_req, res) => {
   res.status(404).json({ message: 'Route not found' });
