@@ -1,126 +1,91 @@
 <form [formGroup]="form" (ngSubmit)="saveModification()">
   <h2 class="mb-5">Informations personnelles</h2>
-  <div class="grid p-fluid">
+  <div class="formgrid grid">
 
     <!-- Nom -->
     <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
-      <span class="p-float-label mb-2">
-        <input type="text" id="lastName" formControlName="lastName" pInputText />
-        <label for="lastName">Nom*</label>
-      </span>
-      @if (lastName?.touched) {
-        <div class="p-error">
-          @if (lastName?.hasError('required')) {
-            <small>{{ messagesErreur }}</small>
-          }
-        </div>
+      <label for="lastName">Nom*</label>
+      <input type="text" id="lastName" formControlName="lastName"
+        pInputText class="w-full" />
+      @if (lastName?.touched && lastName?.hasError('required')) {
+        <small class="p-error">{{ messagesErreur }}</small>
       }
     </div>
 
     <!-- Prénom -->
     <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
-      <span class="p-float-label mb-2">
-        <input type="text" id="firstName" formControlName="firstName" pInputText />
-        <label for="firstName">Prénom*</label>
-      </span>
-      @if (firstName?.touched) {
-        <div class="p-error">
-          @if (firstName?.hasError('required')) {
-            <small>{{ messagesErreur }}</small>
-          }
-        </div>
+      <label for="firstName">Prénom*</label>
+      <input type="text" id="firstName" formControlName="firstName"
+        pInputText class="w-full" />
+      @if (firstName?.touched && firstName?.hasError('required')) {
+        <small class="p-error">{{ messagesErreur }}</small>
       }
     </div>
 
     <!-- Date de naissance -->
     <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
-      <span class="p-float-label mb-2">
-        <p-datepicker
-          formControlName="birthdate"
-          inputId="birthdate"
-          dateFormat="dd/mm/yy"
-          [showIcon]="true">
-        </p-datepicker>
-        <label for="birthdate">Date de naissance*</label>
-      </span>
-      @if (birthdate?.touched) {
-        <div class="p-error">
-          @if (birthdate?.hasError('required')) {
-            <small>{{ messagesErreur }}</small>
-          }
-        </div>
+      <label for="birthdate">Date de naissance*</label>
+      <p-datepicker
+        formControlName="birthdate"
+        inputId="birthdate"
+        dateFormat="dd/mm/yy"
+        [showIcon]="true"
+        styleClass="w-full">
+      </p-datepicker>
+      @if (birthdate?.touched && birthdate?.hasError('required')) {
+        <small class="p-error">{{ messagesErreur }}</small>
       }
     </div>
 
     <!-- Adresse -->
     <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
-      <span class="p-float-label mb-2">
-        <input type="text" id="address" formControlName="address" pInputText />
-        <label for="address">Adresse*</label>
-      </span>
-      @if (address?.touched) {
-        <div class="p-error">
-          @if (address?.hasError('required')) {
-            <small>{{ messagesErreur }}</small>
-          }
-        </div>
+      <label for="address">Adresse*</label>
+      <input type="text" id="address" formControlName="address"
+        pInputText class="w-full" />
+      @if (address?.touched && address?.hasError('required')) {
+        <small class="p-error">{{ messagesErreur }}</small>
       }
     </div>
 
     <!-- Code postal -->
     <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
-      <span class="p-float-label mb-2">
-        <input type="text" id="zipcode" formControlName="zipcode" pInputText />
-        <label for="zipcode">Code postal*</label>
-      </span>
-      @if (zipcode?.touched) {
-        <div class="p-error">
-          @if (zipcode?.hasError('required')) {
-            <small>{{ messagesErreur }}</small>
-          }
-        </div>
+      <label for="zipcode">Code postal*</label>
+      <input type="text" id="zipcode" formControlName="zipcode"
+        pInputText class="w-full" />
+      @if (zipcode?.touched && zipcode?.hasError('required')) {
+        <small class="p-error">{{ messagesErreur }}</small>
       }
     </div>
 
     <!-- Ville -->
     <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
-      <span class="p-float-label mb-2">
-        <input type="text" id="city" formControlName="city" pInputText />
-        <label for="city">Ville*</label>
-      </span>
-      @if (city?.touched) {
-        <div class="p-error">
-          @if (city?.hasError('required')) {
-            <small>{{ messagesErreur }}</small>
-          }
-        </div>
+      <label for="city">Ville*</label>
+      <input type="text" id="city" formControlName="city"
+        pInputText class="w-full" />
+      @if (city?.touched && city?.hasError('required')) {
+        <small class="p-error">{{ messagesErreur }}</small>
       }
     </div>
 
     <!-- Pays -->
     <div class="field col-12 sm:col-6 md:col-4 xl:col-3">
-      <span class="p-float-label mb-2">
-        <input type="text" id="country" formControlName="country" pInputText />
-        <label for="country">Pays*</label>
-      </span>
-      @if (country?.touched) {
-        <div class="p-error">
-          @if (country?.hasError('required')) {
-            <small>{{ messagesErreur }}</small>
-          }
-        </div>
+      <label for="country">Pays*</label>
+      <input type="text" id="country" formControlName="country"
+        pInputText class="w-full" />
+      @if (country?.touched && country?.hasError('required')) {
+        <small class="p-error">{{ messagesErreur }}</small>
       }
     </div>
 
-  </div>
+    <!-- Bouton -->
+    <div class="field col-12 mt-2">
+      <button pButton pRipple
+        [disabled]="form.invalid"
+        type="submit"
+        label="Sauvegarder mes informations personnelles"
+        class="p-button-raised">
+      </button>
+    </div>
 
-  <div class="grid p-fluid col-12 md:col-offset-4 md:col-4 justify-content-center">
-    <button
-      pButton pRipple
-      [disabled]="form.invalid"
-      type="submit"
-      label="Sauvegarder mes informations personnelles"
-      class="p-button-raised">
-    </button>
   </div>
 </form>
