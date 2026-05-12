@@ -33,9 +33,24 @@ Backend/
 │   │   ├── languages/
 │   │   │   ├── language.controller.ts
 │   │   │   └── language.routes.ts
-│   │   └── subscriptions/
-│   │       ├── subscription.controller.ts
-│   │       └── subscription.routes.ts
+│   │   ├── subscriptions/
+│   │   │   ├── subscription.controller.ts
+│   │   │   └── subscription.routes.ts
+│   │   ├── watchlist/
+│   │   │   ├── watchlist.schema.ts
+│   │   │   ├── watchlist.service.ts
+│   │   │   ├── watchlist.controller.ts
+│   │   │   └── watchlist.routes.ts
+│   │   ├── portfolio/
+│   │   │   ├── portfolio.schema.ts
+│   │   │   ├── portfolio.service.ts
+│   │   │   ├── portfolio.controller.ts
+│   │   │   ├── portfolio.routes.ts
+│   │   │   └── price.service.ts
+│   │   └── prices/
+│   │       ├── price-history.service.ts
+│   │       ├── price-history.controller.ts
+│   │       └── price-history.routes.ts
 │   ├── prisma/
 │   │   └── client.ts
 │   └── types/
@@ -116,6 +131,31 @@ Fichier `.env` requis à la racine du projet :
 |---|---|---|
 | code | String | Clé primaire (ex: `FR`, `EN`) |
 | label | String | Libellé affiché |
+
+**Modèle `WatchlistItem` :**
+| Champ | Type | Description |
+|---|---|---|
+| id | String | Identifiant unique (cuid) |
+| userId | String | Référence vers l'utilisateur propriétaire |
+| symbol | String | Symbole de l'actif (ex: `AAPL`, `BTC-USD`) |
+| name | String | Nom complet de l'actif |
+| type | AssetType | Type : `STOCK`, `CRYPTO`, `COMMODITY`, `INDEX`, `FOREX` |
+| createdAt | DateTime | Date d'ajout |
+
+> Contrainte `@@unique([userId, symbol])` — un utilisateur ne peut pas ajouter le même symbole deux fois.
+
+**Modèle `Position` :**
+| Champ | Type | Description |
+|---|---|---|
+| id | String | Identifiant unique (cuid) |
+| userId | String | Référence vers l'utilisateur propriétaire |
+| symbol | String | Symbole de l'actif |
+| name | String | Nom complet de l'actif |
+| quantity | Float | Nombre d'unités détenues |
+| buyPrice | Float | Prix d'achat unitaire (USD) |
+| createdAt | DateTime | Date d'ajout |
+
+> Le P&L et le prix actuel sont calculés à la volée via Yahoo Finance, non stockés en base.
 
 **Modèle `Subscription` :**
 | Champ | Type | Description |

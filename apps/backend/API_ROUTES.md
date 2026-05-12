@@ -423,6 +423,142 @@ GET /api/articles/aHR0cHM6Ly93d3cuZnQuY29tL3Jzcy9ob21l
 
 ---
 
+## Watchlist (protégé) 🔒
+
+### `GET /api/watchlist`
+
+Retourne tous les actifs surveillés par l'utilisateur connecté.
+
+**Retour 200 :**
+```json
+[
+  {
+    "id": "cmlv2l3c80000ik7khuj71g24",
+    "userId": "...",
+    "symbol": "AAPL",
+    "name": "Apple Inc.",
+    "type": "STOCK",
+    "createdAt": "2026-04-28T10:00:00.000Z"
+  }
+]
+```
+
+---
+
+### `POST /api/watchlist`
+
+Ajoute un actif à la watchlist.
+
+**Body :**
+```json
+{
+  "symbol": "AAPL",
+  "name": "Apple Inc.",
+  "type": "STOCK"
+}
+```
+
+> Types acceptés : `STOCK`, `CRYPTO`, `COMMODITY`, `INDEX`, `FOREX`
+> Le symbole est automatiquement converti en majuscules.
+> Retourne 409 si le symbole est déjà dans la watchlist.
+
+**Retour 201 :** item créé
+
+---
+
+### `DELETE /api/watchlist/:id`
+
+Supprime un actif de la watchlist.
+
+**Retour 204 :** aucun contenu
+> Retourne 404 si l'item n'existe pas ou n'appartient pas à l'utilisateur.
+
+---
+
+## Portfolio (protégé) 🔒
+
+### `GET /api/portfolio`
+
+Retourne toutes les positions avec les prix actuels (Yahoo Finance) et le calcul du P&L.
+
+**Retour 200 :**
+```json
+[
+  {
+    "id": "cmlv2l3c80000ik7khuj71g24",
+    "symbol": "AAPL",
+    "name": "Apple Inc.",
+    "quantity": 10,
+    "buyPrice": 150.00,
+    "currentPrice": 287.51,
+    "value": 2875.10,
+    "cost": 1500.00,
+    "pnl": 1375.10,
+    "pnlPercent": 91.67,
+    "createdAt": "2026-04-28T10:00:00.000Z"
+  }
+]
+```
+> `currentPrice`, `value`, `pnl` et `pnlPercent` sont `null` si le prix est indisponible.
+
+---
+
+### `POST /api/portfolio`
+
+Ajoute une position au portfolio.
+
+**Body :**
+```json
+{
+  "symbol": "AAPL",
+  "name": "Apple Inc.",
+  "quantity": 10,
+  "buyPrice": 150.00
+}
+```
+
+**Retour 201 :** position créée (sans prix actuel)
+
+---
+
+### `DELETE /api/portfolio/:id`
+
+Supprime une position du portfolio.
+
+**Retour 204 :** aucun contenu
+> Retourne 404 si la position n'existe pas ou n'appartient pas à l'utilisateur.
+
+---
+
+## Historique des cours (protégé) 🔒
+
+### `GET /api/prices/:symbol?range=1mo`
+
+Retourne l'historique des prix d'un actif via Yahoo Finance.
+
+**Params :** `:symbol` — symbole de l'actif (ex: `AAPL`, `ETH-USD`)
+
+**Query :** `range` — période :
+
+| Valeur | Description | Intervalle |
+|---|---|---|
+| `1d` | 1 jour | 5 minutes |
+| `5d` | 1 semaine (5 jours de trading) | 1 heure |
+| `1mo` | 1 mois | 1 jour |
+| `1y` | 1 an | 1 semaine |
+
+**Retour 200 :**
+```json
+[
+  { "timestamp": 1714298400000, "price": 284.12 },
+  { "timestamp": 1714302000000, "price": 285.50 }
+]
+```
+> `timestamp` est en millisecondes (Unix timestamp × 1000).
+> Retourne 404 si le symbole est introuvable sur Yahoo Finance.
+
+---
+
 ## Règles de validation du mot de passe
 
 | Règle | Détail |
