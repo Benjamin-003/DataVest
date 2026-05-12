@@ -70,3 +70,14 @@ small.p-error {
     padding: 1rem;
   }
 }
+
+/* ─── Boutons formulaires ─────────────────────────────────────────────── */
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.form-actions .p-button {
+  width: auto !important;
+}
