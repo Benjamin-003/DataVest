@@ -1,47 +1,34 @@
-<h2 class="mb-5">Autres préférences</h2>
-<form [formGroup]="form" (ngSubmit)="saveModification()">
-  <div class="grid p-fluid">
+<div class="formgrid grid">
 
-    <!-- Langue -->
-    <div class="field col-12 md:col-4">
-      <span class="p-float-label">
-        <p-select
-          [options]="languages"
-          optionLabel="label"
-          optionValue="code"
-          inputId="language"
-          formControlName="languageCode">
-        </p-select>
-        <label for="language">Langue</label>
-      </span>
-    </div>
-
-    <!-- Devise -->
-    <div class="field col-12 md:col-4">
-      <span class="p-float-label">
-        <p-select
-          [options]="currencies"
-          optionValue="code"
-          inputId="currency"
-          formControlName="currencyCode">
-          <ng-template pTemplate="selectedItem" let-currency>
-            <span [class]="'fi fi-' + currency.flag"></span>
-            <span class="ml-2">{{ currency.label }}</span>
-          </ng-template>
-          <ng-template pTemplate="item" let-currency>
-            <span [class]="'fi fi-' + currency.flag"></span>
-            <span class="ml-2">{{ currency.label }}</span>
-          </ng-template>
-        </p-select>
-        <label for="currency">Devise</label>
-      </span>
-    </div>
-
-    <div class="col-12 mt-12 form-actions">
-      <button pButton pRipple [disabled]="form.invalid" type="submit"
-        label="Sauvegarder mes préférences" class="p-button-raised">
-      </button>
-    </div>
-
+  <div class="field col-12 md:col-4">
+    <label for="language">Langue</label>
+    <p-select [options]="languages" optionLabel="label"
+      optionValue="code" inputId="language"
+      formControlName="languageCode" styleClass="w-full">
+    </p-select>
   </div>
-</form>
+
+  <div class="field col-12 md:col-4">
+    <label for="currency">Devise</label>
+    <p-select [options]="currencies" optionValue="code"
+      inputId="currency" formControlName="currencyCode"
+      styleClass="w-full">
+      <ng-template pTemplate="selectedItem" let-currency>
+        <span [class]="'fi fi-' + currency.flag"></span>
+        <span class="ml-2">{{ currency.label }}</span>
+      </ng-template>
+      <ng-template pTemplate="item" let-currency>
+        <span [class]="'fi fi-' + currency.flag"></span>
+        <span class="ml-2">{{ currency.label }}</span>
+      </ng-template>
+    </p-select>
+  </div>
+
+  <div class="col-12 mt-2">
+    <button pButton pRipple style="width: auto;"
+      [disabled]="form.invalid" type="submit"
+      label="Sauvegarder mes préférences" class="p-button-raised">
+    </button>
+  </div>
+
+</div>
