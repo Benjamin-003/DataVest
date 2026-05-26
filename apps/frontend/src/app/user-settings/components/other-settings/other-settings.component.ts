@@ -5,11 +5,12 @@ import { ButtonModule } from 'primeng/button';
 import { Language } from '../../../languages/interfaces/language.model';
 import { Currency } from '../../../currencies/currency-model';
 import { UpdateProfilePayload } from '../../../core/models/auth.models';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @Component({
   selector: 'app-other-settings',
   standalone: true,
-  imports: [ReactiveFormsModule, SelectModule, ButtonModule],
+  imports: [ReactiveFormsModule, SelectModule, ButtonModule, CheckboxModule],
   templateUrl: './other-settings.component.html',
 })
 export class OtherSettingsComponent implements OnChanges {
@@ -19,24 +20,31 @@ export class OtherSettingsComponent implements OnChanges {
   @Input() userLanguage!: string;
   @Input() currencies!: Currency[];
   @Input() userCurrency!: string;
+  @Input() userNewsletter!: boolean;
 
   @Output() modifyOtherSettings = new EventEmitter<UpdateProfilePayload>();
 
-  form = this.fb.group({ languageCode: [''], currencyCode: [''] });
+  form = this.fb.group({
+    languageCode: [''],
+    currencyCode: [''],
+    newsletter:   [false],
+  });
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['userLanguage'] || changes['userCurrency']) {
       const lang = changes['userLanguage']?.currentValue ?? this.userLanguage;
       const cur  = changes['userCurrency']?.currentValue ?? this.userCurrency;
-      this.initForm(lang, cur);
+      const newsletter = changes['userNewsletter']?.currentValue  ?? this.userNewsletter;
+      this.initForm(lang, cur, newsletter);
     }
   }
 
-  initForm(languageCode: string, currencyCode: string) {
+  initForm(languageCode: string, currencyCode: string, newsletter: boolean) {
     this.form = this.fb.group(
       {
         languageCode: [languageCode, Validators.required],
         currencyCode: [currencyCode, Validators.required],
+        newsletter: [newsletter],
       },
       { validators: [this.noChangeValidator(languageCode, currencyCode)] }
     );

@@ -101,8 +101,9 @@ export class FormInscriptionComponent implements OnChanges {
         confirmPassword:  ['', Validators.required],
         subscriptionCode: [this.selectedOptionCode ?? '', Validators.required],
         newsletter:       [false],
+        cgu: [false, Validators.requiredTrue],
       },
-      { validators: [this.matchingPasswordsValidator] }
+      { validators: [this.matchingPasswordsValidator] },
     );
   }
 

@@ -204,7 +204,11 @@
         <div class="mb-6">
           <div class="field-checkbox mb-2">
             <p-checkbox id="newsletter" [binary]="true" formControlName="newsletter"></p-checkbox>
-            <label for="newsletter">J'accepte de recevoir la newsletter de SVB-Ind Ottawa Pigeon</label>
+            <label for="newsletter">
+  J'accepte de recevoir la newsletter d'Ottawa Pigeon (actualités financières, conseils
+  d'investissement). Vous pouvez vous désabonner à tout moment depuis vos
+  <a routerLink="/parametres">paramètres</a>.
+</label>
           </div>
         </div>
 
@@ -224,7 +228,20 @@
           <button pButton pRipple label="S'inscrire via un compte Google"
             type="button" icon="pi pi-google"></button>
         </div>
-
+<div class="mb-6">
+  <div class="field-checkbox mb-2">
+    <p-checkbox id="cgu" [binary]="true" formControlName="cgu"></p-checkbox>
+    <label for="cgu">
+      J'ai lu et j'accepte la
+      <a routerLink="/legal/politique-confidentialite">politique de confidentialité</a>
+      et les
+      <a routerLink="/legal/mentions-legales">CGU</a> *
+    </label>
+  </div>
+  @if (formulaire.get('cgu')?.touched && formulaire.get('cgu')?.hasError('required')) {
+    <small class="p-error">Vous devez accepter les CGU pour continuer</small>
+  }
+</div>
       </p-card>
     </div>
   </div>

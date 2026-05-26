@@ -27,7 +27,8 @@
       [userLanguage]="user()!.languageCode ?? ''"
       [currencies]="currencies()"
       [userCurrency]="user()!.currencyCode ?? ''"
-      (modifyOtherSettings)="onOtherSettingsUpdate($event)">
+      (modifyOtherSettings)="onOtherSettingsUpdate($event)"
+      [userNewsletter]="user()!.newsletter">
     </app-other-settings>
 
     <!-- Suppression de compte -->

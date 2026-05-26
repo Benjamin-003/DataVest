@@ -127,6 +127,29 @@ export const routes: Routes = [
   loadComponent: () =>
     import('./portfolio/portfolio.component').then(c => c.PortfolioComponent),
 },
+  {
+    path: 'legal',
+    children: [
+      {
+        path: 'politique-confidentialite',
+        loadComponent: () =>
+          import('./legal/politique-confidentialite/politique-confidentialite.component')
+            .then(c => c.PolitiqueConfidentialiteComponent),
+      },
+      {
+        path: 'mentions-legales',
+        loadComponent: () =>
+          import('./legal/mentions-legales/mentions-legales.component')
+            .then(c => c.MentionsLegalesComponent),
+      },
+      {
+        path: '',
+        redirectTo: 'mentions-legales',
+        pathMatch: 'full',
+      },
+    ],
+  },
+
   // ─── 404 ─────────────────────────────────────────────────────────────────
   {
     path: '**',
