@@ -19,6 +19,7 @@ router.post('/verify-email', validate(verifyEmailSchema), authController.verifyE
 router.post('/logout', authenticate, authController.logout);
 router.patch('/me', authenticate, validate(updateMeSchema), authController.updateMe);
 router.delete('/me', authenticate, authController.deleteMe);
+router.get('/me/export', authenticate, authController.exportMe);
 router.get('/me', authenticate, authController.getLoggedUser);
 router.patch('/password', authenticate, validate(changePasswordSchema), authController.changePassword);
 router.post('/2fa/verify', validate(verifyTwoFactorSchema), authController.verifyTwoFactor);

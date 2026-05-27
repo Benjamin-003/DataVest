@@ -336,4 +336,30 @@ export const authService = {
       },
     });
   },
+  async exportMe(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      firstName:    true,
+      lastName:     true,
+      name:      true,
+      email:        true,
+      birthdate:    true,
+      address:      true,
+      zipcode:      true,
+      city:         true,
+      country:      true,
+      languageCode: true,
+      currencyCode: true,
+      newsletter:   true,
+      createdAt:    true,
+      watchlist:    { select: { symbol: true, createdAt: true } },
+      positions:    { select: { symbol: true, quantity: true, buyPrice: true, createdAt: true } },
+    },
+  });
+  return {
+    exportDate: new Date().toISOString(),
+    data: user,
+  };
+},
 };

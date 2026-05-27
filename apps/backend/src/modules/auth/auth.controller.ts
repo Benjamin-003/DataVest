@@ -162,4 +162,14 @@ async disableTwoFactor(req: Request, res: Response, next: NextFunction) {
     next(err);
   }
 },
+  async exportMe(req: Request, res: Response, next: NextFunction) {
+  try {
+    const data = await authService.exportMe(req.user!.id);
+    res.setHeader('Content-Disposition', 'attachment; filename="mes-donnees-ottawa-pigeon.json"');
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json(data);
+  } catch (err) {
+    next(err);
+  }
+},
 };
