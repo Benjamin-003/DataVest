@@ -183,6 +183,7 @@ Logique métier complète, découpée en petites fonctions.
 - **`getLoggedUser`** — profil utilisateur connecté
 - **`updateMe`** — mise à jour partielle du profil
 - **`deleteMe`** — suppression du compte
+- **`exportMe`** — export RGPD des données personnelles (Art. 20)
 - **`checkEmail`** — disponibilité d'un email
 - **`changePassword`** — changement mot de passe
 - **`forgotPassword`** — demande réinitialisation + email
@@ -209,6 +210,7 @@ Lien entre routes et service. Gestion req/res uniquement, aucune logique métier
 | PATCH | `/api/auth/me` | Protégé 🔒 | Modifier son profil |
 | PATCH | `/api/auth/password` | Protégé 🔒 | Changer son mot de passe |
 | DELETE | `/api/auth/me` | Protégé 🔒 | Supprimer son compte |
+| GET | `/api/auth/me/export` | Protégé 🔒 | Exporter ses données (RGPD Art. 20) |
 
 ### `src/modules/conversions/conversion.schema.ts`
 Schémas Zod pour la validation des données du module conversions.
@@ -319,122 +321,33 @@ errorHandler
 | Resend | - | Emails transactionnels |
 ---
 
-# Architecture du projet Frontend
+## Conformité RGPD
 
-## Structure des fichiers
+Le backend implémente les mesures suivantes conformément au Règlement Général sur la Protection des Données (UE 2016/679) :
 
-```
-Frontend/
-├── src/
-│   ├── components/
-│   │   ├── ConversionHistory.tsx
-│   │   ├── ConversionPage.tsx
-│   │   ├── ConversionTree.tsx
-│   │   ├── ConversionUpload.tsx
-│   │   ├── ForgotPassword.tsx
-│   │   ├── Home-Page.tsx
-│   │   ├── Login.tsx
-│   │   ├── Navbar.tsx
-│   │   ├── NotFound.tsx
-│   │   ├── Profile.tsx
-│   │   ├── Register.tsx
-│   │   ├── ResetPassword.tsx
-│   │   └── TwoFactor.tsx
-│   ├── context/
-│   │   └── AuthContext.tsx
-│   ├── interfaces/
-│   │   ├── auth.types.ts
-│   │   └── conversion.types.ts
-│   ├── services/
-│   │   ├── auth.api.ts
-│   │   ├── axios.ts
-│   │   └── conversion.api.ts
-│   ├── utils/
-│   │   └── api.utils.ts
-│   ├── App.tsx
-│   ├── i18n.ts
-│   ├── main.tsx
-│   └── index.css
-├── tests/
-│   └── home.spec.ts
-├── .env
-├── .env.example
-├── package.json
-├── vite.config.ts
-└── tsconfig.json
-```
+### Droits des utilisateurs implémentés
 
----
+| Droit | Article RGPD | Implémentation |
+|---|---|---|
+| Accès | Art. 15 | `GET /api/auth/me` |
+| Rectification | Art. 16 | `PATCH /api/auth/me` |
+| Effacement | Art. 17 | `DELETE /api/auth/me` (cascade Prisma sur toutes les tables) |
+| Portabilité | Art. 20 | `GET /api/auth/me/export` — JSON structuré |
 
-## Routes frontend
+### Mesures techniques
 
-| Route | Accès | Composant | Description |
-|---|---|---|---|
-| `/` | Public | — | Redirect vers `/login` |
-| `/login` | Public | `Login` | Connexion |
-| `/2fa` | Public | `TwoFactor` | Vérification code 2FA |
-| `/register` | Public | `Register` | Inscription |
-| `/forgot-password` | Public | `ForgotPassword` | Demande reset mot de passe |
-| `/reset-password` | Public | `ResetPassword` | Nouveau mot de passe via token |
-| `/home` | Protégé 🔒 | `HomePage` | Upload + historique des conversions |
-| `/conversion/:id` | Protégé 🔒 | `ConversionPage` | Arborescence d'une conversion |
-| `/profile` | Protégé 🔒 | `Profile` | Gestion du profil |
-| `*` | Public | `NotFound` | Page 404 |
+- **Chiffrement des mots de passe** : bcrypt (facteur de coût 12)
+- **Tokens sécurisés** : générés via `crypto.randomBytes` (OTP 2FA, reset password, verify email)
+- **Durées d'expiration** :
+  - Access token JWT : courte durée
+  - Code 2FA : 5 minutes
+  - Token reset password : 1 heure
+  - Token vérification email : 24 heures
+- **Champs sensibles filtrés** : `sanitizeUser()` retire password, tokens et codes avant tout renvoi client
+- **Variables d'environnement** : `.env` listé dans `.gitignore` — ne jamais commiter
 
----
+### Sous-traitants
 
-## Couche service
-
-### `src/services/axios.ts`
-Instance Axios configurée avec deux intercepteurs :
-- **Requête** — injecte automatiquement le `Bearer token` depuis le localStorage
-- **Réponse** — gère les 401 : tente un refresh token, rejoue la requête originale si succès, redirige vers `/login` si échec
-
-### `src/services/auth.api.ts`
-Appels API liés à l'authentification : `login`, `register`, `verifyTwoFactor`, `refresh`, `logout`, `getMe`, `updateMe`, `changePassword`, `forgotPassword`, `resetPassword`, `checkEmail`.
-
-### `src/services/conversion.api.ts`
-Appels API du module conversion :
-- **`create(file)`** — lit le fichier avec `FileReader`, envoie `{ fileName, xmlContent }` en JSON
-- **`findAll()`** — retourne la liste allégée `ConversionSummary[]`
-- **`findOne(id)`** — retourne la conversion complète avec `treeContent`
-- **`delete(id)`** — supprime une conversion
-
----
-
-## Interfaces TypeScript
-
-### `src/interfaces/auth.types.ts`
-- `User` — profil utilisateur
-- `AuthResponse` — réponse login/2fa (user + tokens)
-- `LoginInput` — body du formulaire de connexion
-
-### `src/interfaces/conversion.types.ts`
-- `RootNode` — nœud racine (id=0, user_name, parentId=-1)
-- `TreeNode` — nœud standard (id, tag, value, parentId, children)
-- `AnyNode` — union RootNode | TreeNode
-- `Conversion` — conversion complète (xmlContent, jsonContent, treeContent)
-- `ConversionSummary` — version allégée pour la liste (id, fileName, createdAt)
-
----
-
-## Contexte
-
-### `src/context/AuthContext.tsx`
-Fournit `user`, `accessToken`, `isLoading`, `login()`, `logout()` à toute l'application via `useAuth()`. Initialise l'état au démarrage via `GET /auth/me` si un token existe en localStorage.
-
----
-
-## Composants conversion
-
-### `src/components/ConversionUpload.tsx`
-Formulaire d'import de fichier. Accepte `.xml`, `.dita`, `.ditamap`, `.xsl`, `.xslt`, `.xhtml`, `.svg`, `.rss`, `.atom`, `.xsd`, `.fo`. Valide l'extension côté client, appelle `conversionApi.create()` et remonte le résultat via `onSuccess`.
-
-### `src/components/ConversionHistory.tsx`
-Liste les conversions de l'utilisateur (`ConversionSummary[]`). Chargement initial au montage. Quand une nouvelle conversion est uploadée, l'ajoute en tête sans refaire un GET. Suppression inline avec confirmation visuelle. Notifie le parent via `onSelect(id)`.
-
-### `src/components/ConversionTree.tsx`
-Affiche l'arborescence d'une conversion avec React Flow. Calcule automatiquement les positions des nœuds (algorithme de layout en arbre). Le nœud racine est mis en évidence (fond bleu). Supporte zoom, minimap et pan.
-
-### `src/components/ConversionPage.tsx`
-Page dédiée à l'affichage d'une conversion. Charge la conversion via `useParams(:id)`, affiche `ConversionTree` en pleine largeur avec un bouton retour vers `/home`.
+| Sous-traitant | Rôle | Base légale transfert |
+|---|---|---|
+| Resend | Emails transactionnels | Clauses contractuelles types (Art. 46 RGPD) |

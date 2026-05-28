@@ -313,6 +313,48 @@ Supprime définitivement le compte de l'utilisateur connecté.
 
 ---
 
+#### `GET /api/auth/me/export` 🔒
+
+Exporte toutes les données personnelles de l'utilisateur connecté au format JSON.
+Implémente le **droit à la portabilité** prévu par l'**Article 20 du RGPD**.
+
+**Retour 200 :** fichier JSON téléchargeable (`mes-donnees-ottawa-pigeon.json`)
+
+```json
+{
+  "exportDate": "2026-05-27T08:26:08.772Z",
+  "data": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "test@test.com",
+    "birthdate": "1990-01-15T00:00:00.000Z",
+    "address": "12 rue de la Paix",
+    "zipcode": "75001",
+    "city": "Paris",
+    "country": "France",
+    "languageCode": "FR",
+    "currencyCode": "EUR",
+    "newsletter": false,
+    "createdAt": "2026-04-28T10:00:00.000Z",
+    "watchlist": [
+      { "symbol": "AAPL", "name": "Apple Inc.", "type": "STOCK", "createdAt": "2026-05-05T09:03:05.266Z" }
+    ],
+    "positions": [
+      { "symbol": "AAPL", "name": "Apple Inc.", "quantity": 10, "buyPrice": 150, "createdAt": "2026-05-06T09:18:10.525Z" }
+    ]
+  }
+}
+```
+
+> Headers de la réponse :
+> ```
+> Content-Disposition: attachment; filename="mes-donnees-ottawa-pigeon.json"
+> Content-Type: application/json
+> ```
+
+
+---
+
 ## Données de référence (publiques)
 
 ### `GET /api/currencies`
