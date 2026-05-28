@@ -184,6 +184,20 @@ export class AuthService {
     );
   }
 
+  exportMe() {
+  return this.api.exportMe().pipe(
+    tap((data) => {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = 'mes-donnees-ottawa-pigeon.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    })
+  );
+}
+
   // ─── Mot de passe oublié ───────────────────────────────────────────────────
 
   forgotPassword(payload: ForgotPasswordPayload) {

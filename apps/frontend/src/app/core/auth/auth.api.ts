@@ -98,4 +98,8 @@ export class AuthApiService {
   deleteMe() {
     return this.http.delete<void>(`${BASE}/me`);
   }
+
+  exportMe() {
+    return this.http.get(`${BASE}/me/export`);
+}
 }
