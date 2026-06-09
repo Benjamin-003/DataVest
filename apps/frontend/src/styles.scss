@@ -1,11 +1,7 @@
 /* ─── Global DataVest ─────────────────────────────────────────────────────── */
 
-/* Navigation */
-.p-menubar-start > a {
-  text-decoration: none;
-}
+.p-menubar-start > a { text-decoration: none; }
 
-/* ─── Layout général ─────────────────────────────────────────────────────── */
 body {
   margin: 0;
   font-family: var(--p-font-family);
@@ -13,7 +9,7 @@ body {
   color: var(--p-text-color);
 }
 
-/* ─── Correction autofill navigateur (fond jaune Chrome/Firefox) ─────────── */
+/* Autofill Chrome/Firefox */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -23,61 +19,156 @@ input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s;
 }
 
-/* ─── Formulaires ─────────────────────────────────────────────────────────── */
+/* Formulaires génériques */
 .field {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
   margin-bottom: 1rem;
 }
-
 .field label {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--p-text-color);
 }
-
-.p-error,
-small.p-error {
+.p-error, small.p-error {
   color: var(--p-red-500);
   font-size: 0.75rem;
 }
 
-/* ─── PrimeFlex formgrid fix ─────────────────────────────────────────────── */
-.formgrid.grid {
-  margin: 0 -0.5rem;
-}
+/* PrimeFlex formgrid */
+.formgrid.grid { margin: 0 -0.5rem; }
+.formgrid.grid .field { padding: 0 0.5rem; }
 
-.formgrid.grid .field {
-  padding: 0 0.5rem;
-}
-
-/* ─── Cards ───────────────────────────────────────────────────────────────── */
+/* Cards */
 .p-card {
   background: var(--p-surface-card);
   border-radius: var(--p-border-radius-xl);
   padding: 1.5rem;
 }
 
-/* ─── Mode sombre ─────────────────────────────────────────────────────────── */
-.dark body {
-  background-color: var(--p-surface-ground);
-}
-
-/* ─── Responsive ──────────────────────────────────────────────────────────── */
+/* Responsive */
 @media (max-width: 768px) {
-  .p-card {
-    padding: 1rem;
-  }
+  .p-card { padding: 1rem; }
 }
 
-/* ─── Boutons formulaires ─────────────────────────────────────────────── */
+/* Boutons formulaires */
 .form-actions {
   display: flex;
   justify-content: center;
   margin-top: 1.5rem;
 }
+.form-actions .p-button { width: auto !important; }
 
-.form-actions .p-button {
-  width: auto !important;
+
+/* ══════════════════════════════════════════════════════════════════════════
+   FORMULAIRE D'INSCRIPTION — overrides PrimeNG
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── 1. Conteneur floatlabel : pleine largeur ───────────────────────────── */
+p-floatlabel,
+.p-floatlabel {
+  display: block !important;
+  width: 100% !important;
+  position: relative;
+}
+
+/* ─── 2. Tous les champs à l'intérieur prennent 100% ────────────────────── */
+.p-floatlabel input,
+.p-floatlabel .p-inputtext,
+.p-floatlabel .p-password,
+.p-floatlabel .p-password input,
+.p-floatlabel p-password,
+.p-floatlabel .p-select,
+.p-floatlabel p-select,
+.p-floatlabel .p-datepicker,
+.p-floatlabel p-datepicker {
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* ─── 3. Labels : couleur et fond ───────────────────────────────────────── */
+.p-floatlabel label {
+  color: #515a6b !important;
+  background: #13161f;
+  padding: 0 4px;
+  z-index: 2;
+}
+
+/* Focus → couleur accent */
+.p-floatlabel:has(input:focus) label,
+.p-floatlabel:has(.p-inputwrapper-focus) label,
+.p-floatlabel:has(.p-select.p-focus) label {
+  color: #e8a020 !important;
+}
+
+/* Valeurs pré-remplies par Angular */
+.p-floatlabel input:not(:placeholder-shown) ~ label,
+.p-floatlabel input.ng-dirty ~ label,
+.p-floatlabel .p-inputwrapper-filled ~ label {
+  color: #e8a020 !important;
+}
+
+/* ─── 4. p-select : label toujours flottant ─────────────────────────────── */
+/* p-select ne déclenche pas p-inputwrapper-filled, on force la position haute */
+.p-floatlabel p-select ~ label,
+.p-floatlabel .p-select ~ label {
+  top: 0 !important;
+  transform: translateY(-50%) !important;
+  font-size: 0.7rem !important;
+  background: #13161f !important;
+  padding: 0 4px !important;
+  color: #515a6b !important;
+  z-index: 3 !important;
+}
+.p-floatlabel:has(.p-select.p-focus) p-select ~ label,
+.p-floatlabel:has(.p-select.p-focus) .p-select ~ label {
+  color: #e8a020 !important;
+}
+
+/* Masque le placeholder du select (texte déjà géré par le label) */
+.p-select .p-select-label.p-placeholder { opacity: 0; }
+
+/* Texte select : pas de troncature brutale */
+.p-select .p-select-label {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  width: 100% !important;
+  display: block !important;
+}
+
+/* ─── 5. Datepicker : icône à l'intérieur (avec [iconDisplay]="'input'") ── */
+.p-floatlabel p-datepicker,
+.p-floatlabel .p-datepicker {
+  position: relative !important;
+}
+.p-datepicker-input-icon-container {
+  position: absolute !important;
+  right: 0.75rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  pointer-events: none;
+  z-index: 2;
+}
+/* Panel en overlay au-dessus de tout */
+.p-datepicker-panel { z-index: 9999 !important; }
+
+/* ─── 6. Espacement entre champs ────────────────────────────────────────── */
+.fi-field {
+  position: relative;
+  margin-bottom: 1.75rem !important;
+}
+.fi-field:last-child { margin-bottom: 0 !important; }
+
+/* ─── 7. Boutons empilés ─────────────────────────────────────────────────── */
+.fi-actions {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.75rem !important;
+}
+.fi-actions .p-button {
+  width: 100% !important;
+  justify-content: center !important;
 }

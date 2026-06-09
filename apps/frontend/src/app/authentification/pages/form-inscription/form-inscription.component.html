@@ -1,247 +1,292 @@
 <form [formGroup]="formulaire" (ngSubmit)="validationForm()">
   <div class="grid mx-2 mt-5 p-fluid">
-    <div class="col-12 lg:col-offset-3 lg:col-6 shadow-2 bg-primary-300">
-      <p-card>
+    <div class="col-12 lg:col-offset-3 lg:col-6">
+      <p-card styleClass="fi-card">
 
-        <!-- Nom -->
-        <div class="field mb-6">
-          <span class="p-float-label mb-2">
-            <input id="lastName" type="text" formControlName="lastName" pInputText>
-            <label for="lastName">Nom</label>
-          </span>
-          @if (lastName?.touched) {
-            <div class="p-error">
-              @if (lastName?.hasError('required')) {
-                <small>{{ messagesErreur[1] }}</small>
-              }
+        <!-- En-tête -->
+        <ng-template pTemplate="header">
+          <div class="fi-card-header">
+            <div class="fi-logo-accent"></div>
+            <h2>Créer un compte</h2>
+            <p>Rejoignez Ottawa Pigeon et commencez à investir</p>
+          </div>
+        </ng-template>
+
+        <div class="fi-section">
+          <div class="fi-section-title">
+            <i class="pi pi-user" aria-hidden="true"></i>
+            <span>Identité</span>
+          </div>
+
+          <div class="grid">
+            <!-- Nom -->
+            <div class="col-12 md:col-6">
+              <div class="fi-field">
+                <p-floatlabel>
+                  <input id="lastName" type="text" formControlName="lastName" pInputText>
+                  <label for="lastName">Nom *</label>
+                </p-floatlabel>
+                @if (lastName?.touched && lastName?.hasError('required')) {
+                  <small class="fi-error"><i class="pi pi-exclamation-circle"></i>{{ messagesErreur[1] }}</small>
+                }
+              </div>
             </div>
-          }
-        </div>
-
-        <!-- Prénom -->
-        <div class="field mb-6">
-          <span class="p-float-label mb-2">
-            <input id="firstName" type="text" formControlName="firstName" pInputText>
-            <label for="firstName">Prénom</label>
-          </span>
-          @if (firstName?.touched) {
-            <div class="p-error">
-              @if (firstName?.hasError('required')) {
-                <small>{{ messagesErreur[1] }}</small>
-              }
+            <!-- Prénom -->
+            <div class="col-12 md:col-6">
+              <div class="fi-field">
+                <p-floatlabel>
+                  <input id="firstName" type="text" formControlName="firstName" pInputText>
+                  <label for="firstName">Prénom *</label>
+                </p-floatlabel>
+                @if (firstName?.touched && firstName?.hasError('required')) {
+                  <small class="fi-error"><i class="pi pi-exclamation-circle"></i>{{ messagesErreur[1] }}</small>
+                }
+              </div>
             </div>
-          }
-        </div>
+          </div>
 
-        <!-- Date de naissance -->
-        <div class="field mb-6">
-          <span class="p-float-label mb-2">
-            <p-datepicker inputId="birthdate" formControlName="birthdate"
-              dateFormat="dd/mm/yy" [showIcon]="true">
-            </p-datepicker>
-            <label for="birthdate">Date de naissance</label>
-          </span>
-          @if (birthdate?.touched) {
-            <div class="p-error">
-              @if (birthdate?.hasError('required')) {
-                <small>{{ messagesErreur[1] }}</small>
-              }
-            </div>
-          }
-        </div>
-
-        <!-- Adresse -->
-        <div class="field mb-6">
-          <span class="p-float-label mb-2">
-            <input id="address" type="text" formControlName="address" pInputText>
-            <label for="address">Adresse</label>
-          </span>
-          @if (address?.touched) {
-            <div class="p-error">
-              @if (address?.hasError('required')) {
-                <small>{{ messagesErreur[1] }}</small>
-              }
-            </div>
-          }
-        </div>
-
-        <!-- Code postal -->
-        <div class="field mb-6">
-          <span class="p-float-label mb-2">
-            <input id="zipcode" type="text" formControlName="zipcode" pInputText>
-            <label for="zipcode">Code postal</label>
-          </span>
-          @if (zipcode?.touched) {
-            <div class="p-error">
-              @if (zipcode?.hasError('required')) {
-                <small>{{ messagesErreur[1] }}</small>
-              }
-            </div>
-          }
-        </div>
-
-        <!-- Ville -->
-        <div class="field mb-6">
-          <span class="p-float-label mb-2">
-            <input id="city" type="text" formControlName="city" pInputText>
-            <label for="city">Ville</label>
-          </span>
-          @if (city?.touched) {
-            <div class="p-error">
-              @if (city?.hasError('required')) {
-                <small>{{ messagesErreur[1] }}</small>
-              }
-            </div>
-          }
-        </div>
-
-        <!-- Pays -->
-        <div class="field mb-6">
-          <span class="p-float-label mb-2">
-            <input id="country" type="text" formControlName="country" pInputText>
-            <label for="country">Pays</label>
-          </span>
-          @if (country?.touched) {
-            <div class="p-error">
-              @if (country?.hasError('required')) {
-                <small>{{ messagesErreur[1] }}</small>
-              }
-            </div>
-          }
-        </div>
-
-        <!-- Email -->
-        <div class="field mb-6">
-          <span class="p-float-label mb-2">
-            <input id="email" type="text" formControlName="email" pInputText>
-            <label for="email">E-mail</label>
-          </span>
-          @if (email?.touched) {
-            <div class="p-error">
-              @if (email?.hasError('required')) {
-                <small>{{ messagesErreur[1] }}</small>
-              }
-              @if (email?.hasError('email')) {
-                <small>{{ messagesErreur[0] }}</small>
-              }
-              @if (email?.hasError('emailTaken')) {
-                <small>{{ messagesErreur[2] }}</small>
-              }
-            </div>
-          }
-        </div>
-
-        <!-- Mot de passe -->
-        <div class="field mb-6">
-          <span class="p-float-label mb-2">
-            <p-password id="password" formControlName="password"
-              weakLabel="Faible" mediumLabel="Moyen" strongLabel="Fort"
-              promptLabel="Saisir un mot de passe"
-              [strongRegex]="strongPasswordRegex"
-              (onBlur)="password?.markAsTouched()">
-              <ng-template pTemplate="header">
-                <h6>Définir un mot de passe</h6>
-              </ng-template>
-              <ng-template pTemplate="footer">
-                <p-divider></p-divider>
-                <p class="mt-2">Suggestions</p>
-                <ul class="pl-2 ml-2 mt-0 line-height-3">
-                  <li>Au moins une minuscule</li>
-                  <li>Au moins une majuscule</li>
-                  <li>Au moins un chiffre</li>
-                  <li>Au moins un caractère spécial</li>
-                  <li>Au moins 12 caractères</li>
-                </ul>
-              </ng-template>
-            </p-password>
-            <label for="password">Mot de passe</label>
-          </span>
-          @if (password?.touched) {
-            <div class="p-error">
-              @if (password?.hasError('required')) {
-                <small>{{ messagesErreur[1] }}</small>
-              }
-              @if (password?.hasError('minlength')) {
-                <small>Le mot de passe doit contenir au moins 12 caractères</small>
-              }
-            </div>
-          }
-        </div>
-
-        <!-- Confirmation mot de passe -->
-        <div class="field mb-6">
-          <span class="p-float-label mb-2">
-            <input id="confirmPassword" type="password" formControlName="confirmPassword" pInputText>
-            <label for="confirmPassword">Confirmez votre mot de passe</label>
-          </span>
-          @if (confirmPassword?.touched) {
-            <div class="p-error">
-              @if (confirmPassword?.hasError('required')) {
-                <small>{{ messagesErreur[1] }}</small>
-              }
-              @if (confirmPassword?.value && password?.value !== confirmPassword?.value) {
-                <small>{{ messagesErreur[0] }}</small>
-              }
-            </div>
-          }
-        </div>
-
-        <!-- Abonnement -->
-        <div class="field col-12 md:col-4">
-          <span class="p-float-label">
-            <p-select
-              [options]="subscriptions"
-              optionLabel="label"
-              optionValue="code"
-              inputId="subscriptionCode"
-              formControlName="subscriptionCode">
-            </p-select>
-            <label for="subscriptionCode">Abonnement</label>
-          </span>
-        </div>
-
-        <!-- Newsletter -->
-        <div class="mb-6">
-          <div class="field-checkbox mb-2">
-            <p-checkbox id="newsletter" [binary]="true" formControlName="newsletter"></p-checkbox>
-            <label for="newsletter">
-  J'accepte de recevoir la newsletter d'Ottawa Pigeon (actualités financières, conseils
-  d'investissement). Vous pouvez vous désabonner à tout moment depuis vos
-  <a routerLink="/parametres">paramètres</a>.
-</label>
+          <!-- Date de naissance -->
+          <div class="fi-field">
+            <p-floatlabel>
+              <p-datepicker inputId="birthdate" formControlName="birthdate"
+  dateFormat="dd/mm/yy"
+  [showIcon]="true"
+  [iconDisplay]="'input'"
+  appendTo="body"
+  styleClass="fi-datepicker">
+</p-datepicker>
+              <label for="birthdate">Date de naissance *</label>
+            </p-floatlabel>
+            @if (birthdate?.touched && birthdate?.hasError('required')) {
+              <small class="fi-error"><i class="pi pi-exclamation-circle"></i>{{ messagesErreur[1] }}</small>
+            }
           </div>
         </div>
 
-        <!-- Boutons -->
-        <div class="col-offset-3 col-6 flex flex-wrap align-items-center justify-content-center">
-          <button pButton pRipple [disabled]="formulaire.invalid" type="submit"
-            label="Créer mon compte" class="p-button-raised"></button>
+        <p-divider></p-divider>
+
+        <div class="fi-section">
+          <div class="fi-section-title">
+            <i class="pi pi-map-marker" aria-hidden="true"></i>
+            <span>Adresse</span>
+          </div>
+
+          <!-- Rue -->
+          <div class="fi-field">
+            <p-floatlabel>
+              <input id="address" type="text" formControlName="address" pInputText>
+              <label for="address">Adresse *</label>
+            </p-floatlabel>
+            @if (address?.touched && address?.hasError('required')) {
+              <small class="fi-error"><i class="pi pi-exclamation-circle"></i>{{ messagesErreur[1] }}</small>
+            }
+          </div>
+
+          <div class="grid">
+            <!-- Code postal -->
+            <div class="col-12 md:col-4">
+              <div class="fi-field">
+                <p-floatlabel>
+                  <input id="zipcode" type="text" formControlName="zipcode" pInputText>
+                  <label for="zipcode">Code postal *</label>
+                </p-floatlabel>
+                @if (zipcode?.touched && zipcode?.hasError('required')) {
+                  <small class="fi-error"><i class="pi pi-exclamation-circle"></i>{{ messagesErreur[1] }}</small>
+                }
+              </div>
+            </div>
+            <!-- Ville -->
+            <div class="col-12 md:col-8">
+              <div class="fi-field">
+                <p-floatlabel>
+                  <input id="city" type="text" formControlName="city" pInputText>
+                  <label for="city">Ville *</label>
+                </p-floatlabel>
+                @if (city?.touched && city?.hasError('required')) {
+                  <small class="fi-error"><i class="pi pi-exclamation-circle"></i>{{ messagesErreur[1] }}</small>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Pays -->
+          <div class="fi-field">
+            <p-floatlabel>
+              <input id="country" type="text" formControlName="country" pInputText>
+              <label for="country">Pays *</label>
+            </p-floatlabel>
+            @if (country?.touched && country?.hasError('required')) {
+              <small class="fi-error"><i class="pi pi-exclamation-circle"></i>{{ messagesErreur[1] }}</small>
+            }
+          </div>
         </div>
-        <div class="col-offset-3 col-6 flex flex-wrap align-items-center justify-content-center">
-          <button pButton pRipple label="Annuler"
-            class="p-button-raised p-button-danger" routerLink="../../accueil"></button>
+
+        <p-divider></p-divider>
+
+        <div class="fi-section">
+          <div class="fi-section-title">
+            <i class="pi pi-shield" aria-hidden="true"></i>
+            <span>Informations de compte</span>
+          </div>
+
+          <!-- Email -->
+          <div class="fi-field">
+            <p-floatlabel>
+              <input id="email" type="text" formControlName="email" pInputText>
+              <label for="email">E-mail *</label>
+            </p-floatlabel>
+            @if (email?.touched) {
+              <div>
+                @if (email?.hasError('required')) {
+                  <small class="fi-error"><i class="pi pi-exclamation-circle"></i>{{ messagesErreur[1] }}</small>
+                }
+                @if (email?.hasError('email')) {
+                  <small class="fi-error"><i class="pi pi-exclamation-circle"></i>{{ messagesErreur[0] }}</small>
+                }
+                @if (email?.hasError('emailTaken')) {
+                  <small class="fi-error"><i class="pi pi-exclamation-circle"></i>{{ messagesErreur[2] }}</small>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Mot de passe -->
+          <div class="fi-field">
+            <p-floatlabel>
+              <p-password id="password" formControlName="password"
+                weakLabel="Faible" mediumLabel="Moyen" strongLabel="Fort"
+                promptLabel="Saisir un mot de passe"
+                [strongRegex]="strongPasswordRegex"
+                styleClass="fi-password"
+                (onBlur)="password?.markAsTouched()">
+                <ng-template pTemplate="header">
+                  <h6>Définir un mot de passe</h6>
+                </ng-template>
+                <ng-template pTemplate="footer">
+                  <p-divider></p-divider>
+                  <p class="mt-2">Suggestions</p>
+                  <ul class="pl-2 ml-2 mt-0 line-height-3">
+                    <li>Au moins une minuscule</li>
+                    <li>Au moins une majuscule</li>
+                    <li>Au moins un chiffre</li>
+                    <li>Au moins un caractère spécial</li>
+                    <li>Au moins 12 caractères</li>
+                  </ul>
+                </ng-template>
+              </p-password>
+              <label for="password">Mot de passe *</label>
+            </p-floatlabel>
+            @if (password?.touched) {
+              <div>
+                @if (password?.hasError('required')) {
+                  <small class="fi-error"><i class="pi pi-exclamation-circle"></i>{{ messagesErreur[1] }}</small>
+                }
+                @if (password?.hasError('minlength')) {
+                  <small class="fi-error"><i class="pi pi-exclamation-circle"></i>Minimum 12 caractères</small>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Confirmation -->
+          <div class="fi-field">
+            <p-floatlabel>
+              <input id="confirmPassword" type="password" formControlName="confirmPassword" pInputText>
+              <label for="confirmPassword">Confirmer le mot de passe *</label>
+            </p-floatlabel>
+            @if (confirmPassword?.touched) {
+              <div>
+                @if (confirmPassword?.hasError('required')) {
+                  <small class="fi-error"><i class="pi pi-exclamation-circle"></i>{{ messagesErreur[1] }}</small>
+                }
+                @if (confirmPassword?.value && password?.value !== confirmPassword?.value) {
+                  <small class="fi-error"><i class="pi pi-exclamation-circle"></i>{{ messagesErreur[0] }}</small>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Abonnement -->
+          <div class="fi-field">
+            <p-floatlabel>
+              <p-select
+                [options]="subscriptions"
+                optionLabel="label"
+                optionValue="code"
+                inputId="subscriptionCode"
+                formControlName="subscriptionCode"
+                styleClass="fi-select">
+              </p-select>
+              <label for="subscriptionCode">Abonnement</label>
+            </p-floatlabel>
+          </div>
         </div>
-        <div class="col-offset-3 col-6 flex flex-wrap align-items-center justify-content-center">
-          <p>OU</p>
+
+        <p-divider></p-divider>
+
+        <div class="fi-section">
+          <div class="fi-section-title">
+            <i class="pi pi-sliders-h" aria-hidden="true"></i>
+            <span>Préférences & Conditions</span>
+          </div>
+
+          <!-- Newsletter -->
+          <div class="fi-checkbox-row">
+            <p-checkbox id="newsletter" [binary]="true" formControlName="newsletter"></p-checkbox>
+            <label for="newsletter">
+              J'accepte de recevoir la newsletter d'Ottawa Pigeon (actualités financières,
+              conseils d'investissement). Vous pouvez vous désabonner depuis vos
+              <a routerLink="/parametres">paramètres</a>.
+            </label>
+          </div>
+
+          <!-- CGU — avant les boutons -->
+          <div class="fi-checkbox-row">
+            <p-checkbox id="cgu" [binary]="true" formControlName="cgu"></p-checkbox>
+            <label for="cgu">
+              J'ai lu et j'accepte la
+              <a routerLink="/legal/politique-confidentialite">politique de confidentialité</a>
+              et les <a routerLink="/legal/mentions-legales">CGU</a>
+              <span class="fi-required">*</span>
+            </label>
+          </div>
+          @if (formulaire.get('cgu')?.touched && formulaire.get('cgu')?.hasError('required')) {
+            <small class="fi-error"><i class="pi pi-exclamation-circle"></i>Vous devez accepter les CGU pour continuer</small>
+          }
         </div>
-        <div class="col-offset-3 col-6 flex flex-wrap align-items-center justify-content-center">
-          <button pButton pRipple label="S'inscrire via un compte Google"
-            type="button" icon="pi pi-google"></button>
+
+        <div class="fi-actions">
+
+          <button pButton pRipple
+            type="submit"
+            [disabled]="formulaire.invalid"
+            label="Créer mon compte"
+            icon="pi pi-user-plus"
+            class="fi-btn-primary">
+          </button>
+
+          <div class="fi-separator">
+            <span class="fi-sep-line"></span>
+            <span class="fi-sep-text">ou</span>
+            <span class="fi-sep-line"></span>
+          </div>
+
+          <button pButton pRipple
+            type="button"
+            label="Continuer avec Google"
+            icon="pi pi-google"
+            class="fi-btn-google">
+          </button>
+
+          <button pButton pRipple
+            type="button"
+            label="Annuler"
+            class="fi-btn-cancel"
+            routerLink="../../accueil">
+          </button>
+
         </div>
-<div class="mb-6">
-  <div class="field-checkbox mb-2">
-    <p-checkbox id="cgu" [binary]="true" formControlName="cgu"></p-checkbox>
-    <label for="cgu">
-      J'ai lu et j'accepte la
-      <a routerLink="/legal/politique-confidentialite">politique de confidentialité</a>
-      et les
-      <a routerLink="/legal/mentions-legales">CGU</a> *
-    </label>
-  </div>
-  @if (formulaire.get('cgu')?.touched && formulaire.get('cgu')?.hasError('required')) {
-    <small class="p-error">Vous devez accepter les CGU pour continuer</small>
-  }
-</div>
+
       </p-card>
     </div>
   </div>

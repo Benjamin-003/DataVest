@@ -7,6 +7,7 @@ import { PasswordModule } from 'primeng/password';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
 import { CheckboxModule } from 'primeng/checkbox';
+import { FloatLabelModule } from 'primeng/floatlabel';
 import { DividerModule } from 'primeng/divider';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
@@ -22,8 +23,9 @@ import { Subscription } from '../../../subscriptions/subscription.model';
     CommonModule, ReactiveFormsModule,
     InputTextModule, PasswordModule, DatePickerModule,
     SelectModule, CheckboxModule, DividerModule,
-    ButtonModule, RippleModule, CardModule,
+    ButtonModule, RippleModule, CardModule,FloatLabelModule
   ],
+
   templateUrl: './form-inscription.component.html',
 })
 export class FormInscriptionComponent implements OnChanges {
