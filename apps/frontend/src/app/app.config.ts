@@ -6,7 +6,6 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/auth.interceptor';
 import { AuthService } from './core/auth/auth.service';
 import { I18nService } from './i18n/i18n.service';
-import * as Sentry from '@sentry/angular';
 import { Router } from '@angular/router';
 import { ErrorHandler } from '@angular/core';
 import { providePrimeNG } from 'primeng/config';
@@ -78,21 +77,5 @@ export const appConfig: ApplicationConfig = {
       deps: [I18nService, AuthService],
       multi: true,
     },
-
-    // ─── Sentry ───────────────────────────────────────────────────────────────
-    {
-      provide: ErrorHandler,
-      useValue: Sentry.createErrorHandler(),
-    },
-    {
-      provide: Sentry.TraceService,
-      deps: [Router],
-    },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: () => () => {},
-      deps: [Sentry.TraceService],
-      multi: true,
-    },
-  ],
+  ]
 };
