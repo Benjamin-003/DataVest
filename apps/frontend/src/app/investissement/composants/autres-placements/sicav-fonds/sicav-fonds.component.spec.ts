@@ -8,8 +8,8 @@ describe('SicavFondsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SicavFondsComponent ]
-    })
+    declarations: [SicavFondsComponent]
+})
     .compileComponents();
   }));
 

@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
-    selector: 'app-accueil',
-    templateUrl: './accueil.component.html',
-    standalone: false
+  selector: 'app-accueil',
+  standalone: true,
+  imports: [RouterLink],
+  templateUrl: './accueil.component.html',
 })
 
 export class AccueilComponent {

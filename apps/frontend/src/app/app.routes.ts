@@ -111,10 +111,11 @@ export const routes: Routes = [
 
   // ─── Accueil (CoreModule encore en NgModule) ──────────────────────────────
   {
-    path: 'accueil',
-    loadChildren: () =>
-      import('./core/core.module').then(m => m.CoreModule),
-  },
+  path: 'accueil',
+  loadComponent: () =>
+    import('./core/page/accueil/accueil.component')
+      .then(c => c.AccueilComponent),
+},
 {
   path: 'watchlist',
   canActivate: [authGuard],

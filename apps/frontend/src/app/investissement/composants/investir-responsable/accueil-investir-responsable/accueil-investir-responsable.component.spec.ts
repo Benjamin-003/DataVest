@@ -8,8 +8,8 @@ describe('AccueilInvestirResponsableComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AccueilInvestirResponsableComponent ]
-    })
+    declarations: [AccueilInvestirResponsableComponent]
+})
     .compileComponents();
   }));
 

@@ -8,8 +8,8 @@ describe('RetraiteComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RetraiteComponent ]
-    })
+    declarations: [RetraiteComponent]
+})
     .compileComponents();
   }));
 

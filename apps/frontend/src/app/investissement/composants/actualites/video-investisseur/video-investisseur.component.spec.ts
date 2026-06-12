@@ -8,8 +8,8 @@ describe('VideoInvestisseurComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ VideoInvestisseurComponent ]
-    })
+    declarations: [VideoInvestisseurComponent]
+})
     .compileComponents();
   }));
 

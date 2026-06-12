@@ -8,8 +8,8 @@ describe('CotationsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CotationsComponent ]
-    })
+    declarations: [CotationsComponent]
+})
     .compileComponents();
   }));
 

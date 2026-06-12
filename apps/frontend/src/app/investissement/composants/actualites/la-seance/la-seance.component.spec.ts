@@ -8,8 +8,8 @@ describe('LaSeanceComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LaSeanceComponent ]
-    })
+    declarations: [LaSeanceComponent]
+})
     .compileComponents();
   }));
 

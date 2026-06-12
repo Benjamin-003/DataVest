@@ -8,8 +8,8 @@ describe('VideosComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ VideosComponent ]
-    })
+    declarations: [VideosComponent]
+})
     .compileComponents();
   }));
 

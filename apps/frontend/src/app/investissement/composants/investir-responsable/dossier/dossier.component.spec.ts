@@ -8,8 +8,8 @@ describe('DossierComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DossierComponent ]
-    })
+    declarations: [DossierComponent]
+})
     .compileComponents();
   }));
 
