@@ -31,15 +31,33 @@ export class FormAuthentificationComponent {
   get email()    { return this.form.get('email'); }
   get password() { return this.form.get('password'); }
 
-  submit(): void {
-    if (this.form.invalid) return;
-    this.loading.set(true);
-    this.authService.login({ email: this.form.value.email!, password: this.form.value.password! }).subscribe({
-      next: () => this.router.navigate(['/authentication/2fa']),
+ submit(): void {
+  if (this.form.invalid) return;
+  this.loading.set(true);
+
+  this.authService
+    .login({ email: this.form.value.email!, password: this.form.value.password! })
+    .subscribe({
+      next: (response: any) => {
+        // ✅ Si l'email n'est pas validé
+        if (response.emailNotVerified) {
+          this.authService.setPendingEmail(this.form.value.email!);
+          this.router.navigate(['/authentication/verify-email']);
+        } 
+        // ✅ Si 2FA est requis (email validé)
+        else if (response.twoFactorRequired) {
+          this.authService.setPendingEmail(this.form.value.email!);
+          this.router.navigate(['/authentication/2fa']);
+        }
+      },
       error: () => {
         this.loading.set(false);
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Email et/ou mot de passe incorrect' });
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erreur',
+          detail: 'Email et/ou mot de passe incorrect',
+        });
       },
     });
-  }
+}
 }

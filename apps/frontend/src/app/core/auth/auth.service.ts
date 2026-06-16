@@ -51,8 +51,14 @@ export class AuthService {
   /** true si un utilisateur est connecté */
   readonly isLoggedIn = computed(() => this._user() !== null);
 
-  /** Email en attente de validation 2FA */
-  readonly pendingEmail = this._pendingEmail.asReadonly();
+
+  setPendingEmail(email: string): void {
+  this._pendingEmail.set(email);
+}
+
+pendingEmail(): string | null {
+  return this._pendingEmail();
+}
 
   // ─── Gestion des tokens ────────────────────────────────────────────────────
 
@@ -184,6 +190,10 @@ export class AuthService {
     );
   }
 
+  resendVerificationEmail(email: string) {
+  return this.api.resendVerificationEmail(email);
+}
+
   exportMe() {
   return this.api.exportMe().pipe(
     tap((data) => {
@@ -222,4 +232,5 @@ export class AuthService {
   isEmailTaken(email: string) {
     return this.api.checkEmail({ email });
   }
+  
 }

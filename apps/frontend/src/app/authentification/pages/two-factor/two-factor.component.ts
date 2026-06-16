@@ -14,7 +14,7 @@ import { AuthService } from '../../../core/auth/auth.service';
   imports: [ReactiveFormsModule, RouterModule, InputTextModule, ButtonModule, ToastModule, CardModule],
   providers: [MessageService],
   template: `
-    <p-toast />
+    <p-toast position="bottom-right"></p-toast>
     <div class="grid mt-5 mx-2 p-fluid">
       <div class="col-12 lg:col-offset-4 lg:col-4 shadow-2 bg-primary-300">
         <p-card>

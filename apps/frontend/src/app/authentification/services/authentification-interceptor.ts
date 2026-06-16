@@ -6,7 +6,7 @@ import { UserService } from 'src/app/users/services/user-service.service';
 @Injectable()
 export class AuthentificationInterceptor implements HttpInterceptor {
 
-  constructor(private readonly userService: UserService) { }
+  constructor(@Inject(UserService) private readonly userService: UserService) { }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const userToken = this.userService.token

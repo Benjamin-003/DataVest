@@ -19,6 +19,12 @@ export const routes: Routes = [
             .then(c => c.FormAuthentificationComponent),
       },
       {
+      path: 'verify-email',
+      loadComponent: () =>
+        import('./authentification/pages/verify-email/verify-email.component')
+          .then(c => c.VerifyEmailComponent),
+    },
+      {
         path: '2fa',
         canActivate: [twoFactorGuard],
         loadComponent: () =>

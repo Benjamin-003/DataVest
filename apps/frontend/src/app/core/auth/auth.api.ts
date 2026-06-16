@@ -102,4 +102,8 @@ export class AuthApiService {
   exportMe() {
     return this.http.get(`${BASE}/me/export`);
 }
+
+resendVerificationEmail(email: string) {
+  return this.http.post<{ message: string }>(`${BASE}/resend-verification-email`, { email });
+}
 }
