@@ -105,6 +105,12 @@ export const verifyTwoFactorSchema = z.object({
   }),
 });
 
+export const resendVerificationEmailSchema = z.object({
+  body: z.object({
+    email: z.string().email('Adresse email invalide'),
+  }),
+});
+
 export type VerifyTwoFactorInput = z.infer<typeof verifyTwoFactorSchema>['body'];
 export type ForgotPasswordInput  = z.infer<typeof forgotPasswordSchema>['body'];
 export type ResetPasswordInput   = z.infer<typeof resetPasswordSchema>['body'];

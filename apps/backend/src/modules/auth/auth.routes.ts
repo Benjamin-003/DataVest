@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { authController } from './auth.controller';
 import { validate } from '../../middleware/validate.middleware';
 import { authenticate } from '../../middleware/auth.middleware';
-import { changePasswordSchema, checkEmailSchema, forgotPasswordSchema, loginSchema, refreshSchema, registerSchema, resetPasswordSchema, updateMeSchema, verifyEmailSchema, verifyTwoFactorSchema } from './auth.schema';
+import { changePasswordSchema, checkEmailSchema, forgotPasswordSchema, loginSchema, refreshSchema, registerSchema, resendVerificationEmailSchema, resetPasswordSchema, updateMeSchema, verifyEmailSchema, verifyTwoFactorSchema } from './auth.schema';
 
 const router = Router();
 
@@ -23,4 +23,5 @@ router.get('/me/export', authenticate, authController.exportMe);
 router.get('/me', authenticate, authController.getLoggedUser);
 router.patch('/password', authenticate, validate(changePasswordSchema), authController.changePassword);
 router.post('/2fa/verify', validate(verifyTwoFactorSchema), authController.verifyTwoFactor);
+router.post('/resend-verification-email', validate(resendVerificationEmailSchema), authController.resendVerificationEmail);
 export default router;

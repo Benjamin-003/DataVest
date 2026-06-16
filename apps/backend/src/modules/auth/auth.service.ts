@@ -272,7 +272,6 @@ export const authService = {
         emailVerifyExpires: { gt: new Date() },
       },
     });
-
     if (!user) throw new AppError(400, "Token invalide ou expiré");
 
     await prisma.user.update({
@@ -284,6 +283,7 @@ export const authService = {
       },
     });
   },
+  
   async verifyTwoFactor(email: string, code: string) {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) throw new AppError(401, "Code invalide");

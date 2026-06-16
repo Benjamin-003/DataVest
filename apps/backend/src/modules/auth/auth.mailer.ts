@@ -2,7 +2,7 @@ import { resend, FROM_EMAIL } from '../../config/mailer';
 
 // Email de vérification envoyé après l'inscription
 const sendVerifyEmail = async (email: string, token: string, firstName: string | null) => {
-  const verifyUrl = `${process.env['FRONTEND_URL']}/verify-email?token=${token}`;
+  const verifyUrl = `${process.env['FRONTEND_URL']}/authentication/verify-email?token=${token}`;
 
   await resend.emails.send({
     from: FROM_EMAIL,
@@ -54,7 +54,7 @@ const sendTwoFactorCode = async (email: string, code: string, firstName: string 
 
 // Email de réinitialisation du mot de passe
 const sendResetPasswordEmail = async (email: string, token: string, firstName: string | null) => {
-  const resetUrl = `${process.env['FRONTEND_URL']}/reset-password?token=${token}`;
+  const resetUrl = `${process.env['FRONTEND_URL']}/authentication/reset-password?token=${token}`;
 
   await resend.emails.send({
     from: FROM_EMAIL,
