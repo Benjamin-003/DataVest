@@ -12,9 +12,9 @@ import { DividerModule } from 'primeng/divider';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { CardModule } from 'primeng/card';
-import { UniqueEmailValidator } from '../../../core/auth/unique-email.validator';
-import { RegisterPayload } from '../../../core/models/auth.models';
-import { Subscription } from '../../../subscriptions/subscription.model';
+import { UniqueEmailValidator } from '../../../auth/unique-email.validator';
+import { RegisterPayload } from '../../../models/auth.models';
+import { Subscription } from '../../../../subscriptions/subscription.model';
 
 @Component({
   selector: 'app-form-inscription',
@@ -127,6 +127,7 @@ export class FormInscriptionComponent implements OnChanges {
       newsletter?: boolean | null;
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword: _confirm, birthdate, ...rest } = raw;
 
     const payload: RegisterPayload = {

@@ -1,13 +1,13 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
-import { SubscriptionsService } from '../../../subscriptions/subscriptions.service';
-import { Subscription } from '../../../subscriptions/subscription.model';
-import { AuthService } from '../../../core/auth/auth.service';
-import { RegisterPayload } from '../../../core/models/auth.models';
+import { SubscriptionsService } from '../../../../subscriptions/subscriptions.service';
+import { Subscription } from '../../../../subscriptions/subscription.model';
+import { AuthService } from '../../../auth/auth.service';
+import { RegisterPayload } from '../../../models/auth.models';
 // Sous-composant de formulaire — à rendre standalone lors de son propre portage
 import { FormInscriptionComponent } from '../../pages/form-inscription/form-inscription.component';
-import { EtapesInscriptionComponent } from '../../../core/components/etapes-inscription/etapes-inscription.component';
+import { EtapesInscriptionComponent } from '../../../../core/components/etapes-inscription/etapes-inscription.component';
 import { CommonModule } from '@angular/common';
 
 /**

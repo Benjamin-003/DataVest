@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
@@ -6,7 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
-import { AuthService } from '../../../core/auth/auth.service';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'app-reset-password',
@@ -15,7 +15,7 @@ import { AuthService } from '../../../core/auth/auth.service';
   providers: [MessageService],
   templateUrl: './reset-password.component.html',
 })
-export class ResetPasswordComponent implements OnInit, OnDestroy {
+export class ResetPasswordComponent implements OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
@@ -30,7 +30,6 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
 
   get email() { return this.form.get('email'); }
 
-  ngOnInit() {}
 
   ngOnDestroy() { clearTimeout(this.timeoutID); }
 

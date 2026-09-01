@@ -1,5 +1,5 @@
 import { UserService } from '../../../users/services/user-service.service';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 
@@ -7,14 +7,12 @@ import { Router } from '@angular/router';
     selector: 'app-authentification',
     templateUrl: './authentification.component.html',
     providers: [MessageService],
-    standalone: false
+    standalone: true
 })
 export class AuthentificationComponent {
-  constructor(
-    private readonly userService: UserService,
-    private readonly messageService: MessageService,
-    private readonly router: Router
-  ) {}
+  private readonly userService = inject(UserService);
+  private readonly messageService = inject(MessageService);
+  private readonly router = inject(Router);
 
   //Cette méthode va appeler le back pour authentification
   signIn(credential: Credential) {

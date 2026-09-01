@@ -1,5 +1,6 @@
 {
   "compileOnSave": false,
+  "ignoreDeprecations": "6.0",
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
@@ -19,8 +20,13 @@
     "module": "ES2022",
     "lib": ["ES2022", "dom"],
     "useDefineForClassFields": false,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+    "@core/*": ["src/app/core/*"],
+    "@shared/*": ["src/app/shared/*"]
+},
   },
+  
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,

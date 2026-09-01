@@ -4,7 +4,7 @@ import { ButtonModule } from 'primeng/button';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-import { AuthService } from '../../../core/auth/auth.service';
+import { AuthService } from '../../../auth/auth.service';
 import { ResendVerificationEmailComponent } from '../../components/resend-verification-email/resend-verification-email.component';
 
 @Component({

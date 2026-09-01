@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../../core/auth/auth.service';
+import { AuthService } from '../../../auth/auth.service';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
@@ -38,7 +38,7 @@ export class FormAuthentificationComponent {
   this.authService
     .login({ email: this.form.value.email!, password: this.form.value.password! })
     .subscribe({
-      next: (response: any) => {
+      next: (response: { emailNotVerified?: boolean; twoFactorRequired?: boolean }) => {
         // ✅ Si l'email n'est pas validé
         if (response.emailNotVerified) {
           this.authService.setPendingEmail(this.form.value.email!);

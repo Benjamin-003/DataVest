@@ -28,7 +28,8 @@
             },
             "index": "src/index.html",
             "polyfills": [
-              "zone.js", "src/polyfills.ts"
+              "zone.js",
+              "src/polyfills.ts"
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "css",
@@ -37,10 +38,9 @@
               "src/assets"
             ],
             "styles": [
-               "node_modules/primeicons/primeicons.css",
-  "node_modules/primeflex/primeflex.css",
-  "src/styles.scss"
-
+              "node_modules/primeicons/primeicons.css",
+              "node_modules/primeflex/primeflex.css",
+              "src/styles.scss"
             ],
             "scripts": [],
             "browser": "src/main.ts"
@@ -148,8 +148,25 @@
               "devServerTarget": "ottawa-pigeon:serve:production"
             }
           }
+        },
+        "deploy": {
+          "builder": "angular-cli-ghpages:deploy"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
+  },
+  "cli": {
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   }
 }

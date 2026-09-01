@@ -15,63 +15,63 @@ export const routes: Routes = [
       {
         path: 'connexion',
         loadComponent: () =>
-          import('./authentification/pages/form-authentification/form-authentification.component')
+          import('./core/authentification/pages/form-authentification/form-authentification.component')
             .then(c => c.FormAuthentificationComponent),
       },
       {
       path: 'verify-email',
       loadComponent: () =>
-        import('./authentification/pages/verify-email/verify-email.component')
+        import('./core/authentification/pages/verify-email/verify-email.component')
           .then(c => c.VerifyEmailComponent),
     },
       {
         path: '2fa',
         canActivate: [twoFactorGuard],
         loadComponent: () =>
-          import('./authentification/pages/two-factor/two-factor.component')
+          import('./core/authentification/pages/two-factor/two-factor.component')
             .then(c => c.TwoFactorComponent),
       },
       {
         path: 'preambule',
         loadComponent: () =>
-          import('./authentification/pages/preambule-inscription/preambule-inscription.component')
+          import('./core/authentification/pages/preambule-inscription/preambule-inscription.component')
             .then(c => c.PreambuleInscriptionComponent),
       },
       {
         path: 'inscription',
         loadComponent: () =>
-          import('./authentification/components/inscription/inscription.component')
+          import('./core/authentification/components/inscription/inscription.component')
             .then(c => c.InscriptionComponent),
       },
       {
         path: 'inscription/:option',
         loadComponent: () =>
-          import('./authentification/components/inscription/inscription.component')
+          import('./core/authentification/components/inscription/inscription.component')
             .then(c => c.InscriptionComponent),
       },
       {
         path: 'succes',
         loadComponent: () =>
-          import('./authentification/pages/succes-inscription/succes-inscription.component')
+          import('./core/authentification/pages/succes-inscription/succes-inscription.component')
             .then(c => c.SuccesInscriptionComponent),
       },
       {
         path: 'echec',
         loadComponent: () =>
-          import('./authentification/pages/echec-inscription/echec-inscription.component')
+          import('./core/authentification/pages/echec-inscription/echec-inscription.component')
             .then(c => c.EchecInscriptionComponent),
       },
       {
         path: 'password',
         loadComponent: () =>
-          import('./authentification/components/reset-password/reset-password.component')
+          import('./core/authentification/components/reset-password/reset-password.component')
             .then(c => c.ResetPasswordComponent),
       },
       {
         path: 'reset-password/:token',
         canActivate: [resetPasswordGuard],
         loadComponent: () =>
-          import('./authentification/components/reset-password-form/reset-password-form.component')
+          import('./core/authentification/components/reset-password-form/reset-password-form.component')
             .then(c => c.ResetPasswordFormComponent),
       },
     ],

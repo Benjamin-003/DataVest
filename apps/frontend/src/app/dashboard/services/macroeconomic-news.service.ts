@@ -1,5 +1,5 @@
 import { environment } from './../../../environments/environment';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs';
 import * as XMLtoJSON from 'xml-js'
@@ -11,7 +11,7 @@ const parsedResult = (articleResult: string) => {
   providedIn: 'root'
 })
 export class MacroeconomicNewsService {
-  constructor(private readonly http: HttpClient) { }
+  private readonly http = inject(HttpClient);
 
   //Appel le flux RSS d'un journal
   getNews(URLStream: string) {
