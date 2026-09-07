@@ -1,5 +1,5 @@
 {
-  "name": "ottawa-pigeon",
+  "name": "frontend",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -27,6 +27,7 @@
     "@angular/platform-browser": "^19.2.21",
     "@angular/platform-browser-dynamic": "^19.2.21",
     "@angular/router": "^19.2.21",
+    "@data-vest-nx/source": "file:../..",
     "@popperjs/core": "^2.10.2",
     "@primeng/themes": "^21.0.4",
     "flag-icons": "^6.6.6",
