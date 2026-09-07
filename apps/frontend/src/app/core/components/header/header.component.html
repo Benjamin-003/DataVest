@@ -1,0 +1,33 @@
+<p-menubar [model]="items">
+  <ng-template pTemplate="start">
+    <a routerLink="accueil">
+      <h4 class="m-1">DataVest</h4>
+    </a>
+  </ng-template>
+
+  @if (isLogged()) {
+    <p-button
+      routerLink="watchlist"
+      icon="pi pi-star"
+      class="m-1"
+      pTooltip="Ma Watchlist"
+      tooltipPosition="bottom">
+    </p-button>
+    <p-button
+  routerLink="portfolio"
+  icon="pi pi-briefcase"
+  class="m-1"
+  pTooltip="Mon Portfolio"
+  tooltipPosition="bottom">
+</p-button>
+    <p-button routerLink="parametres" class="m-1">
+      <span><i class="pi pi-cog"></i> Bonjour {{ loggedUserName() }}</span>
+    </p-button>
+    <p-button class="m-1" (click)="logOffUser()">
+      <span><i class="pi pi-power-off"></i></span>
+    </p-button>
+  } @else {
+    <p-button class="m-1" label="Accès client" routerLink="authentication/connexion"></p-button>
+    <p-button class="m-1" label="Ouvrir un compte" routerLink="authentication/preambule"></p-button>
+  }
+</p-menubar>

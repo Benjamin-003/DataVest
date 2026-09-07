@@ -1,0 +1,357 @@
+$bg-card:        #13161f;
+$bg-surface:     #1b1e2b;
+$bg-hover:       #22273a;
+$accent:         #e8a020;
+$accent-glow:    rgba(232, 160, 32, 0.18);
+$accent-soft:    rgba(232, 160, 32, 0.08);
+$border:         rgba(255, 255, 255, 0.08);
+$border-hover:   rgba(255, 255, 255, 0.14);
+$border-focus:   rgba(232, 160, 32, 0.6);
+$text-primary:   #e4e7f0;
+$text-secondary: #8b95a8;
+$text-muted:     #515a6b;
+$error:          #f87171;
+$radius-input:   8px;
+$radius-btn:     8px;
+$radius-card:    16px;
+$h-input:        3rem;
+
+:host { display: block; }
+
+::ng-deep .fi-card {
+  background: $bg-card !important;
+  border: 1px solid $border !important;
+  border-radius: $radius-card !important;
+
+  .p-card-body  { padding: 0 !important; }
+  .p-card-content { padding: 0 !important; }
+}
+
+.fi-card-header {
+  padding: 2rem 2rem 1.25rem;
+  border-bottom: 1px solid $border;
+  position: relative;
+  overflow: hidden;
+
+  // Barre d'accent dorée en haut
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, $accent, transparent);
+  }
+
+  h2 {
+    margin: 0 0 0.25rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: $text-primary;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: $text-secondary;
+  }
+}
+
+.fi-section {
+  padding: 1.5rem 2rem;
+}
+
+.fi-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+
+  i {
+    font-size: 0.85rem;
+    color: $accent;
+  }
+
+  span {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $text-muted;
+  }
+}
+
+::ng-deep p-divider .p-divider::before {
+  border-color: $border !important;
+}
+
+
+.fi-field {
+  margin-bottom: 1.5rem;
+
+  &:last-child { margin-bottom: 0; }
+}
+
+// ─── Float label : conteneur ───────────────────────────────
+::ng-deep .fi-card {
+
+  .p-float-label {
+  width: 100%;
+  display: block;
+
+  label {
+    background: $bg-card;
+    padding: 0 0.35rem;
+    color: $text-muted;
+    transition: all 0.18s ease;
+  }
+}
+
+/* état flottant */
+.p-float-label:has(input:focus) label,
+.p-float-label:has(input.p-filled) label,
+.p-float-label:has(.p-inputwrapper-focus) label,
+.p-float-label:has(.p-inputwrapper-filled) label {
+  color: $accent;
+}
+
+  // ─── Input texte ───────────────────────────────────────
+  .p-inputtext {
+    display: block;
+    width: 100%;
+    height: $h-input;
+    padding: 0 0.875rem !important;
+    background: $bg-surface !important;
+    border: 1px solid $border !important;
+    border-radius: $radius-input !important;
+    color: $text-primary !important;
+    font-size: 0.9rem;
+    transition: border-color 0.18s, box-shadow 0.18s !important;
+
+    &:hover:not(:focus) { border-color: $border-hover !important; }
+
+    &:focus {
+      border-color: $border-focus !important;
+      box-shadow: 0 0 0 3px $accent-glow !important;
+      outline: none;
+    }
+
+    &::placeholder { color: transparent; }
+  }
+
+  // ─── p-password ────────────────────────────────────────
+  p-password,
+  .p-password {
+    display: block !important;
+    width: 100% !important;
+
+    .p-password-input { width: 100% !important; }
+  }
+
+  // ─── p-datepicker ──────────────────────────────────────
+  p-datepicker,
+  .fi-datepicker,
+  .p-datepicker-input-icon-container {
+    display: block !important;
+    width: 100% !important;
+
+    input { width: 100% !important; }
+  }
+
+  // ─── p-select ──────────────────────────────────────────
+  p-select,
+  .fi-select,
+  .p-select {
+    display: block !important;
+    width: 100% !important;
+    height: $h-input;
+    background: $bg-surface !important;
+    border: 1px solid $border !important;
+    border-radius: $radius-input !important;
+    transition: border-color 0.18s, box-shadow 0.18s !important;
+
+    &:hover:not(.p-focus) { border-color: $border-hover !important; }
+
+    &.p-focus {
+      border-color: $border-focus !important;
+      box-shadow: 0 0 0 3px $accent-glow !important;
+    }
+
+    .p-select-label {
+      color: $text-primary !important;
+      font-size: 0.9rem;
+      padding: 0 0.875rem !important;
+      line-height: $h-input !important;
+
+      &.p-placeholder { color: transparent !important; }
+    }
+
+    .p-select-dropdown { color: $text-muted !important; }
+  }
+
+  // Panel dropdown
+  .p-select-overlay {
+    background: $bg-surface !important;
+    border: 1px solid $border !important;
+    border-radius: $radius-input !important;
+
+    .p-select-option {
+      color: $text-secondary !important;
+
+      &:hover, &.p-highlight {
+        background: $accent-soft !important;
+        color: $text-primary !important;
+      }
+    }
+  }
+
+  // ─── Checkboxes ────────────────────────────────────────
+  .p-checkbox {
+    .p-checkbox-box {
+      background: $bg-surface !important;
+      border: 1px solid $border-hover !important;
+      border-radius: 4px !important;
+      width: 18px;
+      height: 18px;
+      transition: all 0.18s !important;
+
+      &:hover { border-color: $accent !important; }
+
+      &.p-highlight {
+        background: $accent !important;
+        border-color: $accent !important;
+
+        .p-checkbox-icon { color: #0a0c12 !important; }
+      }
+    }
+  }
+}
+
+.fi-checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.875rem;
+
+  label {
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: $text-secondary;
+    cursor: pointer;
+
+    a {
+      color: $accent;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+
+      &:hover { color: lighten($accent, 10%); }
+    }
+  }
+
+  &:last-child { margin-bottom: 0; }
+}
+
+.fi-required {
+  color: $error;
+  margin-left: 3px;
+}
+
+.fi-error {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: $error;
+  line-height: 1.3;
+
+  i { font-size: 0.75rem; }
+}
+
+.fi-actions {
+  padding: 1.5rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+// Mixin bouton de base
+%fi-btn-base {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 100% !important;
+  height: $h-input !important;
+  border-radius: $radius-btn !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+  transition: all 0.18s !important;
+  border: none !important;
+}
+
+::ng-deep .fi-card {
+
+  // Bouton principal : Créer mon compte
+  button.fi-btn-primary {
+    @extend %fi-btn-base;
+    background: $accent !important;
+    color: #0a0c12 !important;
+    letter-spacing: 0.01em;
+
+    &:hover:not(:disabled) {
+      background: lighten($accent, 7%) !important;
+      box-shadow: 0 4px 20px $accent-glow !important;
+    }
+
+    &:disabled {
+      opacity: 0.35 !important;
+      cursor: not-allowed !important;
+    }
+  }
+
+  // Bouton Google
+  button.fi-btn-google {
+    @extend %fi-btn-base;
+    background: transparent !important;
+    border: 1px solid $border-hover !important;
+    color: $text-primary !important;
+
+    &:hover {
+      background: $bg-hover !important;
+      border-color: rgba(255, 255, 255, 0.22) !important;
+    }
+  }
+
+  // Bouton Annuler
+  button.fi-btn-cancel {
+    @extend %fi-btn-base;
+    background: transparent !important;
+    color: $text-muted !important;
+    height: 2.25rem !important;
+
+    &:hover {
+      color: $text-secondary !important;
+      background: $bg-surface !important;
+    }
+  }
+}
+
+// ─── Séparateur OU ─────────────────────────────────────────
+.fi-separator {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.fi-sep-line {
+  flex: 1;
+  height: 1px;
+  background: $border;
+}
+
+.fi-sep-text {
+  font-size: 0.75rem;
+  color: $text-muted;
+  letter-spacing: 0.05em;
+}

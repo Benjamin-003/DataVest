@@ -1,0 +1,67 @@
+<h2>Informations du compte</h2>
+<div class="grid p-fluid col-12 md:col-offset-4 md:col-4 justify-content-center">
+  <!-- Modal de suppression -->
+  <p-dialog
+    [showHeader]="false"
+    [(visible)]="isVisible"
+    [draggable]="false"
+    [resizable]="false"
+    [modal]="true"
+    [styleClass]="'w-full md:w-25rem'"
+  >
+    <ng-template pTemplate="content">
+      <div class="text-center">
+        <i class="pi pi-exclamation-triangle text-4xl text-red-500 mb-3"></i>
+        <h3 class="text-xl font-bold mb-3">Suppression définitive du compte</h3>
+        <p class="text-base mb-4">
+          Souhaitez-vous vraiment supprimer votre compte Ottawa Pigeon ?<br />
+          <span class="font-bold text-red-600">Cette action est irréversible</span> 
+          et supprimera l'ensemble de vos données.
+        </p>
+      </div>
+    </ng-template>
+
+    <!-- Boutons -->
+    <ng-template pTemplate="footer">
+      <div class="flex gap-2 justify-content-center">
+        <button 
+          type="button" 
+          pButton 
+          label="Annuler" 
+          icon="pi pi-times"
+          (click)="isVisible = false"
+         
+          class="p-button-secondary">
+        </button>
+        <button 
+          type="button" 
+          pButton 
+          label="Oui, supprimer mon compte" 
+          icon="pi pi-trash"
+          (click)="deleteAccount()"
+          class="p-button-danger">
+        </button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Boutons principaux -->
+  <button
+    pButton
+    pRipple
+    (click)="exportData()"
+    disabled=true
+    label="Exporter mes données"
+    icon="pi pi-download"
+    class="p-button-outlined p-button-info mb-2">
+  </button>
+
+  <button
+    pButton
+    pRipple
+    (click)="isVisible = true"
+    label="Supprimer mon compte"
+    icon="pi pi-trash"
+    class="p-button-danger">
+  </button>
+</div>

@@ -1,0 +1,81 @@
+<p-card>
+  <div class="flex justify-content-between align-items-center mb-3">
+    <div>
+      <h3 class="m-0">{{ symbol }}</h3>
+      <span class="text-color-secondary">{{ name }}</span>
+    </div>
+
+    <!-- Prix actuel + variation -->
+    @if (lastPrice() !== null) {
+      <div class="text-right">
+        <div class="text-2xl font-bold">{{ lastPrice() | currency:'USD' }}</div>
+        @if (firstPrice() !== null) {
+          <div [class.text-green-400]="isPositive()"
+               [class.text-red-400]="!isPositive()">
+            {{ isPositive() ? '+' : '' }}{{ (lastPrice()! - firstPrice()!) | currency:'USD' }}
+            ({{ (((lastPrice()! - firstPrice()!) / firstPrice()!) * 100) | number:'1.2-2' }}%)
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Sélecteur de période -->
+  <div class="flex gap-2 mb-3">
+    @for (r of ranges; track r) {
+      <button pButton
+        [label]="rangeLabels[r]"
+        [outlined]="range() !== r"
+        (click)="changeRange(r)"
+        size="small">
+      </button>
+    }
+  </div>
+
+  <!-- Graphique SVG -->
+  @if (loading()) {
+    <div class="flex justify-content-center p-4">
+      <i class="pi pi-spin pi-spinner text-4xl"></i>
+    </div>
+  } @else if (error()) {
+    <div class="text-center p-4 text-color-secondary">
+      Données indisponibles pour {{ symbol }}
+    </div>
+  } @else if (data().length > 0) {
+    <svg viewBox="0 0 800 200" class="w-full"
+         xmlns="http://www.w3.org/2000/svg">
+
+      <!-- Zone remplie sous la courbe -->
+      <defs>
+        <linearGradient [id]="'grad-' + symbol" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"
+            [attr.stop-color]="isPositive() ? '#4ade80' : '#f87171'"
+            stop-opacity="0.3"/>
+          <stop offset="100%"
+            [attr.stop-color]="isPositive() ? '#4ade80' : '#f87171'"
+            stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Aire de remplissage -->
+      <path
+        [attr.d]="generatePath(data(), 800, 200) + ' L 800 200 L 0 200 Z'"
+        [attr.fill]="'url(#grad-' + symbol + ')'"
+        stroke="none"/>
+
+      <!-- Ligne du cours -->
+      <path
+        [attr.d]="generatePath(data(), 800, 200)"
+        [attr.stroke]="isPositive() ? '#4ade80' : '#f87171'"
+        stroke-width="2"
+        fill="none"/>
+
+    </svg>
+
+    <!-- Dates min/max -->
+    <div class="flex justify-content-between text-color-secondary text-sm mt-1">
+      <span>{{ formatDate(data()[0].timestamp, range()) }}</span>
+      <span>{{ formatDate(data()[data().length - 1].timestamp, range()) }}</span>
+    </div>
+  }
+</p-card>
