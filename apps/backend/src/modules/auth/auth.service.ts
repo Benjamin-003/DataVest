@@ -342,7 +342,6 @@ export const authService = {
     select: {
       firstName:    true,
       lastName:     true,
-      name:      true,
       email:        true,
       birthdate:    true,
       address:      true,
