@@ -2,7 +2,9 @@
   "name": "@data-vest-nx/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "dev": "nx run-many --targets=serve,dev --projects=frontend,backend --parallel"
+  },
   "private": true,
   "devDependencies": {
     "@angular-devkit/core": "~22.1.0",

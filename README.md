@@ -1,96 +1,140 @@
-# DataVestNx
+# DataVest
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+Application fintech développée dans le cadre d'un titre professionnel (Alt Incubateur Tech, janvier–juin 2026).
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+Monorepo géré avec [Nx](https://nx.dev), regroupant le frontend Angular et l'API backend Express.
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## Stack technique
 
-## Run tasks
+| Partie | Technologies |
+|--------|-------------|
+| **Frontend** | Angular 19, PrimeNG 19, RxJS, Signals, Cypress (E2E) |
+| **Backend**  | Node.js, Express, TypeScript, Prisma, PostgreSQL 16 |
+| **Monorepo** | Nx (workspace, cache, orchestration des tâches) |
+| **Base de données** | PostgreSQL via Docker |
 
-To run tasks with Nx use:
+## Structure du projet
 
-```sh
-npx nx <target> <project-name>
+```
+DataVest-nx/
+├── apps/
+│   ├── frontend/     Application Angular (PrimeNG, Signals)
+│   └── backend/      API Express + Prisma + PostgreSQL
+├── nx.json            Configuration Nx (plugins, cache)
+├── package.json        Scripts racine (dev, build...)
+└── README.md
 ```
 
-For example:
+## Fonctionnalités principales
 
-```sh
-npx nx build myproject
+- Authentification complète : inscription, connexion, double authentification (2FA), vérification d'email, réinitialisation de mot de passe
+- Dashboard avec cotations en temps réel
+- Watchlist et gestion de portefeuille (portfolio)
+- Actualités financières et ISR (Investissement Socialement Responsable)
+- Paramètres utilisateur et gestion d'abonnement (tarifs)
+- Export RGPD des données personnelles
+
+## Prérequis
+
+- Node.js 18+
+- Docker (pour PostgreSQL)
+- npm
+
+## Installation
+
+### 1. Cloner le repo
+
+```bash
+git clone https://github.com/Benjamin-003/DataVest.git
+cd DataVest
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+### 2. Installer les dépendances
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-To install a new plugin you can use the `nx add` command. Here's an example of adding the React plugin:
-```sh
-npx nx add @nx/react
+```bash
+npm install --prefix apps/frontend
+npm install --prefix apps/backend
 ```
 
-Use the plugin's generator to create new projects. For example, to create a new React app or library:
+### 3. Lancer la base de données PostgreSQL (Docker)
 
-```sh
-# Generate an app
-npx nx g @nx/react:app demo
-
-# Generate a library
-npx nx g @nx/react:lib some-lib
+```bash
+cd apps/backend
+docker-compose up -d
+cd ../..
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+### 4. Configurer les variables d'environnement du backend
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Crée un fichier `apps/backend/.env` avec :
 
-## Set up CI!
-
-### Step 1
-
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
+```env
+DATABASE_URL="postgresql://myuser:mypassword@localhost:5433/mydb?schema=public"
+JWT_SECRET="ton_secret_ici"
+JWT_REFRESH_SECRET="ton_autre_secret_ici"
+JWT_EXPIRES_IN="7d"
+JWT_REFRESH_EXPIRES_IN="30d"
+PORT=3000
+NODE_ENV=development
+CORS_ORIGIN=http://localhost:4200
+RESEND_API_KEY="ta_cle_resend"
 ```
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+> Génère des secrets JWT aléatoires avec :
+> ```bash
+> node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+> ```
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### 5. Générer le client Prisma et appliquer les migrations
 
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
+```bash
+npx nx run backend:prisma-generate
+npx nx run backend:prisma-migrate
 ```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## Lancer le projet
 
-## Install Nx Console
+### Les deux applications en parallèle
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+```bash
+npm run dev
+```
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- Frontend : http://localhost:4200
+- Backend : http://localhost:3000
 
-## Useful links
+### Une application à la fois
 
-Learn more:
+```bash
+npm run dev:front   # Angular seul
+npm run dev:back    # Express seul
+```
 
-- [Learn more about this workspace setup](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## Build de production
 
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```bash
+npm run build
+```
+
+## Autres commandes utiles
+
+| Commande | Effet |
+|----------|-------|
+| `npx nx graph` | Visualise le graphe de dépendances du workspace |
+| `npx nx run backend:prisma-studio` | Ouvre l'interface graphique Prisma Studio |
+| `npx nx run backend:seed` | Peuple la base avec des données initiales |
+| `npx nx run-many --target=test --all` | Lance tous les tests du workspace |
+| `npx nx reset` | Vide le cache Nx (en cas de comportement incohérent) |
+
+## Tests
+
+- **Backend** : Vitest (`npx nx run backend:test`)
+- **Frontend** : Karma/Jasmine (`npx nx test frontend`) et Cypress pour les tests E2E (`npx nx run frontend:e2e`)
+
+## Sécurité
+
+Le projet applique les recommandations OWASP Top 10 : validation des entrées (Zod), hachage bcrypt des mots de passe, tokens JWT à courte durée avec refresh révocable, protection contre les attaques IDOR, et conformité RGPD (export et suppression des données personnelles).
+
+## Auteur
+
+Benjamin Boissin — Titre professionnel Concepteur Développeur d'Applications, Alt Incubateur Tech (2026)

@@ -15,6 +15,29 @@
       "options": {
         "command": "npm run build",
         "cwd": "apps/backend"
+      },
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true
+    },
+    "start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run start",
+        "cwd": "apps/backend"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run test",
+        "cwd": "apps/backend"
+      }
+    },
+    "seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run seed",
+        "cwd": "apps/backend"
       }
     },
     "prisma-generate": {
@@ -28,6 +51,13 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "npx prisma migrate dev",
+        "cwd": "apps/backend"
+      }
+    },
+    "prisma-studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx prisma studio",
         "cwd": "apps/backend"
       }
     }
