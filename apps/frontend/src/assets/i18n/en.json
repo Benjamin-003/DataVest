@@ -1,0 +1,13 @@
+{
+  "header.welcome": "{$START_ITALIC_TEXT}{$CLOSE_ITALIC_TEXT} Hello {$INTERPOLATION}",
+  "header.price": "Price",
+  "header.invest": "Invest",
+  "header.academy": "Academy",
+  "header.aboutSVBInd": "About SVB Ind",
+  "header.aboutOttawaPigeon": "About Ottawa Pigeon",
+  "header.helpCenter": "Help center",
+  "header.whyChooseUs": "Why choose us?",
+  "header.anyQuestions": "Any questions?",
+  "header.signUp": "Open an account",
+  "header.signIn": "Customer access"
+}

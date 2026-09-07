@@ -1,0 +1,17 @@
+{
+  "users": [
+    {
+      "surname": "Boissin",
+      "firstname": "Benjamin",
+      "address": "Rue de la paix ",
+      "zip_code": "69001",
+      "city": "Paris",
+      "country": "France",
+      "mail": "benjamin.boissin@akkodisgroup.com",
+      "password": "Aze",
+      "newsletter": false,
+      "id": 1,
+      "birthdate": "2023-01-08T22:00:00.000Z"
+    }
+  ]
+}
