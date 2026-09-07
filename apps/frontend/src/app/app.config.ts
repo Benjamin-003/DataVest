@@ -6,8 +6,6 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/auth.interceptor';
 import { AuthService } from './core/auth/auth.service';
 import { I18nService } from './i18n/i18n.service';
-import { Router } from '@angular/router';
-import { ErrorHandler } from '@angular/core';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 import { definePreset } from '@primeng/themes';
