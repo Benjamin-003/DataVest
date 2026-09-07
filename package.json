@@ -6,8 +6,11 @@
   "private": true,
   "dependencies": {},
   "devDependencies": {
+    "@nx/cypress": "23.2.0",
+    "@nx/eslint": "23.2.0",
     "@nx/js": "23.2.0",
     "@nx/workspace": "23.2.0",
+    "eslint": "^9.8.0",
     "nx": "23.2.0"
   }
 }

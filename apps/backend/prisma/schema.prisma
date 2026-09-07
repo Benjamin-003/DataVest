@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                   String        @id @default(cuid())
+  email                String        @unique
+  password             String
+  positions   Position[]
+  firstName            String?
+  lastName             String?
+  role                 Role          @default(USER)
+  refreshToken         String?
+  watchlist WatchlistItem[]
+
+  // Informations personnelles (Ottawa-Pigeon)
+  birthdate            DateTime?
+  address              String?
+  zipcode              String?
+  city                 String?
+  country              String?
+  newsletter           Boolean       @default(false)
+
+  // Préférences utilisateur
+  languageCode         String?
+  language             Language?     @relation(fields: [languageCode], references: [code])
+
+  currencyCode         String?
+  currency             Currency?     @relation(fields: [currencyCode], references: [code])
+
+  subscriptionCode     String?
+  subscription         Subscription? @relation(fields: [subscriptionCode], references: [code])
+
+  // Vérification email
+  emailVerified        Boolean       @default(false)
+  emailVerifyToken     String?
+  emailVerifyExpires   DateTime?
+
+  // Double authentification
+  twoFactorEnabled     Boolean       @default(false)
+  twoFactorCode        String?
+  twoFactorExpires     DateTime?
+
+  // Réinitialisation mot de passe
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Currency {
+  code  String @id
+  label String
+  flag  String
+  users User[]
+
+  @@map("currencies")
+}
+
+model Language {
+  code  String @id
+  label String
+  users User[]
+
+  @@map("languages")
+}
+
+model Subscription {
+  code      String  @id
+  label     String
+  isDefault Boolean @default(false)
+  users     User[]
+
+  @@map("subscriptions")
+}
+
+model WatchlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  symbol    String   // ex: "AAPL", "BTC", "CAC40"
+  name      String   // ex: "Apple Inc.", "Bitcoin"
+  type      AssetType
+  createdAt DateTime @default(now())
+
+  @@unique([userId, symbol]) // un utilisateur ne peut pas ajouter le même actif deux fois
+  @@map("watchlist_items")
+}
+
+enum AssetType {
+  STOCK       // action
+  CRYPTO      // cryptomonnaie
+  COMMODITY   // matière première
+  INDEX       // indice (CAC40, S&P500...)
+  FOREX       // paire de devises
+}
+
+model Position {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  symbol    String
+  name      String
+  quantity  Float
+  buyPrice  Float
+  createdAt DateTime @default(now())
+
+  @@map("positions")
+}
