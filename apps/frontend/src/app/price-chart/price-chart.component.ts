@@ -59,10 +59,14 @@ export class PriceChartComponent implements OnChanges {
     });
   }
 
-  changeRange(range: Range) {
-    this.range.set(range);
-    this.load();
+ changeRange(range: Range) {
+  if (this.range() === range) {
+    return;
   }
+
+  this.range.set(range);
+  this.load();
+}
 
   // Génère le path SVG du graphique à partir des données
   generatePath(points: PricePoint[], width: number, height: number): string {

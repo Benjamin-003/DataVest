@@ -25,7 +25,8 @@
     @for (r of ranges; track r) {
       <button pButton
         [label]="rangeLabels[r]"
-        [outlined]="range() !== r"
+        [outlined]="range() === r"
+        [severity]="range() === r ? 'primary' : 'secondary'"
         (click)="changeRange(r)"
         size="small">
       </button>

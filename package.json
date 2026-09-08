@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "nx run-many --targets=serve,dev --projects=frontend,backend --parallel"
+    "dev": "nx run-many --targets=serve,dev --projects=frontend,backend --parallel",
+    "dev:front": "nx serve frontend",
+    "dev:back": "nx run backend:dev"
   },
   "private": true,
   "devDependencies": {
