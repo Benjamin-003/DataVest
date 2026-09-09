@@ -1,0 +1,42 @@
+name: SonarCloud Analysis
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sonarcloud:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install --prefix apps/frontend && npm install --prefix apps/backend
+
+      - name: Run tests with coverage
+        run: npx nx run-many --target=test --all --coverage
+
+      - name: SonarCloud Scan - Backend
+        uses: SonarSource/sonarqube-scan-action@v4
+        with:
+          projectBaseDir: apps/backend
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: SonarCloud Scan - Frontend
+        uses: SonarSource/sonarqube-scan-action@v4
+        with:
+          projectBaseDir: apps/frontend
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
