@@ -6,6 +6,6 @@ const router = Router();
 
 // Route protégée — nécessite un token valide
 // :url = URL du flux RSS encodée en base64
-router.get('/:url', authenticate, articleController.getArticles);
+router.get('/articles/:feedId', authenticate,articleController.getArticles);
 
 export default router;

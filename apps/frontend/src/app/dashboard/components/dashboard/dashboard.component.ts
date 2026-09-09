@@ -7,58 +7,94 @@ import { LastArticleCardComponent } from '../../pages/last-article-card/last-art
 import { ArticleTableComponent } from '../../pages/article-table/article-table.component';
 import { TableFooterComponent } from '../../pages/table-footer/table-footer.component';
 
+interface RawArticle {
+  title: Record<string, string>;
+  description?: { _cdata?: string };
+  pubDate: { _text: string };
+  link: { _text: string };
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, TabsModule, LastArticleCardComponent, ArticleTableComponent, TableFooterComponent],
+  imports: [
+    CommonModule,
+    TabsModule,
+    LastArticleCardComponent,
+    ArticleTableComponent,
+    TableFooterComponent,
+  ],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
   private readonly macroEconomicNews = inject(MacroeconomicNewsService);
 
-public activeTab = 0;
+  public activeTab = 0;
   public isError = true;
   public articleListe: Article[] = [];
-  public firstArticle: Article = { title: '', description: '', publicationDate: '', link: '' };
+  public firstArticle: Article = {
+    title: '',
+    description: '',
+    publicationDate: '',
+    link: '',
+  };
 
   public readonly streams = [
-    { label: 'FT - Economic News', url: 'https://www.ft.com/rss/home',                        attr: '_cdata' },
-    { label: 'WSJ - US',           url: 'https://feeds.a.dj.com/rss/WSJcomUSBusiness.xml',    attr: '_text'  },
-    { label: 'WSJ - Markets',      url: 'https://feeds.a.dj.com/rss/RSSMarketsMain.xml',      attr: '_text'  },
+    {
+      id: 'ft-economic',
+      label: 'FT - Economic News',
+      attr: '_cdata',
+    },
+    {
+      id: 'wsj-us',
+      label: 'WSJ - US',
+      attr: '_text',
+    },
+    {
+      id: 'wsj-markets',
+      label: 'WSJ - Markets',
+      attr: '_text',
+    },
   ];
 
   ngOnInit(): void {
-    this.getStream(this.streams[0].url, this.streams[0].attr);
+    this.getStream(this.streams[0].id, this.streams[0].attr);
   }
 
- onTabChange(index: number): void {
-  this.activeTab = index;
-  const stream = this.streams[index];
-  this.getStream(stream.url, stream.attr);
-}
+  onTabChange(index: number): void {
+    this.activeTab = index;
+    const stream = this.streams[index];
+    this.getStream(stream.id, stream.attr);
+  }
 
-  getStream(url: string, attributeTitle: string): void {
-    this.macroEconomicNews.getNews(url).subscribe({
+  getStream(feedId: string, attributeTitle: string): void {
+    this.macroEconomicNews.getNews(feedId).subscribe({
       next: (result) => {
-        this.articleListe = result.rss.channel.item.map((rawData: any) => {
-          const description: { _cdata: string } | undefined = rawData?.description;
-          return {
-            title:           rawData.title[attributeTitle],
-            description:     description?.['_cdata'] ?? '',
-            publicationDate: rawData.pubDate['_text'],
-            link:            rawData.link['_text'],
-          };
-        });
+        this.articleListe = result.rss.channel.item.map(
+          (rawData: RawArticle) => {
+            const description = rawData.description;
+            return {
+              title: rawData.title[attributeTitle],
+              description: description?.['_cdata'] ?? '',
+              publicationDate: rawData.pubDate['_text'],
+              link: rawData.link['_text'],
+            };
+          },
+        );
         this.sortArticleByDate(this.articleListe);
         this.firstArticle = this.articleListe[0];
         this.articleListe.shift();
         this.isError = false;
       },
-      error: () => { this.isError = true; },
+      error: () => {
+        this.isError = true;
+      },
     });
   }
 
   sortArticleByDate(list: Article[]): void {
-    list.sort((a, b) => Date.parse(b.publicationDate) - Date.parse(a.publicationDate));
+    list.sort(
+      (a, b) => Date.parse(b.publicationDate) - Date.parse(a.publicationDate),
+    );
   }
 }
