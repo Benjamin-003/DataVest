@@ -2,6 +2,10 @@
   "name": "@data-vest-nx/source",
   "version": "0.0.0",
   "license": "MIT",
+  "workspaces": [
+    "apps/frontend",
+    "apps/backend"
+  ],
   "scripts": {
     "dev": "nx run-many --targets=serve,dev --projects=frontend,backend --parallel",
     "dev:front": "nx serve frontend",
@@ -9,13 +13,24 @@
   },
   "private": true,
   "devDependencies": {
-    "@angular-devkit/core": "~22.1.0",
-    "@nx/angular": "^23.2.0",
-    "@nx/cypress": "23.2.0",
-    "@nx/eslint": "23.2.0",
-    "@nx/js": "23.2.0",
-    "@nx/workspace": "23.2.0",
+    "@nx/angular": "22.7.10",
+    "@nx/cypress": "22.7.10",
+    "@nx/eslint": "22.7.10",
+    "@nx/js": "22.7.10",
+    "@nx/workspace": "22.7.10",
     "eslint": "^9.8.0",
-    "nx": "23.2.0"
+    "nx": "22.7.10"
+  },
+  "allowScripts": {
+    "nx@22.7.10": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.0": true,
+    "@parcel/watcher@2.6.0": true,
+    "@prisma/engines@7.10.0": true,
+    "bcrypt@6.0.0": true,
+    "cypress@15.21.1": true,
+    "lmdb@3.2.6": true,
+    "msgpackr-extract@3.0.4": true,
+    "prisma@7.10.0": true
   }
 }
