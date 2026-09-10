@@ -1,12 +1,12 @@
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { TableFooterComponent } from './table-footer.component';
 
 describe('TableFooterComponent', () => {
   let component: TableFooterComponent;
   let fixture: ComponentFixture<TableFooterComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ TableFooterComponent ]
     })

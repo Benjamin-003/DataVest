@@ -1,12 +1,12 @@
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { OtherSettingsComponent } from './other-settings.component';
 
 describe('OtherSettingsComponent', () => {
   let component: OtherSettingsComponent;
   let fixture: ComponentFixture<OtherSettingsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ OtherSettingsComponent ]
     })

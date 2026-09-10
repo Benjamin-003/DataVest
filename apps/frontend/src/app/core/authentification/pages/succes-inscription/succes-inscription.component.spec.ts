@@ -1,12 +1,12 @@
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { SuccesInscriptionComponent } from './succes-inscription.component';
 
 describe('SuccesInscriptionComponent', () => {
   let component: SuccesInscriptionComponent;
   let fixture: ComponentFixture<SuccesInscriptionComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SuccesInscriptionComponent ]
     })

@@ -1,12 +1,12 @@
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { EchecInscriptionComponent } from './echec-inscription.component';
 
 describe('EchecInscriptionComponent', () => {
   let component: EchecInscriptionComponent;
   let fixture: ComponentFixture<EchecInscriptionComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ EchecInscriptionComponent ]
     })

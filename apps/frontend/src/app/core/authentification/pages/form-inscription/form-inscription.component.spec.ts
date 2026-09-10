@@ -8,7 +8,7 @@ describe('FormInscriptionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FormInscriptionComponent ]
+      imports: [ FormInscriptionComponent ]
     })
     .compileComponents();
 

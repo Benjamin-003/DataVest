@@ -1,12 +1,12 @@
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { AProposOttawaPigeonComponent } from './a-propos-ottawa-pigeon.component';
 
 describe('AProposOttawaPigeonComponent', () => {
   let component: AProposOttawaPigeonComponent;
   let fixture: ComponentFixture<AProposOttawaPigeonComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ AProposOttawaPigeonComponent ]
     })

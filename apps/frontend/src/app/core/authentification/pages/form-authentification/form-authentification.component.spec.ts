@@ -1,12 +1,12 @@
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormAuthentificationComponent } from './form-authentification.component';
 
 describe('FormAuthentificationComponent', () => {
   let component: FormAuthentificationComponent;
   let fixture: ComponentFixture<FormAuthentificationComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ FormAuthentificationComponent ]
     })

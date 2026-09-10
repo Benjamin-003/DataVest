@@ -1,12 +1,12 @@
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { SicavFondsComponent } from './sicav-fonds.component';
 
 describe('SicavFondsComponent', () => {
   let component: SicavFondsComponent;
   let fixture: ComponentFixture<SicavFondsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
     declarations: [SicavFondsComponent]
 })

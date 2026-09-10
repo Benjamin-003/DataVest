@@ -1,12 +1,12 @@
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { AccueilInvestirResponsableComponent } from './accueil-investir-responsable.component';
 
 describe('AccueilInvestirResponsableComponent', () => {
   let component: AccueilInvestirResponsableComponent;
   let fixture: ComponentFixture<AccueilInvestirResponsableComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
     declarations: [AccueilInvestirResponsableComponent]
 })
