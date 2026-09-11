@@ -1,4 +1,3 @@
-
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { OtherSettingsComponent } from './other-settings.component';
 
@@ -8,7 +7,7 @@ describe('OtherSettingsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OtherSettingsComponent ]
+      imports: [ OtherSettingsComponent ]
     })
     .compileComponents();
   }));

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 
 import { AccueilComponent } from './accueil.component';
 
@@ -8,7 +9,10 @@ describe('AccueilComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ AccueilComponent ]
+      imports: [ AccueilComponent ],
+      providers: [
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map() } } },
+      ],
     })
     .compileComponents();
 

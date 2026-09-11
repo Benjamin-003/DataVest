@@ -1,4 +1,3 @@
-
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ArticleTableComponent } from './article-table.component';
 
@@ -8,7 +7,7 @@ describe('ArticleTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ArticleTableComponent ]
+      imports: [ ArticleTableComponent ]
     })
     .compileComponents();
   }));

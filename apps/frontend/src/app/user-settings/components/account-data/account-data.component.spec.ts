@@ -1,5 +1,6 @@
-
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { AccountDataComponent } from './account-data.component';
 
 describe('AccountDataComponent', () => {
@@ -8,7 +9,11 @@ describe('AccountDataComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AccountDataComponent ]
+      imports: [ AccountDataComponent ],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     })
     .compileComponents();
   }));

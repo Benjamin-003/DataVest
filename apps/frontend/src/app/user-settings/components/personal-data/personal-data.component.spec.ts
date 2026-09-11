@@ -1,4 +1,3 @@
-
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { PersonalDataComponent } from './personal-data.component';
 
@@ -8,7 +7,7 @@ describe('PersonalDataComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PersonalDataComponent ]
+      imports: [ PersonalDataComponent ]
     })
     .compileComponents();
   }));

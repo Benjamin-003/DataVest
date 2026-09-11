@@ -1,5 +1,5 @@
-
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 import { EchecInscriptionComponent } from './echec-inscription.component';
 
 describe('EchecInscriptionComponent', () => {
@@ -8,7 +8,10 @@ describe('EchecInscriptionComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ EchecInscriptionComponent ]
+      imports: [ EchecInscriptionComponent ],
+      providers: [
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map() } } },
+      ],
     })
     .compileComponents();
   }));

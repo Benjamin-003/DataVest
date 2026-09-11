@@ -1,12 +1,16 @@
-
-
 import { TestBed, inject } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { SubscriptionsService } from './subscriptions.service';
 
 describe('Service: Subscriptions', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [SubscriptionsService]
+      providers: [
+        SubscriptionsService,
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ]
     });
   });
 

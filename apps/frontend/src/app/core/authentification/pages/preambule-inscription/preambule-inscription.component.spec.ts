@@ -1,5 +1,5 @@
-
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 import { PreambuleInscriptionComponent } from './preambule-inscription.component';
 
 describe('PreambuleInscriptionComponent', () => {
@@ -8,7 +8,10 @@ describe('PreambuleInscriptionComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PreambuleInscriptionComponent ]
+      imports: [ PreambuleInscriptionComponent ],
+      providers: [
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map() } } },
+      ],
     })
     .compileComponents();
   }));
