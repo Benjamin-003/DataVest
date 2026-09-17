@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import { config } from './config/env';
-import { errorHandler } from './middleware/error.middleware';
 import authRoutes         from './modules/auth/auth.routes';
 import currencyRoutes     from './modules/currencies/currency.routes';
 import languageRoutes     from './modules/languages/language.routes';
@@ -13,6 +13,7 @@ import priceHistoryRoutes from './modules/prices/price-history.routes';
 
 const app = express();
 
+app.use(helmet());
 app.use(cors({ origin: config.cors.origin, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -38,8 +39,3 @@ app.use('/api/prices', priceHistoryRoutes);
 app.use((_req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
-
-
-app.use(errorHandler);
-
-export default app;
