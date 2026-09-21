@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { authController } from './auth.controller';
 import { prisma } from '../../prisma/client';
 import { authMailer } from './auth.mailer';
@@ -8,7 +8,10 @@ vi.mock('../../prisma/client', () => ({
   prisma: { user: { findUnique: vi.fn(), update: vi.fn() } },
 }));
 
-vi.mock('bcrypt', () => ({ default: { compare: vi.fn() }, compare: vi.fn() }));
+vi.mock('bcrypt', () => {
+  const compare = vi.fn();
+  return { default: { compare }, compare };
+});
 
 vi.mock('./auth.mailer', () => ({
   authMailer: {
