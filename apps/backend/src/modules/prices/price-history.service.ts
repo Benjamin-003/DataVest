@@ -14,11 +14,17 @@ const intervalMap: Record<Range, string> = {
   '1y':  '1wk',
 };
 
+const YAHOO_CHART_URL = 'https://query1.finance.yahoo.com/v8/finance/chart/';
+
 export const priceHistoryService = {
 
   async getHistory(symbol: string, range: Range): Promise<PricePoint[]> {
     const interval = intervalMap[range];
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=${range}&interval=${interval}`;
+
+    // encodeURIComponent neutralise /, ?, #, &, % dans le segment de chemin
+    const url = new URL(`${YAHOO_CHART_URL}${encodeURIComponent(symbol)}`);
+    url.searchParams.set('range', range);
+    url.searchParams.set('interval', interval);
 
     const response = await fetch(url, {
       headers: { 'User-Agent': 'Mozilla/5.0' },

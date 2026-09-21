@@ -3,7 +3,7 @@ import { authService } from './auth.service';
 import { prisma } from '../../prisma/client';
 import { authMailer } from './auth.mailer';
 import * as bcrypt from 'bcrypt';
-import * as nodeCrypto from 'crypto';
+import * as nodeCrypto from 'node:crypto';
 
 // The controller links routes to the service
 // It receives the HTTP request, calls the service and sends the response
@@ -40,8 +40,8 @@ export const authController = {
   }
 
   // Générer code 2FA et envoyer par email
-  const twoFactorCode = Math.random().toString().slice(2, 8);
-  const twoFactorExpires = new Date(Date.now() + 5 * 60 * 1000);
+const twoFactorCode = nodeCrypto.randomInt(0, 1_000_000).toString().padStart(6, '0');
+const twoFactorExpires = new Date(Date.now() + 5 * 60 * 1000);
 
   await prisma.user.update({
     where: { id: user.id },
@@ -219,7 +219,6 @@ async resendVerificationEmail(req: Request, res: Response) {
   });
 
   // Envoyer le mail
-  const verifyLink = `${process.env.FRONTEND_URL}/authentication/verify-email?token=${emailVerifyToken}`;
  await authMailer.sendVerifyEmail(user.email, emailVerifyToken, user.firstName || '');
 
   return res.json({ message: 'Un nouveau mail de vérification a été envoyé' });

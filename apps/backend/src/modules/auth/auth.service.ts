@@ -9,7 +9,7 @@ import {
   RegisterInput,
   UpdateMeInput,
 } from "./auth.schema";
-import crypto from "node:crypto";
+import crypto, { randomInt } from "node:crypto";
 import { authMailer } from "./auth.mailer";
 
 // --- Fonctions utilitaires (hors de l'objet) ---
@@ -128,9 +128,9 @@ export const authService = {
     const isValid = await bcrypt.compare(data.password, user.password);
     if (!isValid) throw new AppError(401, "Identifiants invalides");
 
-    // Génération et envoi du code 2FA
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    const expires = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+// Génération et envoi du code 2FA
+const code = randomInt(100000, 1000000).toString();
+const expires = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
     await prisma.user.update({
       where: { id: user.id },
