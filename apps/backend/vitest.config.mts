@@ -16,6 +16,7 @@ export default defineConfig({
         'src/index.ts',
         'src/prisma/client.ts',
         'src/config/rss-feeds.ts',
+        'src/app.ts',
       ],
     },
   },
